@@ -2,7 +2,8 @@
 # Pali text as in the printed book (checked against the scan), written with Mor's conventions:
 #   compounds split with a hyphen (dhamma-vādī); sandhi marked with ’ on the first word
 #   (dhamm’ānupassī), or before the second word when the change reflects the first word's
-#   grammar (dhammo’mhi); saṅgha with ṅ; no circumflexes (saṃvattatī’ti, n’āhaṃ). English: see CREDIT per text.
+#   grammar (dhammo’mhi); saṅgha with ṅ; no circumflexes (saṃvattatī’ti, n’āhaṃ);
+#   no apostrophe where a joining consonant is inserted (yathayidaṃ). English: see CREDIT per text.
 # Word spec keys: l = DPD lemma_1 (with homonym number), g = grammar code,
 # ctx = meaning in this passage, role = "subj" | "verb" (colour hints),
 # parts = for sandhi/compounds: list of (form, DPD lemma_1 or None, grammar code, meaning),
@@ -70,7 +71,7 @@ TEXTS.append(dict(
          "“Bhikkhus, … An unrestrained mind leads to great harm.”"),
         ("… cittaṃ, bhikkhave, saṃvutaṃ mahato atthāya saṃvattatī’ti.",
          "“Bhikkhus, … A restrained mind leads to great good.”"),
-        ("N’āhaṃ, bhikkhave, aññaṃ eka-dhammaṃ pi samanupassāmi yaṃ evaṃ adantaṃ, aguttaṃ, arakkhitaṃ, asaṃvutaṃ, mahato anatthāya saṃvattatī’ti yath’ayidaṃ, bhikkhave, cittaṃ. Cittaṃ, bhikkhave, adantaṃ, aguttaṃ, arakkhitaṃ asaṃvutaṃ mahato anatthāya saṃvattatī’ti.",
+        ("N’āhaṃ, bhikkhave, aññaṃ eka-dhammaṃ pi samanupassāmi yaṃ evaṃ adantaṃ, aguttaṃ, arakkhitaṃ, asaṃvutaṃ, mahato anatthāya saṃvattatī’ti yathayidaṃ, bhikkhave, cittaṃ. Cittaṃ, bhikkhave, adantaṃ, aguttaṃ, arakkhitaṃ asaṃvutaṃ mahato anatthāya saṃvattatī’ti.",
          "“Bhikkhus, I do not see even one other thing that, when untamed, unguarded, unprotected, and unrestrained, leads to such great harm as the mind. The mind, when untamed, unguarded, unprotected, and unrestrained, leads to great harm.”"),
     ],
     words={
@@ -106,7 +107,7 @@ TEXTS.append(dict(
         "yaṃ": dict(l="ya 2.1", g="nt nom sg", ctx="which (refers to eka-dhammaṃ)", role="subj",
                     note="The relative pronoun is the subject of saṃvattati in its own clause."),
         "evaṃ": dict(l="evaṃ 1", g="ind", ctx="so; thus"),
-        "yath’ayidaṃ": dict(l="yathayidaṃ", g="sandhi", ctx="as … this (here: as the mind)",
+        "yathayidaṃ": dict(l="yathayidaṃ", g="sandhi", ctx="as … this (here: as the mind)",
                            parts=[("yathā", "yathā 1", "ind", "as; like"),
                                   ("idaṃ", None, "pron nt nom sg", "this")],
                            note="yathā + idaṃ: the ā is shortened and a y is inserted between the two words."),
@@ -124,9 +125,9 @@ TEXTS.append(dict(
     paras=[
         ("… Micchā-diṭṭhikassa, bhikkhave, anuppannā c’eva akusalā dhammā uppajjanti, uppannā ca akusalā dhammā vepullāya saṃvattantī’ti.",
          "“Bhikkhus, … For one of wrong view, unarisen unwholesome qualities arise and arisen unwholesome qualities increase and expand.”"),
-        ("N’āhaṃ, bhikkhave, aññaṃ eka-dhammaṃ pi samanupassāmi yena anuppannā vā kusalā dhammā n’uppajjanti, uppannā vā kusalā dhammā parihāyanti yath’ayidaṃ, bhikkhave, micchā-diṭṭhi. Micchā-diṭṭhikassa, bhikkhave, anuppannā c’eva kusalā dhammā n’uppajjanti, uppannā ca kusalā dhammā parihāyantī’ti.",
+        ("N’āhaṃ, bhikkhave, aññaṃ eka-dhammaṃ pi samanupassāmi yena anuppannā vā kusalā dhammā n’uppajjanti, uppannā vā kusalā dhammā parihāyanti yathayidaṃ, bhikkhave, micchā-diṭṭhi. Micchā-diṭṭhikassa, bhikkhave, anuppannā c’eva kusalā dhammā n’uppajjanti, uppannā ca kusalā dhammā parihāyantī’ti.",
          "“Bhikkhus, I do not see even a single thing on account of which unarisen wholesome qualities do not arise and arisen wholesome qualities decline so much as wrong view. For one of wrong view, unarisen wholesome qualities do not arise and arisen wholesome qualities decline.”"),
-        ("N’āhaṃ, bhikkhave, aññaṃ eka-dhammaṃ pi samanupassāmi yena anuppannā vā akusalā dhammā n’uppajjanti, uppannā vā akusalā dhammā parihāyanti yath’ayidaṃ, bhikkhave, sammā-diṭṭhi. Sammā-diṭṭhikassa, bhikkhave, anuppannā c’eva akusalā dhammā n’uppajjanti, uppannā ca akusalā dhammā parihāyantī’ti.",
+        ("N’āhaṃ, bhikkhave, aññaṃ eka-dhammaṃ pi samanupassāmi yena anuppannā vā akusalā dhammā n’uppajjanti, uppannā vā akusalā dhammā parihāyanti yathayidaṃ, bhikkhave, sammā-diṭṭhi. Sammā-diṭṭhikassa, bhikkhave, anuppannā c’eva akusalā dhammā n’uppajjanti, uppannā ca akusalā dhammā parihāyantī’ti.",
          "“Bhikkhus, I do not see even a single thing on account of which unarisen unwholesome qualities do not arise and arisen unwholesome qualities decline so much as right view. For one of right view, unarisen unwholesome qualities do not arise and arisen unwholesome qualities decline.”"),
     ],
     words={
@@ -179,7 +180,7 @@ TEXTS.append(dict(
         "vā": dict(l="vā 1", g="ind", ctx="or; and",
                    note="vā … vā here simply joins the two clauses."),
         "parihāyanti": dict(l="parihāyati 1", g="pr 3rd pl", ctx="decline; decrease", role="verb"),
-        "yath’ayidaṃ": dict(l="yathayidaṃ", g="sandhi", ctx="as … this; namely",
+        "yathayidaṃ": dict(l="yathayidaṃ", g="sandhi", ctx="as … this; namely",
                            parts=[("yathā", "yathā 1", "ind", "as; like"),
                                   ("idaṃ", None, "pron nt nom sg", "this")],
                            note="yathā + idaṃ: the ā is shortened and a y is inserted between the two words."),

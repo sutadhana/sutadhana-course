@@ -108,10 +108,11 @@ SECTIONS = [
          "<li>Where sandhi changes the sounds, an apostrophe goes with the first word: dhamma + anupassī → "
          "<b>dhamm’ānupassī</b> (not dhammā’nupassī).</li>"
          "<li>But when the change reflects the grammar of the first word and not the second, the apostrophe "
-         "goes before the second word: dhammo + amhi → <b>dhammo’mhi</b> (not dhamm’omhi).</li></ul>" +
+         "goes before the second word: dhammo + amhi → <b>dhammo’mhi</b> (not dhamm’omhi).</li>"
+         "<li>Where a joining sound is inserted between the words, there is no apostrophe: yathā + idaṃ → <b>yathayidaṃ</b>.</li></ul>" +
          table(["in the text", "from"], [
              ["n’āhaṃ", "na + ahaṃ"], ["saṃvattatī’ti", "saṃvattati + iti"], ["n’uppajjanti", "na + uppajjanti"],
-             ["c’eva", "ca + eva"], ["yath’ayidaṃ", "yathā + idaṃ (with y inserted)"],
+             ["c’eva", "ca + eva"], ["yathayidaṃ", "yathā + idaṃ (a y is inserted, so no apostrophe)"],
              ["eka-dhammaṃ", "eka + dhammaṃ (compound)"]]) +
          "<p>Tap a joined word in the reader to see its parts.</p>"),
     dict(id="pronouns", title="Pronouns", interim=True, html=
