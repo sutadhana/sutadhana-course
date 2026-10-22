@@ -74,7 +74,7 @@
     return [...cards.values()];
   }
   async function getDeck() {
-    if (!state.deck) state.deck = await buildDeck(publishedLessons(state.group));
+    if (!state.deck) state.deck = await buildDeck(PREVIEW ? visibleLessons(state.group) : publishedLessons(state.group));
     return state.deck;
   }
   function learnedSet() {
