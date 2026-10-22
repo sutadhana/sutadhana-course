@@ -1,0 +1,139 @@
+{
+ "title": "Grammar guide",
+ "intro": "Choose a topic. In the reader, the grammar line for each word links straight to the matching section.",
+ "interimNote": "A short note for now. This section will be replaced by Mor’s own grammar guide.",
+ "sections": [
+  {
+   "id": "nominative",
+   "title": "Nominative",
+   "interim": true,
+   "html": "<p>The case of the subject: the one who does the action, or the thing a sentence is about. A word describing the subject (an adjective or participle) is also nominative.</p><p><b>In our texts:</b> <b>cittaṃ</b> … saṃvattati, “the mind … leads”; <b>dhammā</b> uppajjanti, “qualities arise”.</p><p>The a-stem masculine noun <b>dhamma</b>, for reference:</p><div class=\"tablewrap\"><table><thead><tr><th></th><th>singular</th><th>plural</th></tr></thead><tbody><tr><td>nominative</td><td>dhammo</td><td>dhammā</td></tr><tr><td>accusative</td><td>dhammaṃ</td><td>dhamme</td></tr><tr><td>instrumental</td><td>dhammena</td><td>dhammehi</td></tr><tr><td>dative</td><td>dhammāya, dhammassa</td><td>dhammānaṃ</td></tr><tr><td>ablative</td><td>dhammā, dhammasmā, dhammamhā</td><td>dhammehi</td></tr><tr><td>genitive</td><td>dhammassa</td><td>dhammānaṃ</td></tr><tr><td>locative</td><td>dhamme, dhammasmiṃ, dhammamhi</td><td>dhammesu</td></tr><tr><td>vocative</td><td>dhamma</td><td>dhammā</td></tr></tbody></table></div>"
+  },
+  {
+   "id": "accusative",
+   "title": "Accusative",
+   "interim": true,
+   "html": "<p>The case of the direct object, and of the goal of a verb of motion. The neuter accusative singular is also used as an adverb.</p><p><b>In our texts:</b> buddhaṃ saraṇaṃ <b>gacchāmi</b>, “I go to the Buddha as refuge”; <b>dutiyaṃ</b>, “for the second time”.</p><p>The a-stem masculine noun <b>dhamma</b>, for reference:</p><div class=\"tablewrap\"><table><thead><tr><th></th><th>singular</th><th>plural</th></tr></thead><tbody><tr><td>nominative</td><td>dhammo</td><td>dhammā</td></tr><tr><td>accusative</td><td>dhammaṃ</td><td>dhamme</td></tr><tr><td>instrumental</td><td>dhammena</td><td>dhammehi</td></tr><tr><td>dative</td><td>dhammāya, dhammassa</td><td>dhammānaṃ</td></tr><tr><td>ablative</td><td>dhammā, dhammasmā, dhammamhā</td><td>dhammehi</td></tr><tr><td>genitive</td><td>dhammassa</td><td>dhammānaṃ</td></tr><tr><td>locative</td><td>dhamme, dhammasmiṃ, dhammamhi</td><td>dhammesu</td></tr><tr><td>vocative</td><td>dhamma</td><td>dhammā</td></tr></tbody></table></div>"
+  },
+  {
+   "id": "instrumental",
+   "title": "Instrumental",
+   "interim": true,
+   "html": "<p>“By, with, by means of”. It also expresses cause: “because of, on account of”.</p><p><b>In our texts:</b> <b>yena</b> … nūppajjanti, “on account of which … do not arise”.</p><p>The a-stem masculine noun <b>dhamma</b>, for reference:</p><div class=\"tablewrap\"><table><thead><tr><th></th><th>singular</th><th>plural</th></tr></thead><tbody><tr><td>nominative</td><td>dhammo</td><td>dhammā</td></tr><tr><td>accusative</td><td>dhammaṃ</td><td>dhamme</td></tr><tr><td>instrumental</td><td>dhammena</td><td>dhammehi</td></tr><tr><td>dative</td><td>dhammāya, dhammassa</td><td>dhammānaṃ</td></tr><tr><td>ablative</td><td>dhammā, dhammasmā, dhammamhā</td><td>dhammehi</td></tr><tr><td>genitive</td><td>dhammassa</td><td>dhammānaṃ</td></tr><tr><td>locative</td><td>dhamme, dhammasmiṃ, dhammamhi</td><td>dhammesu</td></tr><tr><td>vocative</td><td>dhamma</td><td>dhammā</td></tr></tbody></table></div>"
+  },
+  {
+   "id": "dative",
+   "title": "Dative",
+   "interim": true,
+   "html": "<p>“To, for”. Very common for purpose or result, especially with saṃvattati, “leads to”, and with abstract nouns: “for the sake of …”. It also marks the person for whom something is so.</p><p><b>In our texts:</b> mahato <b>anatthāya</b> saṃvattati, “leads to great harm”; <b>pahānāya</b>, “for the abandoning”; <b>micchādiṭṭhikassa</b>, “for one of wrong view”.</p><p>The a-stem masculine noun <b>dhamma</b>, for reference:</p><div class=\"tablewrap\"><table><thead><tr><th></th><th>singular</th><th>plural</th></tr></thead><tbody><tr><td>nominative</td><td>dhammo</td><td>dhammā</td></tr><tr><td>accusative</td><td>dhammaṃ</td><td>dhamme</td></tr><tr><td>instrumental</td><td>dhammena</td><td>dhammehi</td></tr><tr><td>dative</td><td>dhammāya, dhammassa</td><td>dhammānaṃ</td></tr><tr><td>ablative</td><td>dhammā, dhammasmā, dhammamhā</td><td>dhammehi</td></tr><tr><td>genitive</td><td>dhammassa</td><td>dhammānaṃ</td></tr><tr><td>locative</td><td>dhamme, dhammasmiṃ, dhammamhi</td><td>dhammesu</td></tr><tr><td>vocative</td><td>dhamma</td><td>dhammā</td></tr></tbody></table></div>"
+  },
+  {
+   "id": "ablative",
+   "title": "Ablative",
+   "interim": true,
+   "html": "<p>“From”: separation, origin, and also cause (“because of”) and comparison (“than”).</p><p><b>In our texts:</b> Coming up in later readings.</p><p>The a-stem masculine noun <b>dhamma</b>, for reference:</p><div class=\"tablewrap\"><table><thead><tr><th></th><th>singular</th><th>plural</th></tr></thead><tbody><tr><td>nominative</td><td>dhammo</td><td>dhammā</td></tr><tr><td>accusative</td><td>dhammaṃ</td><td>dhamme</td></tr><tr><td>instrumental</td><td>dhammena</td><td>dhammehi</td></tr><tr><td>dative</td><td>dhammāya, dhammassa</td><td>dhammānaṃ</td></tr><tr><td>ablative</td><td>dhammā, dhammasmā, dhammamhā</td><td>dhammehi</td></tr><tr><td>genitive</td><td>dhammassa</td><td>dhammānaṃ</td></tr><tr><td>locative</td><td>dhamme, dhammasmiṃ, dhammamhi</td><td>dhammesu</td></tr><tr><td>vocative</td><td>dhamma</td><td>dhammā</td></tr></tbody></table></div>"
+  },
+  {
+   "id": "genitive",
+   "title": "Genitive",
+   "interim": true,
+   "html": "<p>“Of”: possession and other relations between two nouns. Its forms are often the same as the dative’s, so the context decides.</p><p><b>In our texts:</b> anuppannānaṃ … <b>dhammānaṃ</b> anuppādāya, “for the non-arising of unarisen … qualities”.</p><p>The a-stem masculine noun <b>dhamma</b>, for reference:</p><div class=\"tablewrap\"><table><thead><tr><th></th><th>singular</th><th>plural</th></tr></thead><tbody><tr><td>nominative</td><td>dhammo</td><td>dhammā</td></tr><tr><td>accusative</td><td>dhammaṃ</td><td>dhamme</td></tr><tr><td>instrumental</td><td>dhammena</td><td>dhammehi</td></tr><tr><td>dative</td><td>dhammāya, dhammassa</td><td>dhammānaṃ</td></tr><tr><td>ablative</td><td>dhammā, dhammasmā, dhammamhā</td><td>dhammehi</td></tr><tr><td>genitive</td><td>dhammassa</td><td>dhammānaṃ</td></tr><tr><td>locative</td><td>dhamme, dhammasmiṃ, dhammamhi</td><td>dhammesu</td></tr><tr><td>vocative</td><td>dhamma</td><td>dhammā</td></tr></tbody></table></div>"
+  },
+  {
+   "id": "locative",
+   "title": "Locative",
+   "interim": true,
+   "html": "<p>“In, on, at, among”: place, time and circumstance.</p><p><b>In our texts:</b> Coming up in later readings.</p><p>The a-stem masculine noun <b>dhamma</b>, for reference:</p><div class=\"tablewrap\"><table><thead><tr><th></th><th>singular</th><th>plural</th></tr></thead><tbody><tr><td>nominative</td><td>dhammo</td><td>dhammā</td></tr><tr><td>accusative</td><td>dhammaṃ</td><td>dhamme</td></tr><tr><td>instrumental</td><td>dhammena</td><td>dhammehi</td></tr><tr><td>dative</td><td>dhammāya, dhammassa</td><td>dhammānaṃ</td></tr><tr><td>ablative</td><td>dhammā, dhammasmā, dhammamhā</td><td>dhammehi</td></tr><tr><td>genitive</td><td>dhammassa</td><td>dhammānaṃ</td></tr><tr><td>locative</td><td>dhamme, dhammasmiṃ, dhammamhi</td><td>dhammesu</td></tr><tr><td>vocative</td><td>dhamma</td><td>dhammā</td></tr></tbody></table></div>"
+  },
+  {
+   "id": "vocative",
+   "title": "Vocative",
+   "interim": true,
+   "html": "<p>The case of address: the person or people spoken to.</p><p><b>In our texts:</b> <b>bhikkhave</b>, “O bhikkhus” (vocative plural of bhikkhu).</p><p>The a-stem masculine noun <b>dhamma</b>, for reference:</p><div class=\"tablewrap\"><table><thead><tr><th></th><th>singular</th><th>plural</th></tr></thead><tbody><tr><td>nominative</td><td>dhammo</td><td>dhammā</td></tr><tr><td>accusative</td><td>dhammaṃ</td><td>dhamme</td></tr><tr><td>instrumental</td><td>dhammena</td><td>dhammehi</td></tr><tr><td>dative</td><td>dhammāya, dhammassa</td><td>dhammānaṃ</td></tr><tr><td>ablative</td><td>dhammā, dhammasmā, dhammamhā</td><td>dhammehi</td></tr><tr><td>genitive</td><td>dhammassa</td><td>dhammānaṃ</td></tr><tr><td>locative</td><td>dhamme, dhammasmiṃ, dhammamhi</td><td>dhammesu</td></tr><tr><td>vocative</td><td>dhamma</td><td>dhammā</td></tr></tbody></table></div>"
+  },
+  {
+   "id": "present",
+   "title": "Present tense",
+   "interim": true,
+   "html": "<p>Describes what happens now, what usually happens, or a general truth. The endings show person and number.</p><div class=\"tablewrap\"><table><thead><tr><th></th><th>singular</th><th>plural</th></tr></thead><tbody><tr><td>3rd person</td><td>gacchati</td><td>gacchanti</td></tr><tr><td>2nd person</td><td>gacchasi</td><td>gacchatha</td></tr><tr><td>1st person</td><td>gacchāmi</td><td>gacchāma</td></tr></tbody></table></div><p><b>In our texts:</b> saraṇaṃ <b>gacchāmi</b>, “I go for refuge”; <b>samanupassāmi</b>, “I see”; <b>saṃvattati</b>, “it leads”; <b>uppajjanti</b>, “they arise”.</p>"
+  },
+  {
+   "id": "imperative",
+   "title": "Imperative",
+   "interim": true,
+   "html": "<p>Commands, requests and wishes: “go!”, “may he go”.</p><div class=\"tablewrap\"><table><thead><tr><th></th><th>singular</th><th>plural</th></tr></thead><tbody><tr><td>3rd person</td><td>gacchatu</td><td>gacchantu</td></tr><tr><td>2nd person</td><td>gaccha, gacchāhi</td><td>gacchatha</td></tr><tr><td>1st person</td><td>gacchāmi</td><td>gacchāma</td></tr></tbody></table></div>"
+  },
+  {
+   "id": "optative",
+   "title": "Optative",
+   "interim": true,
+   "html": "<p>What should, would or might happen: advice, possibility and conditions. Recognise it by <b>-eyya-</b> (and the short 3rd person singular in <b>-e</b>).</p><div class=\"tablewrap\"><table><thead><tr><th></th><th>singular</th><th>plural</th></tr></thead><tbody><tr><td>3rd person</td><td>gaccheyya, gacche</td><td>gaccheyyuṃ</td></tr><tr><td>2nd person</td><td>gaccheyyāsi</td><td>gaccheyyātha</td></tr><tr><td>1st person</td><td>gaccheyyāmi</td><td>gaccheyyāma</td></tr></tbody></table></div>"
+  },
+  {
+   "id": "future",
+   "title": "Future tense",
+   "interim": true,
+   "html": "<p>What will happen. Recognise it by <b>-issa-</b>: gacchissati, “he will go”; gacchissanti, “they will go”.</p>"
+  },
+  {
+   "id": "aorist",
+   "title": "Aorist (past tense)",
+   "interim": true,
+   "html": "<p>The usual past tense of narrative: “he went, they said”. Many verbs form it with <b>-i</b> (3rd singular) and <b>-iṃsu</b> (3rd plural): pucchi, “he asked”; pucchiṃsu, “they asked”. Several common verbs are irregular.</p>"
+  },
+  {
+   "id": "past-participle",
+   "title": "Past participle",
+   "interim": true,
+   "html": "<p>A verbal adjective in <b>-ta</b> or <b>-na</b>: “tamed, arisen, guarded”. Like any adjective it agrees with its noun in gender, case and number, and it can also stand as the main verb of a sentence.</p><p><b>In our texts:</b> <b>dantaṃ</b> cittaṃ, “a tamed mind”; <b>uppannā</b> dhammā, “arisen qualities”. With the prefix a(n)-: adanta, anuppanna.</p>"
+  },
+  {
+   "id": "present-participle",
+   "title": "Present participle",
+   "interim": true,
+   "html": "<p>A verbal adjective in <b>-nta</b> or <b>-māna</b>: “going, seeing”. It describes an action happening at the same time as the main verb.</p>"
+  },
+  {
+   "id": "absolutive",
+   "title": "Absolutive",
+   "interim": true,
+   "html": "<p>An indeclinable verb form in <b>-tvā</b>, <b>-ya</b> or <b>-tvāna</b>: “having done”. It describes an action completed before the main verb, by the same subject.</p>"
+  },
+  {
+   "id": "infinitive",
+   "title": "Infinitive",
+   "interim": true,
+   "html": "<p>“To do”: an indeclinable form in <b>-tuṃ</b>, often expressing purpose: gantuṃ, “to go”.</p>"
+  },
+  {
+   "id": "sandhi",
+   "title": "Sandhi",
+   "interim": true,
+   "html": "<p>When two words meet, their sounds often join and change. In this book a circumflex marks a vowel that comes from two vowels joined together:</p><div class=\"tablewrap\"><table><thead><tr><th>joined</th><th>from</th></tr></thead><tbody><tr><td>nâhaṃ</td><td>na + ahaṃ</td></tr><tr><td>saṃvattatîti</td><td>saṃvattati + iti</td></tr><tr><td>nūppajjanti</td><td>na + uppajjanti</td></tr><tr><td>yathayidaṃ</td><td>yathā + idaṃ (with y inserted)</td></tr><tr><td>ceva</td><td>ca + eva</td></tr></tbody></table></div><p>Tap a joined word in the reader to see its parts.</p>"
+  },
+  {
+   "id": "pronouns",
+   "title": "Pronouns",
+   "interim": true,
+   "html": "<p>Personal pronouns (<b>ahaṃ</b>, “I”) and the relative pronoun <b>ya-</b>, “who, which”, which opens a clause of its own. The relative clause is often picked up by a word in the main clause.</p><p><b>In our texts:</b> aññaṃ ekadhammaṃ … <b>yaṃ</b> evaṃ … saṃvattati, “one other thing <b>which</b> thus leads …”; <b>yena</b>, “on account of which”.</p>"
+  },
+  {
+   "id": "indeclinables",
+   "title": "Indeclinables",
+   "interim": true,
+   "html": "<p>Words that never change their form: particles, conjunctions and adverbs such as <b>ca</b> “and”, <b>vā</b> “or”, <b>pi</b> “also, even”, <b>evaṃ</b> “thus”, <b>na</b> “not” and <b>iti</b>, which closes a quotation.</p>"
+  },
+  {
+   "id": "adjectives",
+   "title": "Adjectives",
+   "interim": true,
+   "html": "<p>An adjective takes the gender, case and number of the noun it describes, and may stand before or after it.</p><p><b>In our texts:</b> <b>kusalā</b> dhammā (masculine nominative plural); <b>mahato</b> anatthāya (masculine dative singular).</p>"
+  },
+  {
+   "id": "numbers",
+   "title": "Numbers",
+   "interim": true,
+   "html": "<p>Ordinals such as <b>dutiya</b> “second” and <b>tatiya</b> “third” decline like adjectives. Their neuter accusative singular serves as an adverb: <b>dutiyaṃ pi</b>, “for the second time too”.</p>"
+  }
+ ]
+}
