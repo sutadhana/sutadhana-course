@@ -1,18 +1,52 @@
 {
  "id": "oc3",
  "name": "OC3 2026",
- "title": "Online Pāḷi course · from 3 October 2026",
- "schedule": "Saturdays and Tuesdays, 4 pm Israel time, on Zoom.",
+ "title": "Online Pāḷi course",
+ "schedule": {
+  "days": "Saturdays and Tuesdays",
+  "utc": "13:00",
+  "weekdays": [
+   6,
+   2
+  ]
+ },
  "materials": "https://1drv.ms/f/c/6c1280ffd770ad5b/IgD9q7N5k1i7Q5cMuIc4i2XhAcBWe00qR2Gsu02M2i5pe5M?e=kkKdDo",
  "dana": "https://www.sutadhana.com/d%C4%81na",
- "settings": {"markNewWords": true, "colourHints": true},
+ "settings": {
+  "markNewWords": true,
+  "colourHints": true
+ },
  "earlier": [
-  {"n": 1, "date": "2026-10-03", "recording": "https://1drv.ms/v/c/6c1280ffd770ad5b/IQC4Q09Q9K9DT4cYxED83BjoAfO7Tgc_dUKG5-R4Fq-sFHg?e=l0Slpd"},
-  {"n": 2, "date": "2026-10-06", "recording": "https://1drv.ms/v/c/6c1280ffd770ad5b/IQC_iWLnxU_MSKTEkEq7QJBcAfu4mde67CuFFPTYrwYWvEk?e=z4naUK"},
-  {"n": 3, "date": "2026-10-10", "recording": "https://1drv.ms/v/c/6c1280ffd770ad5b/IQD49rRquPTFQZbwTdAGoKYfAf9yvD83-o45vl0eCbpLyUY?e=y7dpro"},
-  {"n": 4, "date": "2026-10-13", "recording": "https://1drv.ms/v/c/6c1280ffd770ad5b/IQA9IOnM5GTwRovIW4e13CiWAagQ63l8nC98sQynRum9aKs?e=9az9f1"},
-  {"n": 5, "date": "2026-10-17", "recording": "https://1drv.ms/v/c/6c1280ffd770ad5b/IQB--I2AY5UfT5oUsDWpa85dAQFfGe7HdGfcDGrA3KYs8jI?e=R19igJ"},
-  {"n": 6, "date": "2026-10-20", "recording": "https://1drv.ms/v/c/6c1280ffd770ad5b/IQDgxisVSyMcTLQUS-Vi9ALGAURn97bvbFqc_39QGVzVqpE?e=VAZMF0"}
+  {
+   "n": 1,
+   "date": "2026-10-03",
+   "recording": "https://1drv.ms/v/c/6c1280ffd770ad5b/IQC4Q09Q9K9DT4cYxED83BjoAfO7Tgc_dUKG5-R4Fq-sFHg?e=l0Slpd"
+  },
+  {
+   "n": 2,
+   "date": "2026-10-06",
+   "recording": "https://1drv.ms/v/c/6c1280ffd770ad5b/IQC_iWLnxU_MSKTEkEq7QJBcAfu4mde67CuFFPTYrwYWvEk?e=z4naUK"
+  },
+  {
+   "n": 3,
+   "date": "2026-10-10",
+   "recording": "https://1drv.ms/v/c/6c1280ffd770ad5b/IQD49rRquPTFQZbwTdAGoKYfAf9yvD83-o45vl0eCbpLyUY?e=y7dpro"
+  },
+  {
+   "n": 4,
+   "date": "2026-10-13",
+   "recording": "https://1drv.ms/v/c/6c1280ffd770ad5b/IQA9IOnM5GTwRovIW4e13CiWAagQ63l8nC98sQynRum9aKs?e=9az9f1"
+  },
+  {
+   "n": 5,
+   "date": "2026-10-17",
+   "recording": "https://1drv.ms/v/c/6c1280ffd770ad5b/IQB--I2AY5UfT5oUsDWpa85dAQFfGe7HdGfcDGrA3KYs8jI?e=R19igJ"
+  },
+  {
+   "n": 6,
+   "date": "2026-10-20",
+   "recording": "https://1drv.ms/v/c/6c1280ffd770ad5b/IQDgxisVSyMcTLQUS-Vi9ALGAURn97bvbFqc_39QGVzVqpE?e=VAZMF0"
+  }
  ],
  "lessons": [
   {
@@ -22,10 +56,18 @@
    "published": false,
    "recording": null,
    "items": [
-    {"text": "ncrp-1-1-1"},
-    {"text": "ncrp-1-1-2"},
-    {"text": "ncrp-1-1-3"},
-    {"text": "ncrp-1-1-4"}
+    {
+     "text": "ncrp-1-1-1"
+    },
+    {
+     "text": "ncrp-1-1-2"
+    },
+    {
+     "text": "ncrp-1-1-3"
+    },
+    {
+     "text": "ncrp-1-1-4"
+    }
    ],
    "next": ""
   }

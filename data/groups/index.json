@@ -1,7 +1,11 @@
 {
- "version": "2026-10-22a",
+ "version": "2026-10-22b",
  "current": "oc3",
  "groups": [
-  {"id": "oc3", "name": "OC3 2026", "start": "2026-10-03"}
+  {
+   "id": "oc3",
+   "name": "OC3 2026",
+   "start": "2026-10-03"
+  }
  ]
 }

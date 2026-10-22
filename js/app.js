@@ -107,7 +107,7 @@
     const re = new RegExp("\\b(" + GRAMMAR_TERMS.map((t) => t[0]).join("|") + ")\\b", "g");
     html = html.replace(re, (m) => {
       const id = GRAMMAR_TERMS.find((t) => t[0] === m)[1];
-      return `<a href="#/${state.gid}/grammar/${id}">${m}</a>`;
+      return `<a href="#/${state.gid}/grammar/${id}" data-gram="${id}">${m}</a>`;
     });
     return html;
   }
@@ -117,7 +117,7 @@
     const g = state.group;
     const tab = (id, label, href, extra = "") => `<a href="${href}"${active === id ? ' aria-current="page"' : ""}>${label}${extra}</a>`;
     $("#top").innerHTML = `<div class="top-in">
-      <a class="brand" href="#/${g.id}"><b>Sutadhana</b><span>${esc(g.name)}</span></a>
+      <a class="brand" href="#/${g.id}"><b>Sutadhana</b><span>Pāḷi course</span></a>
       <nav class="tabs" aria-label="Sections">
         ${tab("lessons", "Lessons", `#/${g.id}`)}
         ${tab("review", "Review", `#/${g.id}/review`, dueCount ? `<span class="due" aria-label="${dueCount} cards due">${dueCount}</span>` : "")}
@@ -134,6 +134,35 @@
   }
   const fmtDate = (iso) => iso ? new Date(iso + "T12:00:00").toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "long", year: "numeric" }) : "";
   const fmtShort = (iso) => iso ? new Date(iso + "T12:00:00").toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" }) : "";
+
+  /* lesson time: shown in UTC, with the viewer's local time on hover or tap */
+  function utcLabel(hhmm) {
+    const [h, m] = hhmm.split(":").map(Number);
+    return `${h % 12 || 12}${m ? ":" + String(m).padStart(2, "0") : ""} ${h < 12 ? "am" : "pm"} UTC`;
+  }
+  function localTimeText(g) {
+    try {
+      const [h, m] = g.schedule.utc.split(":").map(Number);
+      const wd = g.schedule.weekdays || [];          // 0 = Sunday … 6 = Saturday, in UTC
+      const now = new Date();
+      let next = null;
+      for (let i = 0; i < 8 && !next; i++) {
+        const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + i, h, m));
+        if (wd.includes(d.getUTCDay()) && d > now) next = d;
+      }
+      if (!next) return "";
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+      const time = next.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+      const sameDays = wd.every((x) => {
+        const d = new Date(Date.UTC(2026, 0, 4 + x, h, m)); // 4 Jan 2026 is a Sunday
+        return d.getDay() === x;
+      });
+      const day = next.toLocaleDateString([], { weekday: "long", day: "numeric", month: "long" });
+      return `${time} in your time zone${tz ? " (" + tz.replace(/_/g, " ") + ")" : ""}.` +
+        (sameDays ? "" : " For you this falls on a different day of the week.") +
+        ` Next class: ${day}.`;
+    } catch (e) { return ""; }
+  }
 
   /* ---------------- views ---------------- */
   async function viewGroup() {
@@ -164,18 +193,24 @@
             <a class="btn primary block" style="margin-top:14px" href="#/${g.id}/review">${d.total ? "Start review" : "Open review"}</a>
             <p class="muted" style="font-size:.85rem;margin:10px 0 0">Progress is saved on this device.</p></div>
           <div class="card"><div class="eyebrow">Classes</div>
-            <p style="margin:6px 0 0">${esc(g.schedule)}</p>
+            <p style="margin:6px 0 0">${esc(g.schedule.days)}, <button class="timebtn" id="lessonTime" aria-describedby="pop">${esc(utcLabel(g.schedule.utc))}</button></p>
             ${g.materials ? `<p style="margin:10px 0 0"><a href="${esc(g.materials)}" target="_blank" rel="noopener">Course materials folder</a></p>` : ""}</div>
           ${g.dana ? `<div class="card soft"><p style="margin:0">You may express your support for the lessons by <a href="${esc(g.dana)}" target="_blank" rel="noopener">giving dāna</a>, yathā-pasādanaṃ: according to your inspiration and ability.</p></div>` : ""}
         </aside>
       </div>`;
+    const tb = $("#lessonTime"), txt = localTimeText(g);
+    if (tb && txt) {
+      tb.dataset.note = txt; tb.dataset.label = "Your local time";
+      tb.onmouseenter = () => showPop(tb); tb.onmouseleave = () => { if (!tb.dataset.pinned) hidePop(); };
+      tb.onclick = (e) => { e.stopPropagation(); togglePop(tb); };
+    } else if (tb) tb.classList.add("plain");
   }
 
   async function viewLesson(n) {
     const g = state.group;
     const l = g.lessons.find((x) => String(x.n) === String(n));
     await headerWithDue("lessons");
-    if (!l || (!l.published && !PREVIEW)) { $("#main").innerHTML = `<a class="back" href="#/${g.id}">‹ All lessons</a><div class="notice">This lesson isn't available yet.</div>`; return; }
+    if (!l || (!l.published && !PREVIEW)) { $("#main").innerHTML = `<a class="back" href="#/${g.id}"><span aria-hidden="true" style="color:var(--accent)">←</span> All lessons</a><div class="notice">This lesson isn't available yet.</div>`; return; }
     const lib = await load("library/index.json");
     const meta = (id) => lib.find((x) => x.id === id) || { id, titleEn: id };
     let k = 0;
@@ -201,7 +236,7 @@
     const listHtml = (arr) => arr.length ? `<div class="wl">${arr.map((c) => `<div class="p">${esc(c.lemma)}</div><div class="m">${esc(c.meaning)}</div>`).join("")}</div>` : `<p class="muted">None.</p>`;
 
     $("#main").innerHTML = `
-      <a class="back" href="#/${g.id}">‹ All lessons</a>
+      <a class="back" href="#/${g.id}"><span aria-hidden="true" style="color:var(--accent)">←</span> All lessons</a>
       <div class="head"><div class="eyebrow">Lesson ${l.n}${l.date ? " · " + fmtDate(l.date) : ""}${l.published ? "" : " · draft"}</div>
         <h1>${esc(l.title || "Lesson " + l.n)}</h1></div>
       <div class="cols">
@@ -284,7 +319,7 @@
     }
 
     $("#main").innerHTML = `
-      <a class="back" href="${lesson ? `#/${g.id}/lesson/${lesson.n}` : `#/${g.id}/library`}">‹ ${lesson ? "Lesson " + lesson.n : "Library"}</a>
+      <a class="back" href="${lesson ? `#/${g.id}/lesson/${lesson.n}` : `#/${g.id}/library`}"><span aria-hidden="true" style="color:var(--accent)">←</span> ${lesson ? "Back to Lesson " + lesson.n : "Back to the library"}</a>
       <div class="head"><div class="eyebrow">${esc(t.source)} · ${esc(t.ref)}</div>
         <h1 lang="pi">${esc(t.title)}</h1><p class="sub">${esc(t.titleEn || "")}</p></div>
       <div class="toolbar">
@@ -323,7 +358,7 @@
   const pop = () => $("#pop");
   function showPop(btn) {
     const p = pop();
-    p.innerHTML = `<span class="lbl">Mor’s note</span>${esc(btn.dataset.note)}`;
+    p.innerHTML = `<span class="lbl">${esc(btn.dataset.label || "Mor’s note")}</span>${esc(btn.dataset.note)}`;
     p.hidden = false;
     const r = btn.getBoundingClientRect(), pw = Math.min(320, innerWidth - 24);
     p.style.maxWidth = pw + "px";
@@ -366,8 +401,7 @@
       ${wn ? `<p class="tnote"><span class="lbl">Mor’s note</span>${esc(wn.text)}</p>` : ""}
       ${w.more?.length ? `<details class="more"><summary>Other meanings in the dictionary</summary><ul>${w.more.map((m) => `<li>${esc(m)}</li>`).join("")}</ul></details>` : ""}
       <div class="ext">
-        <a href="https://www.dpdict.net/?q=${encodeURIComponent(btn.textContent.toLowerCase())}" target="_blank" rel="noopener">Look up this form in DPD ↗</a>
-        ${w.lemma && !w.lemma.includes("+") ? `<a href="https://www.dpdict.net/?q=${encodeURIComponent(w.q || w.lemma)}" target="_blank" rel="noopener">Full dictionary entry ↗</a>` : ""}
+        <a href="https://www.dpdict.net/?q=${encodeURIComponent(w.lemma && !w.lemma.includes("+") ? (w.q || w.lemma) : btn.textContent.toLowerCase())}" target="_blank" rel="noopener">Full dictionary entry ↗</a>
       </div>
       ${deckLine ? `<div class="deckline">${deckLine}</div>` : ""}`;
     const sh = $("#sheet");
@@ -387,6 +421,25 @@
   function relDay(ms) {
     const d = Math.round((ms - Date.now()) / DAY);
     return d <= 0 ? "today" : d === 1 ? "tomorrow" : `in ${d} days`;
+  }
+
+  /* grammar pop-up (opened from the word panel and review cards, so the reader stays open) */
+  async function openGrammar(id) {
+    const gr = await load("grammar/index.json");
+    const sec = gr.sections.find((x) => x.id === id);
+    if (!sec) return;
+    $("#gmBody").innerHTML = `<div class="eyebrow">Grammar</div><h2 id="gmTitle">${esc(sec.title)}</h2>
+      ${sec.interim ? `<div class="interim">${esc(gr.interimNote)}</div>` : ""}<div class="gram-body">${sec.html}</div>`;
+    const m = $("#gmodal");
+    m.hidden = false; document.body.classList.add("modal-open");
+    $("#gmodal .gmodal-box").scrollTop = 0;
+    $("#gmClose").focus();
+  }
+  function closeGrammar() {
+    const m = $("#gmodal");
+    if (m.hidden) return false;
+    m.hidden = true; document.body.classList.remove("modal-open");
+    return true;
   }
 
   /* ---------------- review ---------------- */
@@ -430,7 +483,7 @@
       ? `<div class="kv"><div class="lbl">Meaning</div><div style="font-size:1.2rem">${esc(k.meaning)}</div><div class="lbl">Here</div><div>${esc(k.ctx)}</div></div>`
       : `<div class="kv"><div class="lbl">From</div><div style="font-size:1.2rem" lang="pi">${esc(k.lemma)}</div><div class="lbl">Form</div><div class="gram" style="font-size:1.1rem">${linkGrammar(k.label)}</div><div class="lbl">Here</div><div>${esc(k.ctx)}</div></div>`;
     $("#main").innerHTML = `<div class="rv">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><a class="back" href="#/${g.id}">‹ Lessons</a>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><a class="back" href="#/${g.id}"><span aria-hidden="true" style="color:var(--accent)">←</span> Lessons</a>
         <span class="muted" style="font-size:.95rem">${s.done + 1} of ${s.start}${c[k.id] ? "" : " · new"}</span></div>
       <div class="progress"><i style="width:${Math.round(100 * s.done / Math.max(1, s.start))}%"></i></div>
       <div class="qcard">${front}
@@ -466,7 +519,7 @@
     await headerWithDue("grammar");
     const sec = gr.sections.find((x) => x.id === sid) || null;
     const nav = gr.sections.map((x) => `<a href="#/${g.id}/grammar/${x.id}"${sec && x.id === sec.id ? ' aria-current="page"' : ""}>${esc(x.title)}</a>`).join("");
-    const backTo = state.lastReader ? `<a class="back" href="${esc(state.lastReader)}">‹ Back to the text</a>` : "";
+    const backTo = state.lastReader ? `<a class="back" href="${esc(state.lastReader)}"><span aria-hidden="true" style="color:var(--accent)">←</span> Back to the text</a>` : "";
     $("#main").innerHTML = `${backTo}
       <div class="head"><div class="eyebrow">${esc(gr.title)}</div><h1>${sec ? esc(sec.title) : "Grammar guide"}</h1></div>
       <div class="gram-layout"><nav class="gram-nav" aria-label="Grammar topics">${nav}</nav>
@@ -479,17 +532,24 @@
     const g = state.group;
     const lib = await load("library/index.json");
     await headerWithDue("library");
-    const groups = {};
-    lib.forEach((x) => { const k = x.source.replace(/ · .*/, ""); (groups[k] = groups[k] || []).push(x); });
-    $("#main").innerHTML = `<div class="head"><div class="eyebrow">Shared by all groups</div><h1>Library</h1>
+    const books = [];
+    lib.forEach((x) => {
+      const key = x.bookLesson ? `Lesson ${x.bookLesson}` : "Other texts";
+      let b = books.find((y) => y.key === key);
+      if (!b) books.push(b = { key, initial: [], further: [], extra: [] });
+      b[x.section || "extra"].push(x);
+    });
+    const row = (x) => `<a class="row" href="#/${g.id}/read/${x.id}"><div class="t"><b lang="pi">${esc(x.title)} <span class="muted" style="display:inline;font-size:1rem">· ${esc(x.titleEn)}</span></b><span>${esc(x.ref)}</span></div><div class="arr" aria-hidden="true">›</div></a>`;
+    const part = (title, arr) => arr.length ? `<div class="eyebrow" style="margin:14px 0 8px">${title}</div><div class="boxes" style="gap:10px">${arr.map(row).join("")}</div>` : "";
+    $("#main").innerHTML = `<div class="head"><div class="eyebrow">A New Course in Reading Pāḷi, and more</div><h1>Library</h1>
       <p class="sub">Every text prepared for the course, including ones we haven't read in class yet.</p></div>
-      ${Object.entries(groups).map(([k, arr]) => `<h2 style="margin-top:18px">${esc(k)}</h2><div class="boxes" style="gap:10px">${arr.map((x) => `
-        <a class="row" href="#/${g.id}/read/${x.id}"><div class="t"><b lang="pi">${esc(x.title)} <span class="muted" style="display:inline;font-size:1rem">· ${esc(x.titleEn)}</span></b><span>${esc(x.source.replace(/^[^·]*· /, ""))} · ${esc(x.ref)}</span></div><div class="arr" aria-hidden="true">›</div></a>`).join("")}</div>`).join("")}`;
+      ${books.map((b) => `<section style="margin-top:22px"><h2>${esc(b.key)}</h2>
+        ${part("Initial readings", b.initial)}${part("Further readings", b.further)}${part("Extra readings", b.extra)}</section>`).join("")}`;
   }
 
   /* ---------------- router ---------------- */
   async function route() {
-    closeSheet(); hidePop();
+    closeSheet(); hidePop(); closeGrammar();
     const [path, query] = location.hash.replace(/^#\/?/, "").split("?");
     const parts = path.split("/").filter(Boolean);
     const q = new URLSearchParams(query || "");
@@ -500,7 +560,7 @@
       const gid = parts[0];
       if (!idx.groups.some((x) => x.id === gid)) { $("#main").innerHTML = `<div class="notice">This group page doesn't exist. <a href="#/${idx.current}">Go to the current group</a>.</div>`; return; }
       await getGroup(gid);
-      document.title = `Sutadhana · ${state.group.name}`;
+      document.title = "Sutadhana · Pāḷi course";
       const v = parts[1];
       if (!v) await viewGroup();
       else if (v === "lesson") await viewLesson(parts[2]);
@@ -520,10 +580,15 @@
     }
   }
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") { if (!$("#sheet").hidden) closeSheet(); hidePop(); }
+    if (e.key === "Escape") { if (closeGrammar()) return; if (!$("#sheet").hidden) closeSheet(); hidePop(); }
   });
   document.addEventListener("click", (e) => {
-    if (!e.target.closest(".nmark") && !e.target.closest("#pop")) hidePop();
+    const a = e.target.closest("a[data-gram]");
+    if (a && a.closest("#sheet, .qcard")) { e.preventDefault(); openGrammar(a.dataset.gram); return; }
+    if (e.target.id === "gmodal" || e.target.closest("#gmClose")) closeGrammar();
+  });
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".nmark") && !e.target.closest("#pop") && !e.target.closest(".timebtn")) hidePop();
   });
   addEventListener("hashchange", route);
   route();

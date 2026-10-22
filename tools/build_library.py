@@ -136,7 +136,7 @@ def build_word(form, spec):
     return w
 
 
-TOKEN = re.compile(r"[^\s,.;:!?“”\"‘’()…*—–]+|[\s,.;:!?“”\"‘’()…*—–]+")
+TOKEN = re.compile(r"[^\s,.;:!?“”\"‘()…*—–]+|[\s,.;:!?“”\"‘()…*—–]+")
 
 
 def build_text(t):
@@ -149,7 +149,7 @@ def build_text(t):
         for m in TOKEN.finditer(pali):
             s = m.group(0)
             key = s.lower()
-            if re.match(r"[\s,.;:!?“”\"‘’()…*—–]+$", s):
+            if re.match(r"[\s,.;:!?“”\"‘()…*—–]+$", s):
                 toks.append([s])
             elif key in words:
                 toks.append([s, key])
@@ -160,6 +160,12 @@ def build_text(t):
     if unused:
         print(f"  note: {t['id']} unused analyses: {sorted(unused)}")
     out = {k: t[k] for k in ("id", "ref", "title", "titleEn", "source", "credit") if k in t}
+    m = re.match(r"ncrp-(\d+)-(\d+)-\d+$", t["id"])
+    if m:
+        out["bookLesson"] = int(m.group(1))
+        out["section"] = "initial" if m.group(2) == "1" else "further"
+    else:
+        out["section"] = "extra"
     if t.get("intro"):
         out["intro"] = t["intro"]
     out["paras"] = paras
@@ -178,7 +184,7 @@ def main():
             data = build_text(t)
             with open(os.path.join(OUT, t["id"] + ".json"), "w", encoding="utf-8") as fh:
                 json.dump(data, fh, ensure_ascii=False, separators=(",", ":"))
-            catalogue.append({k: data[k] for k in ("id", "ref", "title", "titleEn", "source")})
+            catalogue.append({k: data[k] for k in ("id", "ref", "title", "titleEn", "source", "bookLesson", "section") if k in data})
             print("built", t["id"], len(data["words"]), "words")
     catalogue.sort(key=lambda c: [int(x) if x.isdigit() else x for x in re.split(r"[-.]", c["id"])])
     with open(os.path.join(OUT, "index.json"), "w", encoding="utf-8") as fh:
