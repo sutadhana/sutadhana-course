@@ -50,7 +50,7 @@ nav.tabs{display:flex;flex-wrap:wrap;gap:4px;background:var(--bg);border-radius:
 nav.tabs a{text-decoration:none;color:var(--ink);padding:7px 16px;border-radius:999px;font-size:1rem;min-height:40px;display:inline-flex;align-items:center}
 nav.tabs a[aria-current="page"]{background:var(--accent);color:var(--accent-ink)}
 nav.tabs a .due{display:inline-block;min-width:20px;padding:0 6px;margin-left:6px;border-radius:999px;background:var(--copper);color:#FDFCF7;font-size:.78rem;line-height:20px;text-align:center}
-@media (max-width:560px){nav.tabs{width:100%;justify-content:space-between}nav.tabs a{padding:7px 12px;flex:1;justify-content:center}}
+@media (max-width:560px){nav.tabs{width:100%;flex-wrap:nowrap}nav.tabs a{padding:7px 6px;flex:1 1 auto;justify-content:center;font-size:.95rem;white-space:nowrap}nav.tabs a .due{margin-left:4px}}
 
 /* type */
 h1{font:400 clamp(1.9rem,4.6vw,2.6rem)/1.12 var(--pali);margin:0;text-wrap:balance}
