@@ -192,10 +192,10 @@
             <div class="big">${d.total}</div><div class="muted">${d.total === 1 ? "card" : "cards"} to review today</div>
             <a class="btn primary block" style="margin-top:14px" href="#/${g.id}/review">${d.total ? "Start review" : "Open review"}</a>
             <p class="muted" style="font-size:.85rem;margin:10px 0 0">Progress is saved on this device.</p></div>
+          ${g.dana ? `<div class="card soft"><p style="margin:0">You may express your support for the lessons by <a href="${esc(g.dana)}" target="_blank" rel="noopener">giving dāna</a>, yathā-pasādanaṃ: according to your inspiration and ability.</p></div>` : ""}
           <div class="card"><div class="eyebrow">Classes</div>
             <p style="margin:6px 0 0">${esc(g.schedule.days)}, <button class="timebtn" id="lessonTime" aria-describedby="pop">${esc(utcLabel(g.schedule.utc))}</button></p>
             ${g.materials ? `<p style="margin:10px 0 0"><a href="${esc(g.materials)}" target="_blank" rel="noopener">Course materials folder</a></p>` : ""}</div>
-          ${g.dana ? `<div class="card soft"><p style="margin:0">You may express your support for the lessons by <a href="${esc(g.dana)}" target="_blank" rel="noopener">giving dāna</a>, yathā-pasādanaṃ: according to your inspiration and ability.</p></div>` : ""}
         </aside>
       </div>`;
     const tb = $("#lessonTime"), txt = localTimeText(g);
@@ -383,7 +383,7 @@
     const learned = (w.heads || []).map((h) => cards["m:" + h.lemma]);
     const deckLine = !w.heads?.length ? "" : learned.every((c) => c && c.s >= LEARNED_DAYS) ? "Well learned" :
       learned.some((c) => c) ? `In your review${learned[0]?.due ? " · next review " + relDay(learned[0].due) : ""}` : "Not reviewed yet";
-    const parts = w.parts ? `<ul class="parts">${w.parts.map((p) => `<li><b lang="pi">${esc(p.form)}</b> <span class="gram">${linkGrammar(p.label)}</span><small>${esc(p.meaning)}${p.dpd && p.dpd !== p.meaning ? " · DPD: " + esc(p.dpd) : ""}</small></li>`).join("")}</ul>` : "";
+    const parts = w.parts ? `<ul class="parts">${w.parts.map((p) => `<li><b lang="pi">${esc(p.form)}</b><span class="sep" aria-hidden="true">–</span><span class="gram">${linkGrammar(p.label)}</span><small>${esc(p.meaning)}${p.dpd && p.dpd !== p.meaning ? " · DPD: " + esc(p.dpd) : ""}</small></li>`).join("")}</ul>` : "";
     $("#sheetIn").innerHTML = `
       <div class="grab" aria-hidden="true"></div>
       <div class="s-head"><div style="flex:1;min-width:0">
@@ -409,8 +409,8 @@
     sh.scrollTop = 0;
     $("#sheetClose").onclick = closeSheet;
     // keep the tapped word visible above the sheet on small screens
-    if (innerWidth < 1100) {
-      const r = btn.getBoundingClientRect(), limit = innerHeight * 0.4;
+    {
+      const r = btn.getBoundingClientRect(), limit = innerHeight * 0.5;
       if (r.bottom > limit) scrollBy({ top: r.bottom - limit + 20, behavior: "smooth" });
     }
   }
