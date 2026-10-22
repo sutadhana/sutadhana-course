@@ -102,11 +102,17 @@ SECTIONS = [
          "an action completed before the main verb, by the same subject.</p>"),
     dict(id="infinitive", title="Infinitive", interim=True, html=
          "<p>“To do”: an indeclinable form in <b>-tuṃ</b>, often expressing purpose: gantuṃ, “to go”.</p>"),
-    dict(id="sandhi", title="Sandhi", interim=True, html=
-         "<p>When two words meet, their sounds often join and change. In this book a circumflex marks a "
-         "vowel that comes from two vowels joined together:</p>" + table(["joined", "from"], [
-             ["nâhaṃ", "na + ahaṃ"], ["saṃvattatîti", "saṃvattati + iti"], ["nūppajjanti", "na + uppajjanti"],
-             ["yathayidaṃ", "yathā + idaṃ (with y inserted)"], ["ceva", "ca + eva"]]) +
+    dict(id="sandhi", title="Sandhi and compounds", interim=True, html=
+         "<p>When two words meet, their sounds often join and change (sandhi). In our texts:</p>"
+         "<ul><li>The parts of a compound are separated by a hyphen: dhammavādī → <b>dhamma-vādī</b>.</li>"
+         "<li>Where sandhi changes the sounds, an apostrophe goes with the first word: dhamma + anupassī → "
+         "<b>dhamm’ānupassī</b> (not dhammā’nupassī).</li>"
+         "<li>But when the change reflects the grammar of the first word and not the second, the apostrophe "
+         "goes before the second word: dhammo + amhi → <b>dhammo’mhi</b> (not dhamm’omhi).</li></ul>" +
+         table(["in the text", "from"], [
+             ["n’āhaṃ", "na + ahaṃ"], ["saṃvattatī’ti", "saṃvattati + iti"], ["n’uppajjanti", "na + uppajjanti"],
+             ["c’eva", "ca + eva"], ["yath’ayidaṃ", "yathā + idaṃ (with y inserted)"],
+             ["eka-dhammaṃ", "eka + dhammaṃ (compound)"]]) +
          "<p>Tap a joined word in the reader to see its parts.</p>"),
     dict(id="pronouns", title="Pronouns", interim=True, html=
          "<p>Personal pronouns (<b>ahaṃ</b>, “I”) and the relative pronoun <b>ya-</b>, “who, which”, "

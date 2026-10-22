@@ -99,7 +99,7 @@
     ["vocative", "vocative"], ["present", "present"], ["imperative", "imperative"], ["optative", "optative"],
     ["future", "future"], ["aorist", "aorist"], ["past participle", "past-participle"],
     ["present participle", "present-participle"], ["absolutive", "absolutive"], ["infinitive", "infinitive"],
-    ["sandhi", "sandhi"], ["pronoun", "pronouns"], ["indeclinable", "indeclinables"],
+    ["sandhi", "sandhi"], ["compound", "sandhi"], ["pronoun", "pronouns"], ["indeclinable", "indeclinables"],
     ["ordinal number", "numbers"], ["adjective", "adjectives"],
   ];
   function linkGrammar(label) {
@@ -401,7 +401,7 @@
       ${wn ? `<p class="tnote"><span class="lbl">Mor’s note</span>${esc(wn.text)}</p>` : ""}
       ${w.more?.length ? `<details class="more"><summary>Other meanings in the dictionary</summary><ul>${w.more.map((m) => `<li>${esc(m)}</li>`).join("")}</ul></details>` : ""}
       <div class="ext">
-        <a href="https://www.dpdict.net/?q=${encodeURIComponent(w.lemma && !w.lemma.includes("+") ? (w.q || w.lemma) : btn.textContent.toLowerCase())}" target="_blank" rel="noopener">Full dictionary entry ↗</a>
+        <a href="https://www.dpdict.net/?q=${encodeURIComponent(w.lemma && !w.lemma.includes("+") ? (w.q || w.lemma) : btn.textContent.toLowerCase().replace(/[’'-]/g, ""))}" target="_blank" rel="noopener">Full dictionary entry ↗</a>
       </div>
       ${deckLine ? `<div class="deckline">${deckLine}</div>` : ""}`;
     const sh = $("#sheet");
