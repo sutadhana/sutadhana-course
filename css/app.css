@@ -220,3 +220,17 @@ footer.credit a{color:inherit}
 .gm-x{position:absolute;top:14px;right:14px}
 body.modal-open{overflow:hidden}
 @media (max-width:520px){.gmodal{padding:10px}.gmodal-box{padding:20px 18px}}
+
+/* word panel rows: label and value the same size, a thin line between rows */
+.rows{gap:0 18px;margin:6px 0 4px}
+.rows>*{padding:9px 0;border-top:1px solid rgba(45,48,46,.16)}
+.rows>*:nth-child(-n+2){border-top:0}
+.rows .lbl{font-size:19px;font-weight:400;letter-spacing:0;text-transform:none;color:var(--muted);white-space:nowrap}
+.rows .ctx{font-size:19px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .rows>*{border-top-color:rgba(236,234,227,.16)}}
+:root[data-theme="dark"] .rows>*{border-top-color:rgba(236,234,227,.16)}
+@media (max-width:520px){
+  .rows>*{border-top:0;padding:2px 0}
+  .rows .lbl{border-top:1px solid rgba(45,48,46,.16);padding-top:9px;margin-top:4px}
+  .rows .lbl:first-child{border-top:0;margin-top:0}
+}
