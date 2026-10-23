@@ -27,7 +27,8 @@
     }
     return cache[path];
   }
-  const state = { dataVersion: "", group: null, gid: null, deck: null, lastReader: null };
+  const state = { dataVersion: "", group: null, gid: null, deck: null, lastReader: null, audio: null };
+  const HP_ICON = `<svg class="hp" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1v-6h3zM3 19a2 2 0 0 0 2 2h1v-6H3z"/></svg>`;
 
   async function getGroup(gid) {
     if (state.group && state.gid === gid) return state.group;
@@ -248,7 +249,7 @@
       if (i.text) {
         const m = meta(i.text);
         return `<a class="row" href="#/${g.id}/read/${m.id}?lesson=${l.n}"><div class="dot">${k}</div>
-          <div class="t"><b>${esc(m.title)}${m.titleEn ? ` <span class="muted" style="display:inline;font-size:1rem">· ${esc(m.titleEn)}</span>` : ""}</b><span>${esc(m.source)} · ${esc(m.ref)}</span></div><div class="arr" aria-hidden="true">›</div></a>`;
+          <div class="t"><b>${esc(m.title)}${m.titleEn ? ` <span class="muted" style="display:inline;font-size:1rem">· ${esc(m.titleEn)}</span>` : ""}</b><span>${esc(m.source)} · ${esc(m.ref)}${m.audio ? ` · <span class="has-audio">${HP_ICON}Audio</span>` : ""}</span></div><div class="arr" aria-hidden="true">›</div></a>`;
       }
       if (i.grammar) return `<a class="row" href="#/${g.id}/grammar/${esc(i.grammar)}"><div class="dot">${k}</div><div class="t"><b>${esc(i.label || i.grammar)}</b><span>Grammar guide</span></div><div class="arr" aria-hidden="true">›</div></a>`;
       return `<div class="row"><div class="dot">${k}</div><div class="t"><b>${esc(i.label)}</b>${i.detail ? `<span>${esc(i.detail)}</span>` : ""}</div></div>`;
@@ -339,6 +340,71 @@
   const myTr = (tid, pi) => store.get(`sd:mytr:${tid}:${pi}`, "") || "";
   const textScale = () => Number(store.get("sd:textscale", 1)) || 1;
   const hints = () => store.get("sd:hints", { subj: false, verb: false });
+  // ---- Listening: Mor's reading of the text ----
+  const PLAY_SVG = `<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="7 4 20 12 7 20 7 4"/></svg>`;
+  const PAUSE_SVG = `<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>`;
+  const SPEEDS = [1, 0.85, 0.7];
+  const mmss = (x) => { x = Math.max(0, Math.round(x || 0)); return Math.floor(x / 60) + ":" + String(x % 60).padStart(2, "0"); };
+  function getSpeed() { try { const v = parseFloat(localStorage.getItem("sd:speed")); return SPEEDS.includes(v) ? v : 1; } catch (e) { return 1; } }
+  function stopAudio() { if (state.audio) { state.audio.pause(); state.audio = null; } }
+  function listenBar(t) {
+    return `<div class="listen" id="listen">
+      <button class="lplay" id="lplay" aria-label="Play Mor’s reading">${PLAY_SVG}</button>
+      <div class="lbody">
+        <div class="ltop"><span class="ltitle">${HP_ICON}<span class="lt-long">Listen to Mor read this text</span><span class="lt-short">Mor’s reading</span></span><span class="ltime" id="ltime">0:00 / ${mmss(t.audioDur)}</span></div>
+        <input type="range" class="lbar" id="lbar" min="0" max="${t.audioDur || 100}" step="0.5" value="0" aria-label="Position in the recording">
+      </div>
+      <button class="chip lspeed" id="lspeed" aria-label="Playback speed">${getSpeed()}×</button>
+    </div>`;
+  }
+  function wireListen(t) {
+    stopAudio();
+    const a = new Audio(); a.preload = "none"; state.audio = a;
+    let loaded = false, loading = false;
+    const btn = $("#lplay"), bar = $("#lbar"), time = $("#ltime"), sp = $("#lspeed");
+    const total = () => a.duration && isFinite(a.duration) ? a.duration : t.audioDur || 0;
+    const paint = () => {
+      bar.max = total(); if (!bar.matches(":active")) bar.value = a.currentTime;
+      bar.style.setProperty("--fill", (total() ? a.currentTime / total() * 100 : 0) + "%");
+      time.textContent = mmss(a.currentTime) + " / " + mmss(total());
+    };
+    const setBtn = () => { const on = !a.paused; btn.innerHTML = on ? PAUSE_SVG : PLAY_SVG;
+      btn.setAttribute("aria-label", on ? "Pause" : "Play Mor’s reading"); $("#listen").classList.toggle("on", on); };
+    // the whole file is fetched once (so it also works offline afterwards)
+    async function ensure() {
+      if (loaded || loading) return loaded;
+      loading = true; btn.classList.add("busy");
+      try {
+        const res = await fetch(t.audio + "?v=" + state.dataVersion);
+        if (!res.ok) throw new Error(res.status);
+        a.src = URL.createObjectURL(await res.blob()); loaded = true;
+      } catch (e) {
+        time.textContent = "Can’t load the recording right now";
+      }
+      loading = false; btn.classList.remove("busy");
+      return loaded;
+    }
+    a.playbackRate = getSpeed();
+    btn.onclick = async () => {
+      if (!a.paused) { a.pause(); return; }
+      if (!(await ensure()) || state.audio !== a) return;
+      a.playbackRate = getSpeed(); a.play().catch(() => {});
+    };
+    a.addEventListener("play", setBtn); a.addEventListener("pause", setBtn);
+    a.addEventListener("ended", () => { a.currentTime = 0; setBtn(); paint(); });
+    a.addEventListener("timeupdate", paint); a.addEventListener("loadedmetadata", paint);
+    bar.oninput = async () => {
+      const v = parseFloat(bar.value);
+      bar.style.setProperty("--fill", (total() ? v / total() * 100 : 0) + "%");
+      if (await ensure()) { a.currentTime = v; paint(); }
+    };
+    sp.onclick = () => {
+      const next = SPEEDS[(SPEEDS.indexOf(getSpeed()) + 1) % SPEEDS.length];
+      try { localStorage.setItem("sd:speed", next); } catch (e) {}
+      a.playbackRate = next; sp.textContent = next + "×";
+    };
+  }
+
   async function viewReader(tid, lessonN) {
     const g = state.group;
     const t = await load(`library/${tid}.json`);
@@ -393,6 +459,7 @@
       <a class="back" href="${lesson ? `#/${g.id}/lesson/${lesson.n}` : `#/${g.id}/library`}"><span aria-hidden="true" style="color:var(--accent)">←</span> ${lesson ? "Back to Lesson " + lesson.n : "Back to the library"}</a>
       <div class="head"><div class="eyebrow">${esc(t.source)} · ${esc(t.ref)}</div>
         <h1 lang="pi">${esc(t.title)}</h1><p class="sub">${esc(t.titleEn || "")}</p></div>
+      ${t.audio ? listenBar(t) : ""}
       <div class="toolbar">
         ${showHints ? `<span class="muted">Colour hints:</span>
         <button class="chip subj" data-hint="subj" aria-pressed="${h.subj}">Subject</button>
@@ -408,6 +475,7 @@
       ${prevNext}
       <p class="textcredit">${esc(t.credit || "")}</p>`;
 
+    if (t.audio) wireListen(t);
     const box = $("#text");
     box.addEventListener("click", (e) => {
       const b = e.target.closest(".w");
@@ -659,7 +727,7 @@
       if (!b) books.push(b = { key, initial: [], further: [], extra: [] });
       b[x.section || "extra"].push(x);
     });
-    const row = (x) => `<a class="row" href="#/${g.id}/read/${x.id}"><div class="t"><b lang="pi">${esc(x.title)} <span class="muted" style="display:inline;font-size:1rem">· ${esc(x.titleEn)}</span></b><span>${esc(x.ref)}</span></div><div class="arr" aria-hidden="true">›</div></a>`;
+    const row = (x) => `<a class="row" href="#/${g.id}/read/${x.id}"><div class="t"><b lang="pi">${esc(x.title)} <span class="muted" style="display:inline;font-size:1rem">· ${esc(x.titleEn)}</span></b><span>${esc(x.ref)}${x.audio ? ` · <span class="has-audio">${HP_ICON}Audio</span>` : ""}</span></div><div class="arr" aria-hidden="true">›</div></a>`;
     const part = (title, arr) => arr.length ? `<div class="eyebrow" style="margin:14px 0 8px">${title}</div><div class="boxes" style="gap:10px">${arr.map(row).join("")}</div>` : "";
     $("#main").innerHTML = `<div class="head"><div class="eyebrow">A New Course in Reading Pāḷi, and more</div><h1>Library</h1>
       <p class="sub">Every text prepared for the course, including ones we haven't read in class yet.</p></div>
@@ -669,7 +737,7 @@
 
   /* ---------------- router ---------------- */
   async function route() {
-    closeSheet(); hidePop(); closeGrammar();
+    closeSheet(); hidePop(); closeGrammar(); stopAudio();
     const [path, query] = location.hash.replace(/^#\/?/, "").split("?");
     const parts = path.split("/").filter(Boolean);
     const q = new URLSearchParams(query || "");

@@ -178,6 +178,14 @@ def build_text(t):
         out["section"] = "extra"
     if t.get("intro"):
         out["intro"] = t["intro"]
+    # Mor's reading of the text, if there is one: audio/<id>.m4a
+    if os.path.exists(os.path.join(ROOT, "audio", t["id"] + ".m4a")):
+        out["audio"] = "audio/" + t["id"] + ".m4a"
+        import subprocess
+        dur = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0",
+                              os.path.join(ROOT, out["audio"])], capture_output=True, text=True).stdout.strip()
+        if dur:
+            out["audioDur"] = round(float(dur))
     out["paras"] = paras
     out["words"] = words
     return out
@@ -194,7 +202,7 @@ def main():
             data = build_text(t)
             with open(os.path.join(OUT, t["id"] + ".json"), "w", encoding="utf-8") as fh:
                 json.dump(data, fh, ensure_ascii=False, separators=(",", ":"))
-            catalogue.append({k: data[k] for k in ("id", "ref", "title", "titleEn", "source", "bookLesson", "section") if k in data})
+            catalogue.append({k: data[k] for k in ("id", "ref", "title", "titleEn", "source", "bookLesson", "section", "audio") if k in data})
             print("built", t["id"], len(data["words"]), "words")
     catalogue.sort(key=lambda c: [int(x) if x.isdigit() else x for x in re.split(r"[-.]", c["id"])])
     # concordance: dictionary headword -> texts it occurs in (for "Also found in")
