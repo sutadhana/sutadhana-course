@@ -94,26 +94,37 @@
   }
 
   /* ---------------- grammar links ---------------- */
+  // term in a grammar label -> [section of Mor's grammar guide, text to point at inside it]
+  const CASES = ["nominative", "accusative", "instrumental", "dative", "ablative", "genitive", "locative", "vocative"];
   const GRAMMAR_TERMS = [
-    ["nominative", "nominative"], ["accusative", "accusative"], ["instrumental", "instrumental"],
-    ["dative", "dative"], ["ablative", "ablative"], ["genitive", "genitive"], ["locative", "locative"],
-    ["vocative", "vocative"], ["present", "present"], ["imperative", "imperative"], ["optative", "optative"],
-    ["future", "future"], ["aorist", "aorist"], ["past participle", "past-participle"],
-    ["present participle", "present-participle"], ["absolutive", "absolutive"], ["infinitive", "infinitive"],
-    ["sandhi", "sandhi"], ["compound", "sandhi"], ["pronoun", "pronouns"], ["indeclinable", "indeclinables"],
-    ["ordinal number", "numbers"], ["adjective", "adjectives"],
-  ];
+    ...CASES.map((c) => [c, "cases", c[0].toUpperCase() + c.slice(1)]),
+    ["future passive participle", "future-passive-participle"], ["present participle", "present-participle"],
+    ["past participle", "past-participle"], ["present", "present"], ["imperative", "imperative"],
+    ["optative", "optative"], ["future", "future"], ["aorist", "aorist"], ["absolutive", "absolutive"],
+    ["infinitive", "infinitive"], ["sandhi", "sandhi"], ["compound", "compounds"], ["adjective", "adjectives"],
+    ["pronoun", "pronouns"], ["verb", "verbs"],
+  ].sort((x, y) => y[0].length - x[0].length);
+  const GRAMMAR_RE = new RegExp("\\b(" + GRAMMAR_TERMS.map((t) => t[0]).join("|") + ")\\b", "g");
+  // which kind of pronoun a word is, from its dictionary headword
+  function pronounTopic(label, lemma) {
+    const l = (lemma || "").toLowerCase();
+    if (/\b(1st|2nd) person\b/.test(label)) return ["personal-pronouns"];
+    if (/^(ima|ayaṃ|idaṃ)$/.test(l)) return ["demonstrative-pronouns"];
+    if (/^(ya|yo|yaṃ)$/.test(l)) return ["relative-pronouns"];
+    if (/^(ka|ko|kiṃ|katama|koci|kiñci)$/.test(l)) return ["interrogative-pronouns"];
+    if (/^(ta|so|taṃ|eta|esa|eso)$/.test(l)) return ["personal-pronouns", "third-person pronoun"];
+    return ["pronouns"];
+  }
   let GRAMMAR_IDS = null;
-  function linkGrammar(label) {
-    let html = esc(label);
+  function linkGrammar(label, lemma) {
+    const html = esc(label);
     if (GRAMMAR_IDS && !GRAMMAR_IDS.size) return html;
-    const re = new RegExp("\\b(" + GRAMMAR_TERMS.map((t) => t[0]).join("|") + ")\\b", "g");
-    html = html.replace(re, (m) => {
-      const id = GRAMMAR_TERMS.find((t) => t[0] === m)[1];
+    return html.replace(GRAMMAR_RE, (m) => {
+      let [, id, focus] = GRAMMAR_TERMS.find((t) => t[0] === m);
+      if (id === "pronouns") [id, focus] = pronounTopic(label, lemma);
       if (GRAMMAR_IDS && !GRAMMAR_IDS.has(id)) return m;
-      return `<a href="#/${state.gid}/grammar/${id}" data-gram="${id}">${m}</a>`;
+      return `<a class="glink" href="#/${state.gid}/grammar/${id}" data-gram="${id}"${focus ? ` data-focus="${esc(focus)}"` : ""}>${m}</a>`;
     });
-    return html;
   }
 
   /* ---------------- header & footer ---------------- */
@@ -549,7 +560,7 @@
     const learned = (w.heads || []).map((h) => cards["m:" + h.lemma]);
     const deckLine = !w.heads?.length ? "" : learned.every((c) => c && c.s >= LEARNED_DAYS) ? "Well learned" :
       learned.some((c) => c) ? `In your review${learned[0]?.due ? " · next review " + relDay(learned[0].due) : ""}` : "Not reviewed yet";
-    const parts = w.parts ? `<ul class="parts">${w.parts.map((p) => `<li><b lang="pi">${esc(p.form)}</b><span class="sep" aria-hidden="true">–</span><span class="gram">${linkGrammar(p.label)}</span><small>${esc(p.meaning)}${p.dpd && p.dpd !== p.meaning ? " · DPD: " + esc(p.dpd) : ""}</small></li>`).join("")}</ul>` : "";
+    const parts = w.parts ? `<ul class="parts">${w.parts.map((p) => `<li><b lang="pi">${esc(p.form)}</b><span class="sep" aria-hidden="true">–</span><span class="gram">${linkGrammar(p.label, p.lemma)}</span><small>${esc(p.meaning)}${p.dpd && p.dpd !== p.meaning ? " · DPD: " + esc(p.dpd) : ""}</small></li>`).join("")}</ul>` : "";
     $("#sheetIn").innerHTML = `
       <div class="grab" aria-hidden="true"></div>
       <div class="s-head"><div style="flex:1;min-width:0">
@@ -557,7 +568,7 @@
           ${w.lemma && w.lemma.toLowerCase() !== btn.textContent.toLowerCase() ? `<div class="s-lemma">from <b lang="pi">${esc(w.lemma)}</b></div>` : ""}</div>
         <button class="icon" id="sheetClose" aria-label="Close">×</button></div>
       <div class="rows">
-        <div class="lbl">Grammar</div><div class="gram">${linkGrammar(w.label)}</div>
+        <div class="lbl">Grammar</div><div class="gram">${linkGrammar(w.label, w.lemma)}${/\p{L}-\p{L}/u.test(btn.textContent) && !/compound/.test(w.label) ? ` · ${linkGrammar("compound")}` : ""}</div>
         <div class="lbl">Here</div><div class="ctx">${esc(w.ctx)}</div>
         ${w.dpd ? `<div class="lbl">DPD</div><div>${esc(w.dpd)}${w.lit ? `<div class="lit">literally: ${esc(w.lit)}</div>` : ""}</div>` : ""}
         ${w.construction ? `<div class="lbl">Built from</div><div lang="pi">${esc(w.construction)}${w.root ? ` <span class="muted">(${esc(w.root)})</span>` : ""}</div>` : ""}
@@ -612,21 +623,39 @@
   }
 
   /* grammar pop-up (opened from the word panel and review cards, so the reader stays open) */
-  async function openGrammar(id) {
+  async function openGrammar(id, focus) {
     const gr = await load("grammar/index.json");
     const sec = gr.sections.find((x) => x.id === id);
     if (!sec) return;
-    $("#gmBody").innerHTML = `<div class="eyebrow">Grammar</div><h2 id="gmTitle">${esc(sec.title)}</h2>
-      ${sec.interim ? `<div class="interim">${esc(gr.interimNote)}</div>` : ""}<div class="gram-body">${sec.html}</div>`;
-    const m = $("#gmodal");
+    const chap = sec.chapter && sec.chapter !== sec.title ? sec.chapter : "Grammar guide";
+    $("#gmBody").innerHTML = `<div class="eyebrow">${esc(chap)}</div><h2 id="gmTitle">${sec.titleHtml || esc(sec.title)}</h2>
+      <div class="gram-body">${sec.html}</div>
+      <div class="gm-foot"><a href="#/${state.gid}/grammar/${sec.id}" data-full="1">Open in the grammar guide →</a></div>`;
+    const m = $("#gmodal"), box = $("#gmodal .gmodal-box");
     m.hidden = false; document.body.classList.add("modal-open");
-    $("#gmodal .gmodal-box").scrollTop = 0;
-    $("#gmClose").focus();
+    box.scrollTop = 0;
+    requestAnimationFrame(() => m.classList.add("show"));
+    $("#gmClose").focus({ preventScroll: true });
+    if (focus) {
+      const want = focus.toLowerCase();
+      const cells = [...box.querySelectorAll(".gram-body td")];
+      let el = cells.find((c) => c.textContent.trim().toLowerCase() === want);
+      el = el ? el.closest("tr") : [...box.querySelectorAll(".gram-body p, .gram-body li")].find((x) => x.textContent.toLowerCase().includes(want));
+      if (el) {
+        el.classList.add("gfocus");
+        setTimeout(() => {
+          const top = el.getBoundingClientRect().top - box.getBoundingClientRect().top + box.scrollTop;
+          box.scrollTo({ top: Math.max(0, top - box.clientHeight / 3), behavior: "smooth" });
+        }, 120);
+      }
+    }
   }
   function closeGrammar() {
     const m = $("#gmodal");
     if (m.hidden) return false;
-    m.hidden = true; document.body.classList.remove("modal-open");
+    m.classList.remove("show");
+    document.body.classList.remove("modal-open");
+    setTimeout(() => { if (!m.classList.contains("show")) m.hidden = true; }, 180);
     return true;
   }
 
@@ -669,7 +698,7 @@
       : `<div class="q-kind">Parse this form</div><div class="q-word" lang="pi">${esc(k.form)}</div><div class="q-line" lang="pi">${line} · ${esc(k.ref)}</div>`;
     const back = k.kind === "meaning"
       ? `<div class="kv"><div class="lbl">Meaning</div><div style="font-size:1.2rem">${esc(k.meaning)}</div><div class="lbl">Here</div><div>${esc(k.ctx)}</div></div>`
-      : `<div class="kv"><div class="lbl">From</div><div style="font-size:1.2rem" lang="pi">${esc(k.lemma)}</div><div class="lbl">Form</div><div class="gram" style="font-size:1.1rem">${linkGrammar(k.label)}</div><div class="lbl">Here</div><div>${esc(k.ctx)}</div></div>`;
+      : `<div class="kv"><div class="lbl">From</div><div style="font-size:1.2rem" lang="pi">${esc(k.lemma)}</div><div class="lbl">Form</div><div class="gram" style="font-size:1.1rem">${linkGrammar(k.label, k.lemma)}</div><div class="lbl">Here</div><div>${esc(k.ctx)}</div></div>`;
     $("#main").innerHTML = `<div class="rv">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><a class="back" href="#/${g.id}"><span aria-hidden="true" style="color:var(--accent)">←</span> Lessons</a>
         <span class="muted" style="font-size:.95rem">${s.done + 1} of ${s.start}${c[k.id] ? "" : " · new"}</span></div>
@@ -705,14 +734,38 @@
     const g = state.group;
     const gr = await load("grammar/index.json");
     await headerWithDue("grammar");
-    const sec = gr.sections.find((x) => x.id === sid) || null;
-    const nav = gr.sections.map((x) => `<a href="#/${g.id}/grammar/${x.id}"${sec && x.id === sec.id ? ' aria-current="page"' : ""}>${esc(x.title)}</a>`).join("");
+    const secs = gr.sections;
+    const i = Math.max(0, secs.findIndex((x) => x.id === sid));
+    const sec = secs[i];
+    // topics grouped by chapter
+    const groups = [];
+    secs.forEach((x) => {
+      const c = x.chapter || x.title;
+      let grp = groups.find((y) => y.c === c);
+      if (!grp) groups.push(grp = { c, items: [] });
+      grp.items.push(x);
+    });
+    const link = (x, cls, label) => `<a class="${cls}" href="#/${g.id}/grammar/${x.id}"${x.id === sec.id ? ' aria-current="page"' : ""}>${esc(label || x.title)}</a>`;
+    const nav = groups.map((grp) => grp.items.length === 1 && grp.items[0].title === grp.c ? link(grp.items[0], "gn-top")
+      : `<div class="gn-ch">${esc(grp.c)}</div>${grp.items.map((x) => x.title === grp.c ? link(x, "gn-sub", "Introduction") : link(x, "gn-sub")).join("")}`).join("");
+    const prev = secs[i - 1], next = secs[i + 1];
     const backTo = state.lastReader ? `<a class="back" href="${esc(state.lastReader)}"><span aria-hidden="true" style="color:var(--accent)">←</span> Back to the text</a>` : "";
+    const chap = sec.chapter && sec.chapter !== sec.title ? sec.chapter : gr.title;
     $("#main").innerHTML = `${backTo}
-      <div class="head"><div class="eyebrow">${esc(gr.title)}</div><h1>${sec ? esc(sec.title) : "Grammar guide"}</h1></div>
-      <div class="gram-layout"><nav class="gram-nav" aria-label="Grammar topics">${nav}</nav>
-        <div class="gram-body">${sec ? `${sec.interim ? `<div class="interim">${esc(gr.interimNote)}</div>` : ""}${sec.html}` : `<p>${esc(gr.intro)}</p>`}</div></div>`;
+      <div class="gram-layout">
+        <details class="gram-nav" id="gnav"${innerWidth > 860 || !sid ? " open" : ""}><summary>All topics</summary><nav aria-label="Grammar topics">${nav}</nav></details>
+        <article class="gram-main">
+          <div class="head"><div class="eyebrow">${esc(chap)}</div><h1>${sec.titleHtml || esc(sec.title)}</h1></div>
+          <div class="gram-body">${sec.html}</div>
+          <div class="nav-next">
+            ${prev ? `<a class="btn" href="#/${g.id}/grammar/${prev.id}">← ${esc(prev.title)}</a>` : "<span></span>"}
+            ${next ? `<a class="btn primary" href="#/${g.id}/grammar/${next.id}">${esc(next.title)} →</a>` : "<span></span>"}
+          </div>
+          <p class="textcredit">${esc(gr.title)} · ${esc(gr.author || "")}</p>
+        </article>
+      </div>`;
     closeSheet();
+    if (sid) window.scrollTo(0, 0);
   }
 
   /* ---------------- library ---------------- */
@@ -775,7 +828,8 @@
   });
   document.addEventListener("click", (e) => {
     const a = e.target.closest("a[data-gram]");
-    if (a && a.closest("#sheet, .qcard")) { e.preventDefault(); openGrammar(a.dataset.gram); return; }
+    if (a && a.closest("#sheet, .qcard")) { e.preventDefault(); openGrammar(a.dataset.gram, a.dataset.focus); return; }
+    if (e.target.closest("a[data-full]")) { closeGrammar(); closeSheet(); return; }
     if (e.target.id === "gmodal" || e.target.closest("#gmClose")) closeGrammar();
   });
   document.addEventListener("click", (e) => {
