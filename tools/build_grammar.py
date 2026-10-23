@@ -382,9 +382,9 @@ def main(path):
     assert not dup, dup
     PARADIGMS = {  # key: (form that identifies the table, DPD patterns it stands for)
         "buddha": ("buddhena", ["a masc", "a masc pl"]),
-        "sila": ("sīlena", ["a nt", "a nt east"]),
+        "sila": ("sīlena", ["a nt", "a nt east", "kamma nt"]),
         "saddha": ("saddhāya", ["ā fem"]),
-        "sati": ("satiyā", ["i fem"]),
+        "sati": ("satiyā", ["i fem", "jāti fem"]),
         "bhikkhu": ("bhikkhunā", ["u masc"]),
         "sattha": ("satthārā", ["ar masc", "ar2 masc"]),
         "anicca": ("aniccena", ["a adj", "a ordin"]),

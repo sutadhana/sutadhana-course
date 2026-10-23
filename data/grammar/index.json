@@ -16,7 +16,8 @@
    "title": "Neuter Nouns Ending in ‘a’: sīla",
    "patterns": [
     "a nt",
-    "a nt east"
+    "a nt east",
+    "kamma nt"
    ],
    "html": "<div class=\"tbl\"><table><tr><td><p class=\"ctr\"><b>Case</b></p></td><td><p class=\"ctr\"><b>Singular</b></p></td><td><p class=\"ctr\"><b>Plural</b></p></td></tr><tr><td><p class=\"ctr\">Nominative</p></td><td><p class=\"ctr\">sīl<b>aṃ</b></p></td><td><p class=\"ctr\">sīl<b>ā</b> / sīl<b>āni</b></p></td></tr><tr><td><p class=\"ctr\">Accusative</p></td><td><p class=\"ctr\">sīl<b>aṃ</b></p></td><td><p class=\"ctr\">sīl<b>āni</b> / sīl<b>e</b></p></td></tr><tr><td><p class=\"ctr\">Instrumental</p></td><td><p class=\"ctr\">sīl<b>ena</b></p></td><td><p class=\"ctr\">sīl<b>ehi</b></p></td></tr><tr><td><p class=\"ctr\">Dative</p></td><td><p class=\"ctr\">sīla<b>ssa</b> / sīl<b>āya</b></p></td><td><p class=\"ctr\">sīl<b>ānaṃ</b></p></td></tr><tr><td><p class=\"ctr\">Ablative</p></td><td><p class=\"ctr\">sīl<b>ā</b> / sīla<b>to</b> / sīla<b>smā</b> / sīla<b>mhā</b></p></td><td><p class=\"ctr\">sīl<b>ehi</b></p></td></tr><tr><td><p class=\"ctr\">Genitive</p></td><td><p class=\"ctr\">sīla<b>ssa</b></p></td><td><p class=\"ctr\">sīl<b>ānaṃ</b></p></td></tr><tr><td><p class=\"ctr\">Locative</p></td><td><p class=\"ctr\">sīl<b>amhi</b> / sīl<b>asmiṃ</b> / sīl<b>e</b></p></td><td><p class=\"ctr\">sīl<b>esu</b></p></td></tr><tr><td><p class=\"ctr\">Vocative</p></td><td><p class=\"ctr\">sīl<b>a</b></p></td><td><p class=\"ctr\">sīl<b>ā</b> / sīl<b>āni</b></p></td></tr></table></div>"
   },
@@ -32,7 +33,8 @@
    "section": "nouns",
    "title": "Feminine Nouns Ending in ‘i’: sati",
    "patterns": [
-    "i fem"
+    "i fem",
+    "jāti fem"
    ],
    "html": "<div class=\"tbl\"><table><tr><td><p class=\"ctr\"><b>Case</b></p></td><td><p class=\"ctr\"><b>Singular</b></p></td><td><p class=\"ctr\"><b>Plural</b></p></td></tr><tr><td><p class=\"ctr\">Nominative</p></td><td><p class=\"ctr\">sat<b>i</b></p></td><td><p class=\"ctr\">sat<b>iyo</b> / sat<b>ī</b></p></td></tr><tr><td><p class=\"ctr\">Accusative</p></td><td><p class=\"ctr\">sat<b>iṃ</b></p></td><td><p class=\"ctr\">sat<b>iyo</b> / sat<b>ī</b></p></td></tr><tr><td><p class=\"ctr\">Instrumental</p></td><td><p class=\"ctr\">sat<b>iyā</b></p></td><td><p class=\"ctr\">sat<b>īhi</b></p></td></tr><tr><td><p class=\"ctr\">Dative</p></td><td><p class=\"ctr\">sat<b>iyā</b></p></td><td><p class=\"ctr\">sat<b>īnaṃ</b></p></td></tr><tr><td><p class=\"ctr\">Ablative</p></td><td><p class=\"ctr\">sat<b>iyā</b> / sat<b>ito</b></p></td><td><p class=\"ctr\">sat<b>īhi</b></p></td></tr><tr><td><p class=\"ctr\">Genitive</p></td><td><p class=\"ctr\">sat<b>iyā</b></p></td><td><p class=\"ctr\">sat<b>īnaṃ</b></p></td></tr><tr><td><p class=\"ctr\">Locative</p></td><td><p class=\"ctr\">sat<b>iyā</b> / sat<b>iyaṃ</b></p></td><td><p class=\"ctr\">sat<b>īsu</b></p></td></tr><tr><td><p class=\"ctr\">Vocative</p></td><td><p class=\"ctr\">sat<b>i</b></p></td><td><p class=\"ctr\">sat<b>iyo</b> / sat<b>ī</b></p></td></tr></table></div>"
   },
