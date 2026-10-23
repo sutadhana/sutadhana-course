@@ -298,3 +298,31 @@ details.earlier[open] summary::before{transform:rotate(90deg)}
 .rec-list{margin-top:8px}.rec-list a span:first-child{display:inline-flex;align-items:center;gap:8px}.rec-list svg{color:var(--accent)}
 .lmain .t .dt-m{display:none}
 @media (max-width:600px){.lmain .meta{display:none}.lmain .t .dt-m{display:block;color:var(--accent);font-size:.92rem}.lmain{gap:12px;padding:14px}.lmain .num{width:44px}}
+
+/* own translation, text size, also-found-in */
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.tgls{display:flex;flex-wrap:wrap;gap:4px 18px}
+.mytr{margin:4px 0 8px}
+.mytr textarea{width:100%;font:17.5px/1.55 var(--pali);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;resize:vertical;min-height:80px}
+.mytr textarea:focus{outline:2px solid var(--accent);outline-offset:1px}
+.mytr-st{font-size:.82rem;color:var(--muted);margin-top:4px}
+.sizer{display:inline-flex;align-items:center;gap:6px;margin-left:8px}
+.pali{font-size:calc(24px * var(--ps,1))}
+@media (max-width:520px){.pali{font-size:calc(21px * var(--ps,1))}}
+.also{margin-top:12px;font-size:.95rem}
+.also summary{cursor:pointer;color:var(--accent);padding:4px 0}
+.also ul{margin:6px 0 0;padding-left:20px}.also li{margin:3px 0}
+/* glossary */
+.glossary h2{font-size:1.4rem;margin:22px 0 2px}
+.gl{width:100%;border-collapse:collapse;background:var(--surface);margin-top:8px}
+.gl th,.gl td{border-bottom:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top;font-size:.95rem}
+.gl td:first-child{font:18px var(--pali);white-space:nowrap}
+.gl th{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+@media print{
+  header.top,footer.credit,.noprint,.sheet,.pop,.gmodal,.skip{display:none!important}
+  html,body{background:#fff;color:#000}
+  main{max-width:none;padding:0}
+  .gl{background:#fff}.gl th,.gl td{border-color:#bbb}
+  .gl-sec{break-inside:auto}.gl tr{break-inside:avoid}
+  .glossary h2{break-after:avoid}
+}

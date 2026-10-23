@@ -197,6 +197,17 @@ def main():
             catalogue.append({k: data[k] for k in ("id", "ref", "title", "titleEn", "source", "bookLesson", "section") if k in data})
             print("built", t["id"], len(data["words"]), "words")
     catalogue.sort(key=lambda c: [int(x) if x.isdigit() else x for x in re.split(r"[-.]", c["id"])])
+    # concordance: dictionary headword -> texts it occurs in (for "Also found in")
+    conc = {}
+    for c in catalogue:
+        data = json.load(open(os.path.join(OUT, c["id"] + ".json"), encoding="utf-8"))
+        for w in data["words"].values():
+            for h in w.get("heads", []):
+                lst = conc.setdefault(h["lemma"], [])
+                if c["id"] not in lst:
+                    lst.append(c["id"])
+    with open(os.path.join(OUT, "concordance.json"), "w", encoding="utf-8") as fh:
+        json.dump(conc, fh, ensure_ascii=False, separators=(",", ":"))
     with open(os.path.join(OUT, "index.json"), "w", encoding="utf-8") as fh:
         json.dump(catalogue, fh, ensure_ascii=False, indent=1)
 

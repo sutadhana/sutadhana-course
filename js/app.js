@@ -285,6 +285,7 @@
             <button aria-pressed="false" data-wl="seen">Seen before · ${seen.length}</button></div>
           <div id="wlNew">${listHtml(fresh)}</div><div id="wlSeen" hidden>${listHtml(seen)}</div>
           <p class="muted" style="font-size:.85rem;margin:10px 0 0">${l.published ? "These words are in your review." : "Words join the review when the lesson is published."}</p>
+          <a class="btn block" style="margin-top:12px" href="#/${g.id}/glossary/${l.n}?print=1">Save glossary as PDF</a>
         </div></aside>
       </div>`;
     $("#main").querySelectorAll("[data-wl]").forEach((b) => b.onclick = () => {
@@ -292,6 +293,36 @@
       $("#wlNew").hidden = b.dataset.wl !== "new"; $("#wlSeen").hidden = b.dataset.wl !== "seen";
     });
     $("#anki").onclick = () => exportAnki(here, `${g.id}-lesson-${l.n}`);
+  }
+
+  async function viewGlossary(n, autoPrint) {
+    const g = state.group;
+    const l = g.lessons.find((x) => String(x.n) === String(n));
+    await headerWithDue("lessons");
+    if (!l || (!l.published && !PREVIEW)) { $("#main").innerHTML = `<div class="notice">This lesson isn't available yet.</div>`; return; }
+    const sections = [];
+    for (const tid of lessonTexts(l)) {
+      const t = await load(`library/${tid}.json`);
+      const seen = new Set(), rows = [];
+      t.paras.forEach((p) => p.t.forEach((tok) => {
+        if (tok.length < 2 || seen.has(tok[1])) return;
+        seen.add(tok[1]);
+        const w = t.words[tok[1]];
+        const meaning = w.ctx + (w.dpd && w.dpd !== w.ctx ? ` (DPD: ${w.dpd})` : "");
+        const gram = w.label + (w.lemma && w.lemma.toLowerCase() !== tok[0].toLowerCase() ? `, from ${w.lemma}` : "");
+        rows.push(`<tr><td lang="pi">${esc(tok[0].toLowerCase())}</td><td>${esc(gram)}</td><td>${esc(meaning)}</td></tr>`);
+      }));
+      sections.push(`<section class="gl-sec"><h2><span lang="pi">${esc(t.title)}</span> · ${esc(t.titleEn || "")}</h2>
+        <p class="muted">${esc(t.source)} · ${esc(t.ref)}</p>
+        <table class="gl"><thead><tr><th>Pāḷi</th><th>Grammar</th><th>Meaning</th></tr></thead><tbody>${rows.join("")}</tbody></table></section>`);
+    }
+    $("#main").innerHTML = `<div class="noprint"><a class="back" href="#/${g.id}/lesson/${l.n}"><span aria-hidden="true" style="color:var(--accent)">←</span> Back to Lesson ${l.n}</a>
+        <p><button class="btn primary" id="doPrint">Save as PDF / print</button> <span class="muted" style="font-size:.9rem">In the print window, choose “Save as PDF”.</span></p></div>
+      <div class="glossary"><div class="eyebrow">Sutadhana · Pāḷi course</div><h1>Lesson ${l.n} glossary</h1>
+      <p class="sub">${esc(l.title || "")}${l.date ? " · " + fmtDate(l.date) : ""}</p>${sections.join("")}
+      <p class="textcredit">Word meanings from the Digital Pāḷi Dictionary by Bodhirasa Bhikkhu (CC BY-NC-SA 4.0); grammar labels simplified.</p></div>`;
+    $("#doPrint").onclick = () => window.print();
+    if (autoPrint) setTimeout(() => window.print(), 400);
   }
 
   function exportAnki(cards, name) {
@@ -305,6 +336,8 @@
   }
 
   /* ---------------- reader ---------------- */
+  const myTr = (tid, pi) => store.get(`sd:mytr:${tid}:${pi}`, "") || "";
+  const textScale = () => Number(store.get("sd:textscale", 1)) || 1;
   const hints = () => store.get("sd:hints", { subj: false, verb: false });
   async function viewReader(tid, lessonN) {
     const g = state.group;
@@ -332,7 +365,15 @@
         ${pnote ? `<button class="nmark box-note" data-note="${esc(pnote.text)}" aria-label="Teacher's note">i</button>` : ""}
         <div class="box-no">${t.paras.length > 1 ? "Passage " + (pi + 1) : "Text"}</div>
         <div class="pali">${toks}</div>
-        <button class="tgl" data-tr="${pi}" aria-expanded="false">Show translation</button>
+        <div class="tgls">
+          <button class="tgl" data-tr="${pi}" aria-expanded="false">Show translation</button>
+          <button class="tgl" data-my="${pi}" aria-expanded="false">${myTr(tid, pi) ? "My translation ✓" : "My translation"}</button>
+        </div>
+        <div class="mytr" id="my${pi}" hidden>
+          <label for="myta${pi}" class="sr">My translation of passage ${pi + 1}</label>
+          <textarea id="myta${pi}" data-myta="${pi}" rows="3" placeholder="Write your own translation here…">${esc(myTr(tid, pi))}</textarea>
+          <div class="mytr-st" id="myst${pi}">Saved on this device as you type.</div>
+        </div>
         <div class="eng" id="tr${pi}" hidden>${esc(p.en)}</div></section>`;
     }).join("");
 
@@ -356,10 +397,13 @@
         ${showHints ? `<span class="muted">Colour hints:</span>
         <button class="chip subj" data-hint="subj" aria-pressed="${h.subj}">Subject</button>
         <button class="chip verb" data-hint="verb" aria-pressed="${h.verb}">Verbs</button>` : ""}
+        <span class="sizer" role="group" aria-label="Text size"><span class="muted">Text size:</span>
+          <button class="chip" data-size="-1" aria-label="Smaller text">A−</button>
+          <button class="chip" data-size="1" aria-label="Larger text">A+</button></span>
         ${markNew ? `<span class="legend"><span class="nw">word</span> not yet learned</span>` : ""}
       </div>
       ${t.intro ? `<p class="intro">${esc(t.intro)}</p>` : ""}
-      <div id="text" class="boxes${markNew ? " marknew" : ""}${h.subj ? " hint-subj" : ""}${h.verb ? " hint-verb" : ""}">${boxes}</div>
+      <div id="text" style="--ps:${textScale()}" class="boxes${markNew ? " marknew" : ""}${h.subj ? " hint-subj" : ""}${h.verb ? " hint-verb" : ""}">${boxes}</div>
       <p class="muted" style="font-size:.9rem;margin:12px 0 0">Tap any word for its meaning and grammar.</p>
       ${prevNext}
       <p class="textcredit">${esc(t.credit || "")}</p>`;
@@ -376,6 +420,30 @@
     $("#main").querySelectorAll("[data-tr]").forEach((b) => b.onclick = () => {
       const el = $("#tr" + b.dataset.tr), open = el.hidden;
       el.hidden = !open; b.textContent = open ? "Hide translation" : "Show translation"; b.setAttribute("aria-expanded", open);
+    });
+    $("#main").querySelectorAll("[data-my]").forEach((b) => b.onclick = () => {
+      const el = $("#my" + b.dataset.my), open = el.hidden;
+      el.hidden = !open; b.setAttribute("aria-expanded", open);
+      if (open) $("#myta" + b.dataset.my).focus();
+    });
+    $("#main").querySelectorAll("[data-myta]").forEach((ta) => {
+      let tm;
+      ta.oninput = () => {
+        clearTimeout(tm);
+        tm = setTimeout(() => {
+          const pi = ta.dataset.myta, v = ta.value;
+          store.set(`sd:mytr:${tid}:${pi}`, v);
+          $("#myst" + pi).textContent = "Saved on this device.";
+          const btn = $(`[data-my="${pi}"]`); if (btn) btn.textContent = v.trim() ? "My translation ✓" : "My translation";
+        }, 400);
+      };
+    });
+    $("#main").querySelectorAll("[data-size]").forEach((b) => b.onclick = () => {
+      const steps = [0.8, 0.9, 1, 1.1, 1.2, 1.35, 1.5];
+      let i = steps.indexOf(textScale()); if (i < 0) i = 2;
+      i = Math.max(0, Math.min(steps.length - 1, i + Number(b.dataset.size)));
+      store.set("sd:textscale", steps[i]);
+      box.style.setProperty("--ps", steps[i]);
     });
     $("#main").querySelectorAll("[data-hint]").forEach((b) => b.onclick = () => {
       const cur = hints(); cur[b.dataset.hint] = !cur[b.dataset.hint]; store.set("sd:hints", cur);
@@ -433,7 +501,9 @@
       <div class="ext">
         <a href="https://www.dpdict.net/?q=${encodeURIComponent(w.lemma && !w.lemma.includes("+") ? (w.q || w.lemma) : btn.textContent.toLowerCase().replace(/[’'-]/g, ""))}" target="_blank" rel="noopener">Full dictionary entry ↗</a>
       </div>
+      <div id="alsoIn"></div>
       ${deckLine ? `<div class="deckline">${deckLine}</div>` : ""}`;
+    alsoFoundIn(t, w);
     const sh = $("#sheet");
     sh.hidden = false; document.body.classList.add("sheet-open");
     sh.scrollTop = 0;
@@ -444,6 +514,26 @@
       if (r.bottom > limit) scrollBy({ top: r.bottom - limit + 20, behavior: "smooth" });
     }
   }
+  async function alsoFoundIn(t, w) {
+    const SKIP = new Set(["iti", "ti", "ca", "na", "vā", "pi", "kho", "hi", "eva", "api", "evaṃ"]);
+    const heads = (w.heads || []).map((h) => h.lemma).filter((h) => !SKIP.has(h));
+    if (!heads.length) return;
+    let conc, lib;
+    try { [conc, lib] = await Promise.all([load("library/concordance.json"), load("library/index.json")]); } catch (e) { return; }
+    const box = $("#alsoIn"); if (!box) return;
+    const g = state.group;
+    const meta = (id) => lib.find((x) => x.id === id) || { id, title: id, titleEn: "" };
+    const rows = heads.map((h) => {
+      const ids = (conc[h] || []).filter((id) => id !== t.id);
+      if (!ids.length) return "";
+      const links = ids.map((id) => { const m = meta(id); return `<li><a href="#/${g.id}/read/${id}"><span lang="pi">${esc(m.title)}</span> · ${esc(m.titleEn)}</a> <span class="muted">${esc(m.ref || "")}</span></li>`; }).join("");
+      const head = `<b lang="pi">${esc(h)}</b> is also found in ${ids.length} other ${ids.length === 1 ? "text" : "texts"}`;
+      return ids.length <= 4 ? `<div class="also"><div>${head}:</div><ul>${links}</ul></div>`
+        : `<details class="also"><summary>${head}</summary><ul>${links}</ul></details>`;
+    }).join("");
+    box.innerHTML = rows;
+  }
+
   function closeSheet() {
     $("#sheet").hidden = true; document.body.classList.remove("sheet-open");
     document.querySelectorAll(".w.on").forEach((x) => x.classList.remove("on"));
@@ -599,6 +689,7 @@
       else if (v === "review") await viewReview();
       else if (v === "grammar") await viewGrammar(parts[2]);
       else if (v === "library") await viewLibrary();
+      else if (v === "glossary") await viewGlossary(parts[2], q.get("print") === "1");
       else if (v === "dana-options" && PREVIEW) await viewDanaOptions();
       else await viewGroup();
       if (v !== "review") session = null;
@@ -625,5 +716,13 @@
     if (!e.target.closest(".nmark") && !e.target.closest("#pop") && !e.target.closest(".timebtn")) hidePop();
   });
   addEventListener("hashchange", route);
+  if ("serviceWorker" in navigator && location.protocol === "https:") {
+    navigator.serviceWorker.register("sw.js").then(() => navigator.serviceWorker.ready).then(async () => {
+      try {   // keep every text available offline
+        const lib = await load("library/index.json");
+        await Promise.all([load("library/concordance.json"), load("grammar/index.json"), ...lib.map((x) => load(`library/${x.id}.json`))]);
+      } catch (e) { /* offline or blocked: fine */ }
+    }).catch(() => {});
+  }
   route();
 })();
