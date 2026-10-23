@@ -716,7 +716,7 @@
     if (!e.target.closest(".nmark") && !e.target.closest("#pop") && !e.target.closest(".timebtn")) hidePop();
   });
   addEventListener("hashchange", route);
-  if ("serviceWorker" in navigator && location.protocol === "https:") {
+  if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
     navigator.serviceWorker.register("sw.js").then(() => navigator.serviceWorker.ready).then(async () => {
       try {   // keep every text available offline
         const lib = await load("library/index.json");
