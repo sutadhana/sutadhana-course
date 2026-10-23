@@ -67,7 +67,7 @@
           }
           if (w.parse) {
             const id = "p:" + w.form + "|" + w.label;
-            if (!cards.has(id)) cards.set(id, { id, kind: "parse", lesson: l.n, lemma: w.lemma, form: tok[0], label: w.label, ctx: w.ctx, meaning: w.dpd, line: sentenceOf(p, tok[0]), ref: t.ref, text: t.id });
+            if (!cards.has(id)) cards.set(id, { id, kind: "parse", wk: tok[1], lesson: l.n, lemma: w.lemma, form: tok[0], label: w.label, ctx: w.ctx, meaning: w.dpd, line: sentenceOf(p, tok[0]), ref: t.ref, text: t.id });
           }
         }));
       }
@@ -116,10 +116,16 @@
     return ["pronouns"];
   }
   let GRAMMAR_IDS = null;
-  function linkGrammar(label, lemma) {
+  // src: where the word is ({lemma, t: text id, k: word key, pi: part index}), so a case
+  // opens the declension table of that very word's type
+  function linkGrammar(label, src) {
     const html = esc(label);
+    const lemma = typeof src === "string" ? src : src?.lemma;
     if (GRAMMAR_IDS && !GRAMMAR_IDS.size) return html;
     return html.replace(GRAMMAR_RE, (m) => {
+      if (CASES.includes(m) && src && src.t) {
+        return `<a class="glink" href="#/${state.gid}/grammar/cases" data-case="${m}" data-t="${esc(src.t)}" data-k="${esc(src.k)}" data-pi="${src.pi ?? ""}">${m}</a>`;
+      }
       let [, id, focus] = GRAMMAR_TERMS.find((t) => t[0] === m);
       if (id === "pronouns") [id, focus] = pronounTopic(label, lemma);
       if (GRAMMAR_IDS && !GRAMMAR_IDS.has(id)) return m;
@@ -560,7 +566,7 @@
     const learned = (w.heads || []).map((h) => cards["m:" + h.lemma]);
     const deckLine = !w.heads?.length ? "" : learned.every((c) => c && c.s >= LEARNED_DAYS) ? "Well learned" :
       learned.some((c) => c) ? `In your review${learned[0]?.due ? " · next review " + relDay(learned[0].due) : ""}` : "Not reviewed yet";
-    const parts = w.parts ? `<ul class="parts">${w.parts.map((p) => `<li><b lang="pi">${esc(p.form)}</b><span class="sep" aria-hidden="true">–</span><span class="gram">${linkGrammar(p.label, p.lemma)}</span><small>${esc(p.meaning)}${p.dpd && p.dpd !== p.meaning ? " · DPD: " + esc(p.dpd) : ""}</small></li>`).join("")}</ul>` : "";
+    const parts = w.parts ? `<ul class="parts">${w.parts.map((p, pi) => `<li><b lang="pi">${esc(p.form)}</b><span class="sep" aria-hidden="true">–</span><span class="gram">${linkGrammar(p.label, { lemma: p.lemma, t: t.id, k: btn.dataset.k, pi: pi })}</span><small>${esc(p.meaning)}${p.dpd && p.dpd !== p.meaning ? " · DPD: " + esc(p.dpd) : ""}</small></li>`).join("")}</ul>` : "";
     $("#sheetIn").innerHTML = `
       <div class="grab" aria-hidden="true"></div>
       <div class="s-head"><div style="flex:1;min-width:0">
@@ -568,7 +574,7 @@
           ${w.lemma && w.lemma.toLowerCase() !== btn.textContent.toLowerCase() ? `<div class="s-lemma">from <b lang="pi">${esc(w.lemma)}</b></div>` : ""}</div>
         <button class="icon" id="sheetClose" aria-label="Close">×</button></div>
       <div class="rows">
-        <div class="lbl">Grammar</div><div class="gram">${linkGrammar(w.label, w.lemma)}${/\p{L}-\p{L}/u.test(btn.textContent) && !/compound/.test(w.label) ? ` · ${linkGrammar("compound")}` : ""}</div>
+        <div class="lbl">Grammar</div><div class="gram">${linkGrammar(w.label, { lemma: w.lemma, t: t.id, k: btn.dataset.k })}${/\p{L}-\p{L}/u.test(btn.textContent) && !/compound/.test(w.label) ? ` · ${linkGrammar("compound")}` : ""}</div>
         <div class="lbl">Here</div><div class="ctx">${esc(w.ctx)}</div>
         ${w.dpd ? `<div class="lbl">DPD</div><div>${esc(w.dpd)}${w.lit ? `<div class="lit">literally: ${esc(w.lit)}</div>` : ""}</div>` : ""}
         ${w.construction ? `<div class="lbl">Built from</div><div lang="pi">${esc(w.construction)}${w.root ? ` <span class="muted">(${esc(w.root)})</span>` : ""}</div>` : ""}
@@ -650,6 +656,87 @@
       }
     }
   }
+  // which cell of a declension table holds this case / number / gender / person
+  function tableGrid(table) {
+    const grid = [];
+    [...table.rows].forEach((tr, r) => {
+      grid[r] = grid[r] || [];
+      let c = 0;
+      [...tr.cells].forEach((td) => {
+        while (grid[r][c]) c++;
+        for (let i = 0; i < td.rowSpan; i++) for (let j = 0; j < td.colSpan; j++) {
+          (grid[r + i] = grid[r + i] || [])[c + j] = td;
+        }
+        c += td.colSpan;
+      });
+    });
+    return grid;
+  }
+  function findCell(table, caseName, number, gender, person) {
+    const grid = tableGrid(table);
+    const txt = (td) => (td ? td.textContent.trim().toLowerCase() : "");
+    const r = grid.findIndex((row) => row.slice(0, 2).some((td) => txt(td) === caseName));
+    if (r < 0) return null;
+    const ncol = Math.max(...grid.map((row) => row.length));
+    const heads = [];
+    for (let c = 0; c < ncol; c++) heads[c] = grid.slice(0, r).map((row) => txt(row[c])).join(" ");
+    const has = (c, w) => new RegExp("\\b" + w).test(heads[c]);
+    const anyGender = heads.some((h) => /\b(masculine|neuter|feminine)/.test(h));
+    const anyPerson = heads.some((h) => /\b(first|second) person/.test(h));
+    let best = null;
+    for (let c = 0; c < ncol; c++) {
+      if (!has(c, number)) continue;
+      if (gender && anyGender && !has(c, gender)) continue;
+      if (person && anyPerson && !has(c, person)) continue;
+      best = grid[r][c]; break;
+    }
+    return { row: grid[r][0].parentElement, cell: best };
+  }
+  async function openCase(ds) {
+    const caseName = ds.case;
+    const [gr, t] = await Promise.all([load("grammar/index.json"), load(`library/${ds.t}.json`)]);
+    const w = t.words[ds.k];
+    const x = ds.pi !== "" && ds.pi !== undefined && w.parts ? w.parts[+ds.pi] : w;
+    if (!x) return openGrammar("cases", caseName[0].toUpperCase() + caseName.slice(1));
+    const lab = x.label || "";
+    const number = /\bplural\b/.test(lab) ? "plural" : "singular";
+    const gender = (lab.match(/\b(masculine|neuter|feminine)\b/) || [])[1] || "";
+    const person = /1st person/.test(lab) ? "first" : /2nd person/.test(lab) ? "second" : "";
+    const Case = caseName[0].toUpperCase() + caseName.slice(1);
+    let title, table, note = "", section = "cases";
+    let P = x.para && gr.paradigms ? gr.paradigms[x.para] : null;
+    if (P) {
+      title = esc(P.title); table = P.html; section = P.section;
+    } else if (x.decl) {
+      title = `Declension of <span lang="pi">${esc(x.lemma)}</span>`; table = x.decl;
+      note = `<p class="gm-src">This kind of word isn’t in the grammar guide, so this table is from the Digital Pāḷi Dictionary.</p>`;
+    } else return openGrammar("cases", Case);
+    const def = (gr.caseDefs || {})[caseName];
+    $("#gmBody").innerHTML = `<div class="eyebrow">${esc(Case)} ${esc(number)}${gender ? " · " + esc(gender) : ""}</div>
+      <h2 id="gmTitle">${title}</h2>
+      <p class="gm-like"><b lang="pi">${esc(x.form || w.form)}</b> is from <b lang="pi">${esc(x.lemma)}</b>${P ? ", which follows this pattern" : ""}.</p>
+      ${def ? `<div class="gm-def"><b>${esc(Case)}:</b> ${def}</div>` : ""}
+      <div class="gram-body" id="gmTable">${table}</div>${note}
+      <div class="gm-foot">${section !== "cases" ? `<a href="#" data-gram="cases" data-focus="${esc(Case)}">The case system</a> · ` : ""}<a href="#/${state.gid}/grammar/${section}" data-full="1">Open in the grammar guide →</a></div>`;
+    // the guide's ptp table has only nom. and acc.: "the rest is like anicca / gata"
+    let tb = $("#gmTable table"), hit = tb && findCell(tb, caseName, number, gender, person);
+    if (!hit && P && P.rest && gr.paradigms[P.rest]) {
+      const R = gr.paradigms[P.rest];
+      $("#gmTable").insertAdjacentHTML("beforeend", `<p class="gm-src">The rest of the declension is like that of ${esc(R.title.split(/\s+[–-]\s+/)[0])}:</p>${R.html}`);
+      tb = $("#gmTable").querySelectorAll("table")[1];
+      hit = findCell(tb, caseName, number, gender, person);
+    }
+    if (hit) { hit.row.classList.add("gfocus"); if (hit.cell) hit.cell.classList.add("gcell"); }
+    const m = $("#gmodal"), box = $("#gmodal .gmodal-box");
+    m.hidden = false; document.body.classList.add("modal-open");
+    box.scrollTop = 0;
+    requestAnimationFrame(() => m.classList.add("show"));
+    $("#gmClose").focus({ preventScroll: true });
+    if (hit) setTimeout(() => {
+      const el = hit.row, top = el.getBoundingClientRect().top - box.getBoundingClientRect().top + box.scrollTop;
+      if (top > box.clientHeight * 0.7) box.scrollTo({ top: top - box.clientHeight / 3, behavior: "smooth" });
+    }, 120);
+  }
   function closeGrammar() {
     const m = $("#gmodal");
     if (m.hidden) return false;
@@ -698,7 +785,7 @@
       : `<div class="q-kind">Parse this form</div><div class="q-word" lang="pi">${esc(k.form)}</div><div class="q-line" lang="pi">${line} · ${esc(k.ref)}</div>`;
     const back = k.kind === "meaning"
       ? `<div class="kv"><div class="lbl">Meaning</div><div style="font-size:1.2rem">${esc(k.meaning)}</div><div class="lbl">Here</div><div>${esc(k.ctx)}</div></div>`
-      : `<div class="kv"><div class="lbl">From</div><div style="font-size:1.2rem" lang="pi">${esc(k.lemma)}</div><div class="lbl">Form</div><div class="gram" style="font-size:1.1rem">${linkGrammar(k.label, k.lemma)}</div><div class="lbl">Here</div><div>${esc(k.ctx)}</div></div>`;
+      : `<div class="kv"><div class="lbl">From</div><div style="font-size:1.2rem" lang="pi">${esc(k.lemma)}</div><div class="lbl">Form</div><div class="gram" style="font-size:1.1rem">${linkGrammar(k.label, { lemma: k.lemma, t: k.text, k: k.wk })}</div><div class="lbl">Here</div><div>${esc(k.ctx)}</div></div>`;
     $("#main").innerHTML = `<div class="rv">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><a class="back" href="#/${g.id}"><span aria-hidden="true" style="color:var(--accent)">←</span> Lessons</a>
         <span class="muted" style="font-size:.95rem">${s.done + 1} of ${s.start}${c[k.id] ? "" : " · new"}</span></div>
@@ -754,8 +841,11 @@
     $("#main").innerHTML = `${backTo}
       <div class="gram-layout">
         <details class="gram-nav" id="gnav"${innerWidth > 860 || !sid ? " open" : ""}><summary>All topics</summary><nav aria-label="Grammar topics">${nav}</nav></details>
-        <article class="gram-main">
+        <article class="gram-main" id="gmain" style="--gs:${gramScale()}">
           <div class="head"><div class="eyebrow">${esc(chap)}</div><h1>${sec.titleHtml || esc(sec.title)}</h1></div>
+          <div class="toolbar"><span class="sizer" role="group" aria-label="Text size"><span class="muted">Text size:</span>
+            <button class="chip" data-gsize="-1" aria-label="Smaller text">A−</button>
+            <button class="chip" data-gsize="1" aria-label="Larger text">A+</button></span></div>
           <div class="gram-body">${sec.html}</div>
           <div class="nav-next">
             ${prev ? `<a class="btn" href="#/${g.id}/grammar/${prev.id}">← ${esc(prev.title)}</a>` : "<span></span>"}
@@ -765,8 +855,32 @@
         </article>
       </div>`;
     closeSheet();
+    $("#main").querySelectorAll("[data-gsize]").forEach((b) => b.onclick = () => {
+      const steps = [0.9, 1, 1.1, 1.2, 1.35], cur = gramScale();
+      const i2 = Math.max(0, Math.min(steps.length - 1, steps.indexOf(cur) + +b.dataset.gsize));
+      try { localStorage.setItem("sd:gscale", steps[i2]); } catch (e) {}
+      $("#gmain").style.setProperty("--gs", steps[i2]);
+    });
+    // practice sentences: a box beside each one for the student's own translation
+    if (sec.id === "practicing-cases") {
+      $("#main").querySelectorAll(".gram-body table.t-practice").forEach((tb, ti) => {
+        [...tb.rows].forEach((tr, ri) => {
+          const key = `sd:gp:${ti}-${ri}`;
+          let v = ""; try { v = localStorage.getItem(key) || ""; } catch (e) {}
+          const td = document.createElement("td");
+          td.className = "gp";
+          td.innerHTML = `<textarea rows="1" aria-label="Your translation" placeholder="Your translation…">${esc(v)}</textarea>`;
+          const ta = td.firstChild;
+          const fit = () => { ta.style.height = "auto"; ta.style.height = ta.scrollHeight + "px"; };
+          ta.addEventListener("input", () => { try { localStorage.setItem(key, ta.value); } catch (e) {} fit(); });
+          tr.appendChild(td); requestAnimationFrame(fit);
+        });
+      });
+      $("#main").querySelector(".gram-body").insertAdjacentHTML("afterbegin", `<p class="gp-note">Write your translation next to each sentence. It’s saved on this device.</p>`);
+    }
     if (sid) window.scrollTo(0, 0);
   }
+  function gramScale() { try { const v = parseFloat(localStorage.getItem("sd:gscale")); return [0.9, 1, 1.1, 1.2, 1.35].includes(v) ? v : 1; } catch (e) { return 1; } }
 
   /* ---------------- library ---------------- */
   async function viewLibrary() {
@@ -791,6 +905,7 @@
   /* ---------------- router ---------------- */
   async function route() {
     closeSheet(); hidePop(); closeGrammar(); stopAudio();
+    document.body.classList.toggle("wide", /\/grammar(\/|$)/.test(location.hash));
     const [path, query] = location.hash.replace(/^#\/?/, "").split("?");
     const parts = path.split("/").filter(Boolean);
     const q = new URLSearchParams(query || "");
@@ -827,8 +942,9 @@
     if (e.key === "Escape") { if (closeGrammar()) return; if (!$("#sheet").hidden) closeSheet(); hidePop(); }
   });
   document.addEventListener("click", (e) => {
-    const a = e.target.closest("a[data-gram]");
-    if (a && a.closest("#sheet, .qcard")) { e.preventDefault(); openGrammar(a.dataset.gram, a.dataset.focus); return; }
+    const a = e.target.closest("a[data-gram], a[data-case]");
+    if (a && a.closest("#sheet, .qcard, #gmodal") && a.dataset.case) { e.preventDefault(); openCase(a.dataset); return; }
+    if (a && a.closest("#sheet, .qcard, #gmodal")) { e.preventDefault(); openGrammar(a.dataset.gram, a.dataset.focus); return; }
     if (e.target.closest("a[data-full]")) { closeGrammar(); closeSheet(); return; }
     if (e.target.id === "gmodal" || e.target.closest("#gmClose")) closeGrammar();
   });
@@ -837,6 +953,35 @@
     if (demo) { e.stopPropagation(); togglePop(demo); return; }
     if (!e.target.closest(".nmark") && !e.target.closest("#pop") && !e.target.closest(".timebtn")) hidePop();
   });
+  // word panel: a tap anywhere outside it closes it (a tap on another word just switches)
+  document.addEventListener("click", (e) => {
+    if ($("#sheet").hidden) return;
+    if (e.target.closest("#sheet, .w, #gmodal, #pop, .nmark")) return;
+    closeSheet();
+  });
+  // ...and on touch screens it can be dragged down
+  {
+    const sh = $("#sheet");
+    let y0 = null, dy = 0;
+    sh.addEventListener("touchstart", (e) => {
+      if (sh.scrollTop > 0 && !e.target.closest(".grab, .s-head")) { y0 = null; return; }
+      y0 = e.touches[0].clientY; dy = 0; sh.style.transition = "none";
+    }, { passive: true });
+    sh.addEventListener("touchmove", (e) => {
+      if (y0 === null) return;
+      dy = e.touches[0].clientY - y0;
+      if (dy > 0) { sh.style.transform = `translateY(${dy}px)`; if (e.cancelable) e.preventDefault(); }
+    }, { passive: false });
+    sh.addEventListener("touchend", () => {
+      if (y0 === null) return;
+      sh.style.transition = "";
+      if (dy > 70) {
+        sh.style.transform = "translateY(100%)";
+        setTimeout(() => { closeSheet(); sh.style.transform = ""; }, 200);
+      } else sh.style.transform = "";
+      y0 = null;
+    });
+  }
   addEventListener("hashchange", route);
   if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
     navigator.serviceWorker.register("sw.js").then(() => navigator.serviceWorker.ready).then(async () => {

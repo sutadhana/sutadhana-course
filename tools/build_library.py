@@ -12,6 +12,84 @@ sys.path.insert(0, os.path.join(ROOT, "tools", "texts"))
 OUT = os.path.join(ROOT, "data", "library")
 
 idx, info = pickle.load(open(sys.argv[1], "rb"))
+TEMPLATES = pickle.load(open(os.path.join(os.path.dirname(sys.argv[1]), "templates.pkl"), "rb"))
+# a slip in the DPD template: feminine nominative plural of -aka adjectives is ikāyo / ikā
+for _r in TEMPLATES["aka adj"]:
+    if _r and _r[0] == "nom" and _r[7] == "āyo\nikā":
+        _r[7] = "ikāyo\nikā"
+# which of Mor's grammar-guide tables stands for which DPD pattern
+try:
+    GUIDE = json.load(open(os.path.join(ROOT, "data", "grammar", "index.json"), encoding="utf-8"))
+    PATTERN_TABLE = {pat: key for key, pd in GUIDE.get("paradigms", {}).items() for pat in pd["patterns"]}
+except FileNotFoundError:
+    PATTERN_TABLE = {}
+CASE_RE = re.compile(r"\b(nominative|accusative|instrumental|dative|ablative|genitive|locative|vocative)\b")
+DPD_CASES = [("nom", "Nominative"), ("acc", "Accusative"), ("instr", "Instrumental"), ("dat", "Dative"),
+             ("abl", "Ablative"), ("gen", "Genitive"), ("loc", "Locative"), ("voc", "Vocative")]
+GEN_NAME = {"masc": "Masculine", "fem": "Feminine", "neut": "Neuter"}
+
+
+def dpd_table(d):
+    """The word's own declension, from the DPD inflection template (for word
+    types Mor's guide has no table for)."""
+    tp = TEMPLATES.get(d["pattern"])
+    if not tp:
+        return None
+    stem = d["stem"] or ""
+    stem = "" if "*" in stem else stem.replace("!", "")
+    head = tp[1]
+    cols = [(head[i].split()[0], head[i].split()[1]) for i in range(1, len(head), 2) if head[i]]
+    gens = []
+    for g, _ in cols:
+        if g not in gens:
+            gens.append(g)
+    multi = len(gens) > 1 and all(g in GEN_NAME for g in gens)
+    rows = {r[0]: r for r in tp[2:] if r and r[0]}
+    h = ['<div class="tbl"><table class="t-dpd">']
+    if multi:
+        h.append('<tr><td rowspan="2"><b>Case</b></td>' + "".join(
+            f'<td colspan="{sum(1 for g2, _ in cols if g2 == g)}"><b>{GEN_NAME[g]}</b></td>' for g in gens) + "</tr>")
+        h.append("<tr>" + "".join(f"<td><b>{'Singular' if n == 'sg' else 'Plural'}</b></td>" for _, n in cols) + "</tr>")
+    else:
+        h.append("<tr><td><b>Case</b></td>" + "".join(f"<td><b>{'Singular' if n == 'sg' else 'Plural'}</b></td>" for _, n in cols) + "</tr>")
+    for code, name in DPD_CASES:
+        r = rows.get(code)
+        if not r:
+            continue
+        cells = []
+        for i in range(len(cols)):
+            ends = [e for e in (r[1 + 2 * i] if 1 + 2 * i < len(r) else "").split("\n") if e]
+            cells.append(" / ".join(stem + e for e in ends) or "–")
+        h.append(f"<tr><td>{name}</td>" + "".join(f"<td>{c}</td>" for c in cells) + "</tr>")
+    h.append("</table></div>")
+    return "".join(h)
+
+
+def declension_manual(label, lemma, form):
+    """Words entered by hand (no DPD entry): the type is plain from label and ending."""
+    if not CASE_RE.search(label):
+        return {}
+    lem = (lemma or form or "").lower()
+    rules = [
+        (label.startswith("pronoun") and lem in ("idaṃ", "ima", "ayaṃ"), "ima"),
+        (label.startswith("present participle"), "gacchanta"),
+        (label.startswith("masculine noun") and lem.endswith("a"), "buddha"),
+        (label.startswith("neuter noun") and lem.endswith("a"), "sila"),
+        (label.startswith("feminine noun") and lem.endswith("ā"), "saddha"),
+        (label.startswith("adjective") and re.search(r"(a|o|aṃ)$", lem), "anicca"),
+    ]
+    key = next((k for ok, k in rules if ok), None)
+    return {"para": key} if key and key in {v for v in PATTERN_TABLE.values()} else {}
+
+
+def declension(spec_g, label, d):
+    """Where to look up this form's case: one of Mor's tables, or the word's own DPD table."""
+    if not CASE_RE.search(label):
+        return {}
+    if d["pattern"] in PATTERN_TABLE:
+        return {"para": PATTERN_TABLE[d["pattern"]]}
+    t = dpd_table(d)
+    return {"decl": t} if t else {}
 by_lemma = {}
 for i, d in info.items():
     by_lemma.setdefault(d["lemma_1"], []).append(i)
@@ -107,10 +185,12 @@ def build_word(form, spec):
             w["more"] = more
         w["label"] = label(spec["g"], d["pos"])
         w["q"] = w["lemma"]
+        w.update(declension(spec["g"], w["label"], d))
     else:
         w["lemma"] = spec["lemma"]
         w["pos"] = spec.get("pos", spec["g"])
         w["label"] = label(spec["g"], spec.get("pos", ""))
+        w.update(declension_manual(w["label"], w["lemma"], form))
         if spec.get("dpd"):
             w["dpd"] = spec["dpd"]
         w["q"] = form
@@ -128,8 +208,10 @@ def build_word(form, spec):
                 p["dpdId"] = pid
                 p["label"] = label(pg, pd["pos"])
                 p["dpd"] = pd["meaning_1"] or pd["meaning_2"]
+                p.update(declension(pg, p["label"], pd))
             else:
                 p["label"] = label(pg, pg.split()[0] if pg else "")
+                p.update(declension_manual(p["label"], None, pf))
             parts.append(p)
         w["parts"] = parts
     # review cards: a meaning card for each dictionary headword, a parsing card

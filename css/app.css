@@ -389,3 +389,59 @@ details.earlier[open] summary::before{transform:rotate(90deg)}
 @media (max-width:600px){.listen{gap:10px;padding:10px 12px}.lplay{width:46px;height:46px}.ltitle{font-size:1rem}.lt-long{display:none}.lt-short{display:inline}.lspeed{min-width:50px;padding:5px 10px}}
 @media print{.listen{display:none}}
 @media (max-width:600px){.gram-body table{font-size:.88rem;width:max-content;max-width:none}.gram-body td{padding:5px 8px;max-width:13.5em}.gram-body{line-height:1.5}.gram-body .tbl{margin-right:-18px;padding-right:18px}}
+
+/* ---- grammar guide, larger and easier on the eyes ---- */
+.gram-nav{flex-basis:300px}
+.gram-nav a{font-size:1.12rem;padding:7px 12px}
+.gram-nav .gn-ch{font-size:.8rem;padding-top:14px}
+.gram-main .gram-body{font-size:calc(1.18rem * var(--gs,1));line-height:1.65}
+.gram-main .toolbar{margin:6px 0 10px}
+.gram-body table{font-size:.95em}
+.gram-body td{padding:8px 12px}
+.gmodal-box{width:min(1020px,100%)}
+.gmodal-box .gram-body{font-size:1.1rem}
+/* the case chart: give the definition and example columns room */
+.gram-body table.t-cases{width:100%}
+.t-cases td:nth-child(5){min-width:15em}
+.t-cases td:nth-child(6){min-width:17em;text-align:left}
+.t-cases td:nth-child(2){white-space:nowrap}
+/* declension tables in the pop-up */
+.gmodal-box .gram-body table{min-width:min(100%,520px)}
+.gram-body td.gcell{background:var(--mark)!important;box-shadow:inset 0 0 0 2px var(--copper);font-weight:700}
+.gm-like{margin:0 0 10px;font-size:1.08rem}
+.gm-def{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;padding:10px 14px;margin:0 0 6px;font-size:1.05rem;line-height:1.5}
+.gm-src{color:var(--muted);font-size:.95rem;margin:8px 0}
+/* sandhi: a bullet for each rule, its examples underneath */
+.gram-body ul.rules{padding-left:1.3em}
+.gram-body ul.rules li.rule{margin:.9em 0 .3em}
+.gram-body ul.rules li.rule::marker{color:var(--copper)}
+.gram-body .ex{margin:.25em 0 .25em .2em;padding-left:.9em;border-left:2px solid var(--line)}
+/* practising the cases: sentence | your translation */
+.gram-body table.t-practice{width:100%;table-layout:fixed}
+.t-practice td{vertical-align:middle;font-size:1.05em}
+.t-practice td:first-child{width:46%}
+.t-practice td.gp{padding:4px 6px;background:var(--bg)}
+.t-practice textarea{width:100%;border:0;background:transparent;font:inherit;color:var(--ink);resize:none;overflow:hidden;padding:6px;min-height:2.2em;line-height:1.45;border-radius:6px}
+.t-practice textarea:focus{outline:2px solid var(--accent);background:var(--surface)}
+.gp-note{color:var(--muted);font-size:.92em}
+@media (max-width:600px){
+  .gram-main .gram-body{font-size:calc(1.08rem * var(--gs,1))}
+  .gram-nav a{font-size:1.05rem}
+  .gram-body table.t-practice{width:100%;table-layout:auto}
+  .t-practice td{max-width:none!important;display:block;width:auto!important;border:0}
+  .t-practice tr{display:block;border:1px solid var(--line);border-radius:10px;margin:0 0 10px;background:var(--surface);overflow:hidden}
+  .t-practice td.gp{border-top:1px dashed var(--line)}
+  .gram-body .t-practice{width:100%}
+  .gram-body .tbl:has(.t-practice){margin-right:0;padding-right:0}
+  .t-cases td:nth-child(5){min-width:11em}.t-cases td:nth-child(6){min-width:12em}
+}
+@media (max-width:600px){.gmodal-box .gram-body table{min-width:0}}
+
+/* grammar pages use more of the screen */
+body.wide main{max-width:1320px}
+body.wide .gram-nav{flex-basis:280px}
+.gram-main table.t-cases{font-size:.92em}
+.t-cases td:nth-child(5),.t-cases td:nth-child(6){text-align:left}
+.t-cases td:nth-child(5) p,.t-cases td:nth-child(6) p{text-align:left}
+.t-cases tr:first-child td p{text-align:center}
+.t-cases td:nth-child(5){min-width:13em}.t-cases td:nth-child(6){min-width:14em}

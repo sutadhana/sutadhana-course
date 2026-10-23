@@ -175,6 +175,9 @@ def para_info(p, num):
     return style, level, lst, jc
 
 
+CUR = {"title": ""}
+
+
 def table_html(tbl, num):
     rows = tbl.findall(W + "tr")
     grid = []  # each row: list of cells dict
@@ -216,7 +219,8 @@ def table_html(tbl, num):
             if not c.get("gone") and re.sub(r"<[^>]+>|\s|&nbsp;", "", c["html"]):
                 for k in range(c["col"], c["col"] + c["span"]):
                     used[k] = True
-    out = ['<div class="tbl"><table>']
+    cls = ' class="t-practice"' if CUR["title"].startswith("Practicing") and sum(used) == 1 else ""
+    out = [f'<div class="tbl"><table{cls}>']
     for r in grid:
         tds = []
         for c in r:
@@ -236,15 +240,45 @@ def table_html(tbl, num):
     return "".join(out)
 
 
+def is_rule(h):
+    """A list line that names a rule: it opens with a bold phrase of several words,
+    followed by nothing, a note in brackets, or a new line."""
+    m = re.match(r"<b>([^<]+)</b>(.*)$", h.strip(), re.S)
+    if not m or len(m.group(1).split()) < 3:
+        return False
+    rest = m.group(2).strip()
+    return rest == "" or rest.startswith(("(", "<br>", ":"))
+
+
+def list_html(kind, items):
+    """Where a list mixes rules (bold) and examples, only the rules get a bullet;
+    the examples sit under their rule without one."""
+    if items and is_rule(items[0]) and any(not is_rule(x) for x in items):
+        out = []
+        for h in items:
+            if is_rule(h):
+                if out:
+                    out.append("</li>")
+                out.append(f'<li class="rule">{h}')
+            else:
+                out.append(f'<div class="ex">{h}</div>')
+        out.append("</li>")
+        return f'<{kind} class="rules">' + "".join(out) + f"</{kind}>"
+    return f"<{kind}>" + "".join(f"<li>{h}</li>" for h in items) + f"</{kind}>"
+
+
 def blocks_html(nodes, num, top=False, sink=None):
     """Paragraphs, lists and tables.  At top level, headings go to `sink`."""
     out, lst = [], None
     want_h1 = False
 
+    items = []
+
     def close():
         nonlocal lst
         if lst:
-            out.append(f"</{lst}>")
+            out.append(list_html(lst, items))
+            items.clear()
             lst = None
     for n in nodes:
         if n.tag == W + "p":
@@ -252,6 +286,8 @@ def blocks_html(nodes, num, top=False, sink=None):
             if style.startswith("TOC") or style == "Title":
                 continue
             h = runs_html(n)
+            if top and level is None and h == "<b><u>Nouns</u></b>":
+                level, h = 1, "Nouns"
             if top and level is None and want_h1 and h:
                 want_h1 = False
                 if re.fullmatch(r"<b><u>[^<]{1,40}</u></b>", h):
@@ -267,9 +303,8 @@ def blocks_html(nodes, num, top=False, sink=None):
             if kind:
                 if lst != kind:
                     close()
-                    out.append(f"<{kind}>")
                     lst = kind
-                out.append(f"<li>{h}</li>")
+                items.append(h)
                 continue
             close()
             if not h:
@@ -312,7 +347,7 @@ IDS = {
     "participles": "participles", "the-past-participle-ta-na": "past-participle",
     "the-present-participle-anta-mana": "present-participle",
     "the-future-passive-participle-or-ptp-tabba-aniya-eyya": "future-passive-participle",
-    "adverbs-am-ena": "adverbs",
+    "adverbs-am-ena": "adverbs", "nouns": "nouns",
 }
 
 
@@ -340,11 +375,66 @@ def main(path):
         if level == 1:
             chapter["t"] = re.sub(r"\s+", " ", html.unescape(re.sub(r"<br>|<[^>]+>", " ", h))).strip()
         pending["level"], pending["title"] = level, h
+        CUR["title"] = re.sub(r"<[^>]+>", "", h or "")
     blocks_html(list(body), num, top=True, sink=sink)
     ids = [s["id"] for s in sections]
     dup = {i for i in ids if ids.count(i) > 1}
     assert not dup, dup
+    PARADIGMS = {  # key: (form that identifies the table, DPD patterns it stands for)
+        "buddha": ("buddhena", ["a masc", "a masc pl"]),
+        "sila": ("sīlena", ["a nt", "a nt east"]),
+        "saddha": ("saddhāya", ["ā fem"]),
+        "sati": ("satiyā", ["i fem"]),
+        "bhikkhu": ("bhikkhunā", ["u masc"]),
+        "sattha": ("satthārā", ["ar masc", "ar2 masc"]),
+        "anicca": ("aniccena", ["a adj", "a ordin"]),
+        "silava": ("sīlavatā", ["ant adj"]),
+        "atapi": ("ātāpinā", ["ī adj"]),
+        "gata": ("gatena", ["a pp"]),
+        "gacchanta": ("gacchantena", ["anta prp"]),
+        "gantabba": ("gantabbaṃ", ["a ptp"]),
+        "personal": ("mayhaṃ", ["ahaṃ pron", "tvaṃ pron"]),
+        "third": ("tissā", ["ta pron"]),
+        "ima": ("iminā", ["ima pron"]),
+        "ya": ("yāsaṃ", ["ya pron"]),
+        "ka": ("kissa", ["ka pron"]),
+    }
+    paradigms = {}
+    for sec in sections:
+        for m in re.finditer(r'((?:<p[^>]*>(?:(?!</p>).)*</p>\s*)?)(<div class="tbl"><table[^>]*>.*?</table></div>)', sec["html"]):
+            plain = re.sub(r"</?(td|p|tr)[^>]*>|<br>", " ", m.group(2))
+            plain = re.sub(r"<[^>]+>", "", plain)
+            for key, (form, pats) in PARADIGMS.items():
+                if re.search(r"(?<!\w)" + form + r"(?!\w)", plain):
+                    assert key not in paradigms, key
+                    lead = re.sub(r"<[^>]+>", "", m.group(1)).strip()
+                    lead = re.sub(r"'\s*(\S+?)\s*'", r"‘\1’", lead)
+                    if key == "buddha":
+                        lead = "Masculine nouns ending in ‘a’: buddha"
+                    elif key == "third":
+                        lead = "Third Person (he / she / it)"
+                    elif len(lead) > 70:
+                        lead = ""
+                    paradigms[key] = {"section": sec["id"], "title": lead or sec["title"], "patterns": pats,
+                                      "html": m.group(2)}
+                    if key == "gantabba":   # "the rest of the declension is like that of anicca / gata"
+                        paradigms[key]["rest"] = "anicca"
+    missing = set(PARADIGMS) - set(paradigms)
+    assert not missing, missing
+    # the case chart's definitions, to show next to any table
+    cases = next(s for s in sections if s["id"] == "cases")
+    case_def = {}
+    for row in re.findall(r"<tr>(.*?)</tr>", cases["html"]):
+        cells = [re.sub(r"<[^>]+>", "", c).strip() for c in re.findall(r"<td[^>]*>(.*?)</td>", row)]
+        cells = [html.unescape(c) for c in cells]
+        name = next((c for c in cells[:2] if c in ("Nominative", "Accusative", "Instrumental", "Dative", "Ablative", "Genitive", "Locative", "Vocative")), None)
+        if name:
+            k = cells.index(name)
+            d = re.sub(r"<td[^>]*>|</td>|<p[^>]*>", "", re.findall(r"<td[^>]*>.*?</td>", row)[k + 3])
+            case_def[name.lower()] = re.sub(r"\s*(</p>|<br>)\s*", " ", d).strip()
+    cases["html"] = cases["html"].replace("<table>", '<table class="t-cases">', 1)
     out = {"title": "Pāḷi Grammar Summary", "author": "Mor Ifrah",
+           "paradigms": paradigms, "caseDefs": case_def,
            "intro": "A simplified grammar guide to accompany the Pāḷi texts we read.",
            "sections": sections}
     dest = os.path.join(ROOT, "data", "grammar", "index.json")
