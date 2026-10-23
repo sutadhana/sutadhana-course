@@ -422,6 +422,10 @@ def main(path):
     missing = set(PARADIGMS) - set(paradigms)
     assert not missing, missing
     # the case chart's definitions, to show next to any table
+    # Nouns: each noun type's heading sits, larger, centred right above its table
+    nouns = next(s for s in sections if s["id"] == "nouns")
+    nouns["html"] = re.sub(r'<p class="ctr">((?:(?!</p>).)*)</p>\s*<div class="tbl">',
+                           r'<p class="ctr ttl">\1</p><div class="tbl tc">', nouns["html"])
     cases = next(s for s in sections if s["id"] == "cases")
     case_def = {}
     for row in re.findall(r"<tr>(.*?)</tr>", cases["html"]):

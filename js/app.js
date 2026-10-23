@@ -709,7 +709,7 @@
       title = esc(P.title); table = P.html; section = P.section;
     } else if (x.decl) {
       title = `Declension of <span lang="pi">${esc(x.lemma)}</span>`; table = x.decl;
-      note = `<p class="gm-src">This kind of word isn’t in the grammar guide, so this table is from the Digital Pāḷi Dictionary.</p>`;
+      note = `<p class="gm-src">Table from the Digital Pāḷi Dictionary.</p>`;
     } else return openGrammar("cases", Case);
     const def = (gr.caseDefs || {})[caseName];
     $("#gmBody").innerHTML = `<div class="eyebrow">${esc(Case)} ${esc(number)}${gender ? " · " + esc(gender) : ""}</div>

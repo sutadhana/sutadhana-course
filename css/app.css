@@ -445,3 +445,7 @@ body.wide .gram-nav{flex-basis:280px}
 .t-cases td:nth-child(5) p,.t-cases td:nth-child(6) p{text-align:left}
 .t-cases tr:first-child td p{text-align:center}
 .t-cases td:nth-child(5){min-width:13em}.t-cases td:nth-child(6){min-width:14em}
+
+/* noun-type headings above their tables */
+.gram-body p.ttl{font-size:1.3em;margin:1.8em 0 .5em;line-height:1.35}
+.gram-body .tbl.tc table{margin:0 auto}
