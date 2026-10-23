@@ -8,6 +8,7 @@ Needs the DPD index pickle made from the Digital Pali Dictionary sources
 import glob, importlib.util, json, os, pickle, re, sys, unicodedata
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(ROOT, "tools", "texts"))
 OUT = os.path.join(ROOT, "data", "library")
 
 idx, info = pickle.load(open(sys.argv[1], "rb"))
@@ -24,11 +25,15 @@ TENSE = {"pr": "present", "imp": "imperative", "opt": "optative", "fut": "future
 POS = {"adj": "adjective", "pp": "past participle", "prp": "present participle",
        "ptp": "future passive participle", "ordin": "ordinal number", "card": "number",
        "pron": "pronoun", "ind": "indeclinable", "abs": "absolutive", "inf": "infinitive",
-       "sandhi": "sandhi", "prefix": "prefix", "suffix": "suffix", "num": "number"}
+       "sandhi": "sandhi", "prefix": "prefix", "suffix": "suffix", "num": "number", "ger": "absolutive"}
 
 
 def clean_lemma(l):
     return re.sub(r"\s+\d[\d.]*$", "", l)
+
+
+def case(c):
+    return " or ".join(CASE[x] for x in c.split("/"))
 
 
 def label(g, pos):
@@ -38,22 +43,27 @@ def label(g, pos):
         return "two words joined (sandhi)"
     if g in ("ind", "") and pos in ("ind", "", None):
         return "indeclinable"
+    if t and t[0] == "prp" or pos == "prp" and len(t) == 3 and t[0] in GEN:
+        t2 = t[1:] if t[0] == "prp" else t
+        return f"present participle · {GEN[t2[0]]} {case(t2[1])} {NUM[t2[2]]}"
     if t and t[0] in TENSE:  # verb: pr 1st sg
         person = t[1] + " person" if len(t) > 1 else ""
         num = NUM.get(t[2], "") if len(t) > 2 else ""
         return f"verb · {TENSE[t[0]]}, {person} {num}".strip()
     if t and t[0] in ("1st", "2nd", "3rd"):  # personal pronoun: 1st nom sg
-        return f"pronoun, {t[0]} person · {CASE[t[1]]} {NUM[t[2]]}"
-    if t and t[0] == "pron":  # manual: pron nt nom sg
-        return f"pronoun · {GEN[t[1]]} {CASE[t[2]]} {NUM[t[3]]}"
+        return f"pronoun, {t[0]} person · {case(t[1])} {NUM[t[2]]}"
+    if len(t) == 4 and t[0] in POS and t[1] in GEN:  # manual: adj masc nom sg
+        return f"{POS[t[0]]} · {GEN[t[1]]} {case(t[2])} {NUM[t[3]]}"
+    if t and t[0] == "pron" and len(t) == 4:  # manual: pron nt nom sg
+        return f"pronoun · {GEN[t[1]]} {case(t[2])} {NUM[t[3]]}"
     if len(t) == 3 and t[0] in GEN:
         g_, c, n = t
         if pos in GEN:
-            return f"{GEN[g_]} noun · {CASE[c]} {NUM[n]}"
+            return f"{GEN[g_]} noun · {case(c)} {NUM[n]}"
         kind = POS.get(pos, "adjective")
         if pos == "pron":
             kind = "pronoun"
-        return f"{kind} · {GEN[g_]} {CASE[c]} {NUM[n]}"
+        return f"{kind} · {GEN[g_]} {case(c)} {NUM[n]}"
     if t and t[0] in GEN:
         return f"{GEN[t[0]]} noun"
     return POS.get(g, g)
@@ -132,11 +142,11 @@ def build_word(form, spec):
         if p.get("lemma") and p.get("dpd"):
             heads.append((p["lemma"], p["dpd"], ""))
     w["heads"] = [{"lemma": h[0], "meaning": h[1]} for h in heads]
-    w["parse"] = bool(spec.get("l")) and spec["g"] not in ("ind", "sandhi")
+    w["parse"] = bool(spec.get("l")) and spec["g"] not in ("ind", "sandhi", "inf", "ger")
     return w
 
 
-TOKEN = re.compile(r"[^\s,.;:!?“”\"‘()…*—–]+|[\s,.;:!?“”\"‘()…*—–]+")
+TOKEN = re.compile(r"[^\s,.;:!?“”\"‘()…*—–]+(?:\([^\s()]+\))?|[\s,.;:!?“”\"‘()…*—–]+")
 
 
 def build_text(t):
@@ -176,7 +186,7 @@ def build_text(t):
 def main():
     os.makedirs(OUT, exist_ok=True)
     catalogue = []
-    for f in sorted(glob.glob(os.path.join(ROOT, "tools", "texts", "*.py"))):
+    for f in sorted(glob.glob(os.path.join(ROOT, "tools", "texts", "[!_]*.py"))):
         spec = importlib.util.spec_from_file_location("m", f)
         m = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(m)

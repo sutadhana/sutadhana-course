@@ -1,0 +1,623 @@
+# Word analyses for NCRP Lesson 1 further readings and Lessons 2-3.
+# W(l, g, ctx) uses a DPD headword (lemma_1); M(...) is a manual entry for forms DPD lacks.
+# parts: (form, DPD lemma_1 or None, grammar, meaning).
+import copy
+from _paras_l1_l3 import META
+
+def W(l, g, ctx, role=None, note=None, dpd=None, parts=None):
+    d = dict(l=l, g=g, ctx=ctx)
+    for k, v in (("role", role), ("note", note), ("dpd", dpd), ("parts", parts)):
+        if v:
+            d[k] = v
+    return d
+
+def M(lemma, g, ctx, dpd=None, pos=None, role=None, note=None, parts=None):
+    d = dict(lemma=lemma, g=g, ctx=ctx)
+    for k, v in (("dpd", dpd), ("pos", pos), ("role", role), ("note", note), ("parts", parts)):
+        if v:
+            d[k] = v
+    return d
+
+LENGTH = "The final vowel is lengthened and the apostrophe joins it to ti (iti), which closes the quotation."
+JOIN = "The apostrophe joins it to ti (iti), which closes the quotation."
+
+def Q(spec, note=LENGTH):
+    s = copy.deepcopy(spec)
+    s["note"] = (s.get("note", "") + " " + note).strip()
+    return s
+
+def TI(form1, l, g, meaning, ctx, role=None, lengthen=True):
+    """word + iti joined: …tī’ti"""
+    return M(f"{form1} + iti", "sandhi", ctx, role=role,
+             parts=[(form1, l, g, meaning), ("iti", "iti", "ind", "closes a quotation or a thought")],
+             note=("The final vowel is lengthened before iti, which loses its first i." if lengthen
+                   else "iti loses its first i and joins with an apostrophe."))
+
+PI_EVEN = W("pi 1.1", "ind", "even")
+PI_ALSO = W("pi 1.2", "ind", "also; too")
+
+# ---------------------------------------------------------------- shared
+C = {
+    "bhikkhave": W("bhikkhu", "masc voc pl", "O bhikkhus"),
+    "bhikkhu": W("bhikkhu", "masc nom sg", "a bhikkhu; a monk", role="subj"),
+    "n’āhaṃ": M("na + ahaṃ", "sandhi", "I do not",
+                parts=[("na", "na 1", "ind", "not"), ("ahaṃ", "ahaṃ", "1st nom sg", "I")],
+                note="na + ahaṃ: the a of na drops out, marked by the apostrophe."),
+    "aññaṃ": W("añña 1.1", "masc acc sg", "other (describes eka-dhammaṃ)"),
+    "eka-dhammaṃ": W("ekadhamma", "masc acc sg", "one single thing",
+                     parts=[("eka", "eka 1", "card", "one"), ("dhamma", "dhamma 1.06", "masc", "thing")]),
+    "pi": PI_EVEN,
+    "samanupassāmi": W("samanupassati 1", "pr 1st sg", "I see", role="verb"),
+    "evaṃ": W("evaṃ 1", "ind", "so; thus"),
+    "yathayidaṃ": W("yathayidaṃ", "sandhi", "as … this; namely",
+                    parts=[("yathā", "yathā 1", "ind", "as; like"), ("idaṃ", "idaṃ 1", "pron nt nom sg", "this")],
+                    note="yathā + idaṃ: the ā is shortened and a y is inserted between the two words."),
+    "saṃvattati": W("saṃvattati 1", "pr 3rd sg", "leads (to)", role="verb"),
+    "saṃvattatī’ti": TI("saṃvattati", "saṃvattati 1", "pr 3rd sg", "leads (to)", "leads (to)", role="verb"),
+    "saṃvattanti": W("saṃvattati 1", "pr 3rd pl", "lead (to)", role="verb"),
+    "kho": W("kho", "ind", "indeed (adds emphasis)"),
+    "ca": W("ca 2.1", "ind", "and"),
+    "vā": W("vā 1", "ind", "or"),
+    "na": W("na 1", "ind", "not"),
+    "ti": W("ti 2", "ind", "(closes the quotation)", note="Short form of iti."),
+    "evameva": W("evameva", "sandhi", "just so; in the same way",
+                 parts=[("evaṃ", "evaṃ 1", "ind", "thus"), ("eva", "eva 4", "ind", "indeed")],
+                 note="evaṃ + eva: the ṃ becomes m before the vowel."),
+    "kusalānaṃ": W("kusala 1", "masc gen pl", "of wholesome (describes dhammānaṃ)"),
+    "akusalānaṃ": W("akusala 3", "masc gen pl", "of unwholesome (describes dhammānaṃ)"),
+    "dhammānaṃ": W("dhamma 1.02", "masc gen pl", "of qualities; of mental states"),
+    "cittaṃ": W("citta 1.1", "nt nom sg", "the mind", role="subj"),
+    "bhante": W("bhante", "masc voc sg", "venerable sir"),
+    "bhante’": Q(W("bhante", "masc voc sg", "venerable sir"), JOIN),
+    "nāgasena": W("nāgasena", "masc voc sg", "Nāgasena (addressed)"),
+    "mahārāja": W("mahārāja", "masc voc sg", "great king"),
+    "yathā": W("yathā 1", "ind", "as; just as"),
+    "opammaṃ": W("opamma", "nt acc sg", "a simile"),
+    "karohī’": Q(W("karoti 1", "imp 2nd sg", "make!; give!", role="verb")),
+    "mahato": W("mahanta 1", "masc dat sg", "great (describes anatthāya / atthāya)"),
+    "anatthāya": W("anattha 1", "masc dat sg", "to harm", note="Dative of result with saṃvattati: “leads to …”."),
+    "atthāya": W("attha 1.2", "masc dat sg", "to good; to welfare", note="Dative of result with saṃvattati: “leads to …”."),
+    "atthi": W("atthi 1.1", "pr 3rd sg", "is there?; there is", role="verb"),
+    "hoti": W("hoti 1", "pr 3rd sg", "is", role="verb"),
+    "taṃ": W("ta 1.1", "nt nom sg", "that"),
+    "yaṃ": W("ya 2.1", "nt nom sg", "which (refers to the thing)", role="subj"),
+    "ime": W("ima 1.1", "masc nom pl", "these (describes dhammā)"),
+    "dhammā": W("dhamma 1.02", "masc nom pl", "qualities; things", role="subj"),
+    "kusalā": W("kusala 1", "masc nom pl", "wholesome"),
+    "akusalā": W("akusala 3", "masc nom pl", "unwholesome"),
+    "vā’": Q(W("vā 1", "ind", "or"), JOIN),
+    "sāvajjā": W("sāvajja 1", "masc nom pl", "blameworthy"),
+    "anavajjā": W("anavajja 1", "masc nom pl", "blameless"),
+    "viññu-garahitā": W("viññugarahita", "masc nom pl", "censured by the wise",
+                        parts=[("viññū", None, "masc", "wise person"), ("garahita", None, "pp", "censured; blamed")]),
+    "viññu-ppasatthā": W("viññuppasattha", "masc nom pl", "praised by the wise",
+                         parts=[("viññū", None, "masc", "wise person"), ("pasattha", None, "pp", "praised")],
+                         note="The p of pasattha is doubled in the compound."),
+    "maññatha": W("maññati 1", "pr 2nd pl", "you think", role="verb"),
+    "kiṃ": W("ka 1.1", "nt acc sg", "what?"),
+    "sāḷhā": W("sāḷha 1", "masc voc pl", "Sāḷha (and his companion)", note="Plural: the Buddha addresses Sāḷha and his companion."),
+    "ahaṃ": W("ahaṃ", "1st nom sg", "I", role="subj"),
+    "etamatthaṃ": W("etamatthaṃ 1", "sandhi", "this meaning",
+                    parts=[("etaṃ", "eta", "pron masc acc sg", "this"), ("atthaṃ", "attha 1.1", "masc acc sg", "meaning")],
+                    note="etaṃ + atthaṃ: the ṃ becomes m before the vowel. … ti kho ahaṃ etamatthaṃ vadāmi: “I say … is the meaning of this”."),
+    "vadāmi": W("vadati 1", "pr 1st sg", "I say", role="verb"),
+    "ayaṃ": W("ayaṃ", "masc nom sg", "this (person)", role="subj"),
+    "pāṇaṃ": W("pāṇa 3", "masc acc sg", "a living being"),
+    "hanati": W("hanati 2", "pr 3rd sg", "kills; destroys (life)", role="verb"),
+    "adinnaṃ": W("adinna 1.1", "nt acc sg", "what is not given"),
+    "ādiyati": W("ādiyati 1", "pr 3rd sg", "takes", role="verb"),
+    "para-dāraṃ": W("paradāra", "masc acc sg", "another’s wife",
+                    parts=[("para", "para 1", "adj", "other; another"), ("dāra", None, "masc", "wife")]),
+    "gacchati": W("gacchati 1", "pr 3rd sg", "goes (to)", role="verb"),
+    "musā": W("musā 2", "ind", "falsely"),
+    "bhaṇati": W("bhaṇati 1", "pr 3rd sg", "speaks", role="verb"),
+    "yaṃ’sa": W("yaṃsa", "sandhi", "which … for him",
+                parts=[("yaṃ", "ya 2.1", "pron nt nom sg", "which"), ("assa", "ayaṃ", "masc dat sg", "for him")],
+                note="yaṃ + assa: the a of assa drops out. It refers back to the whole action: “which is for him (for his harm …)”."),
+    "dīgha-rattaṃ": W("dīgharattaṃ", "ind", "for a long time",
+                      parts=[("dīgha", None, "adj", "long"), ("ratta", None, "nt", "night; time")]),
+    "hitāya": W("hita 3", "nt dat sg", "for the welfare"),
+    "ahitāya": W("ahita 3", "nt dat sg", "for the harm"),
+    "sukhāya": W("sukha 2", "nt dat sg", "for the happiness"),
+    "dukkhāya": W("dukkha 3", "nt dat sg", "for the suffering"),
+    "evaṃ_yes": W("evaṃ 2", "ind", "yes"),
+    "mahārājā’": Q(W("mahārāja", "masc voc sg", "great king")),
+    "saṅkamati": W("saṅkamati 2", "pr 3rd sg", "transmigrates; passes over", role="verb"),
+    "paṭisandahati": W("paṭisandahati", "pr 3rd sg", "is reborn; links up again", role="verb",
+                       dpd="reunites; (of rebirth) links on to a new life"),
+    "cā’": Q(W("ca 2.1", "ind", "and")),
+    "kammehi": W("kamma 1", "nt abl pl", "from (bad) deeds"),
+    "pāpakehi": W("pāpaka 1.1", "nt abl pl", "from bad; from evil (describes kammehi)"),
+    "purisaṃ": W("purisa 1", "masc acc sg", "a man"),
+    "puriso": W("purisa 1", "masc nom sg", "a man", role="subj"),
+    "abhijjhālu": W("abhijjhālu", "masc nom sg", "full of longing; covetous"),
+}
+
+# ---------------------------------------------------------------- per text
+T = {}
+
+T["ncrp-1-2-1"] = {
+    "yo": W("ya 2.1", "masc nom sg", "which (refers to eka-dhammaṃ)", role="subj",
+            note="The relative pronoun is the subject of saṃvattati in its own clause."),
+    "saddhammassa": W("saddhamma 1.1", "masc gen sg", "of the good Dhamma",
+                      parts=[("sad", None, "adj", "good; true"), ("dhamma", "dhamma 1.03", "masc", "teaching")]),
+    "sammosāya": W("sammosa 1", "masc dat sg", "to the decline; to the confusion", note="Dative of result with saṃvattati."),
+    "antaradhānāya": W("antaradhāna", "nt dat sg", "to the disappearance"),
+    "pamādo": W("pamāda 1", "masc nom sg", "heedlessness", role="subj"),
+    "ṭhitiyā": W("ṭhiti 1", "fem dat sg", "to the continuation"),
+    "asammosāya": W("asammosa 2", "masc dat sg", "to the non-decline"),
+    "anantaradhānāya": W("anantaradhāna", "nt dat sg", "to the non-disappearance"),
+    "appamādo": W("appamāda", "masc nom sg", "heedfulness", role="subj"),
+    "kosajjaṃ": W("kosajja", "nt nom sg", "laziness", role="subj"),
+    "viriy’ārambho": W("viriyārambha", "masc nom sg", "arousal of energy", role="subj",
+                       parts=[("viriya", "viriya", "nt", "energy"), ("ārambha", None, "masc", "arousing; beginning")],
+                       note="viriya + ārambha: the a of viriya drops out, marked by the apostrophe."),
+    "anuyogo": W("anuyoga 1", "masc nom sg", "pursuit; devotion (to)", role="subj",
+                 note="With the genitive: anuyogo kusalānaṃ dhammānaṃ, “pursuit of wholesome qualities”."),
+    "ananuyogo": W("ananuyoga", "masc nom sg", "non-pursuit (of)", role="subj"),
+    "yaṃ": W("ya 2.1", "nt nom sg", "which (refers to eka-dhammaṃ)", role="subj",
+             note="Neuter here, because the thing in question, kosajjaṃ, is neuter."),
+}
+
+SENSE_NOTE = ("The relative pronoun usually takes the case of its own clause. Here, with a masculine noun, "
+              "it is “attracted” to the accusative of eka-saddaṃ etc. in the main clause, although it is the subject of tiṭṭhati.")
+T["ncrp-1-2-2"] = {
+    "yaṃ": W("ya 2.1", "nt nom sg", "which (refers to the one thing)", role="subj", note=SENSE_NOTE),
+    "eka-rūpaṃ": W("ekarūpa", "nt acc sg", "one single form", parts=[("eka", "eka 1", "card", "one"), ("rūpa", "rūpa 3", "nt", "visible form")]),
+    "eka-saddaṃ": W("ekasadda", "masc acc sg", "one single sound", parts=[("eka", "eka 1", "card", "one"), ("sadda", "sadda 1", "masc", "sound")]),
+    "eka-gandhaṃ": W("ekagandha", "masc acc sg", "one single odour", parts=[("eka", "eka 1", "card", "one"), ("gandha", "gandha 1", "masc", "smell; odour")]),
+    "eka-rasaṃ": M("ekarasa", "masc acc sg", "one single taste", dpd="one taste", pos="masc",
+                   parts=[("eka", "eka 1", "card", "one"), ("rasa", "rasa 1", "masc", "taste")]),
+    "eka-phoṭṭhabbaṃ": W("ekaphoṭṭhabba", "nt acc sg", "one single touch", parts=[("eka", "eka 1", "card", "one"), ("phoṭṭhabba", "phoṭṭhabba 1", "nt", "touch")]),
+    "purisassa": W("purisa 1", "masc gen sg", "of a man"),
+    "itthiyā": W("itthi", "fem gen sg", "of a woman"),
+    "cittaṃ": W("citta 1.1", "nt acc sg", "the mind (as object)"),
+    "pariyādāya": W("pariyādāya 2", "ger", "having taken over; obsessing",
+                    note="pariyādāya tiṭṭhati: “having overcome, remains”, i.e. “obsesses”. This form (the absolutive) comes in a later lesson."),
+    "tiṭṭhati": W("tiṭṭhati 3", "pr 3rd sg", "remains", role="verb"),
+    "tiṭṭhatī’ti": TI("tiṭṭhati", "tiṭṭhati 3", "pr 3rd sg", "remains", "remains", role="verb"),
+    "itthi-rūpaṃ": W("itthirūpa 1", "nt nom sg", "the form of a woman", role="subj", parts=[("itthi", "itthi", "fem", "woman"), ("rūpa", "rūpa 3", "nt", "visible form")]),
+    "itthi-saddo": W("itthisadda", "masc nom sg", "the sound of a woman", role="subj", parts=[("itthi", "itthi", "fem", "woman"), ("sadda", "sadda 1", "masc", "sound")]),
+    "itthi-gandho": W("itthigandha", "masc nom sg", "the odour of a woman", role="subj", parts=[("itthi", "itthi", "fem", "woman"), ("gandha", "gandha 1", "masc", "smell")]),
+    "itthi-raso": W("itthirasa", "masc nom sg", "the taste of a woman", role="subj", parts=[("itthi", "itthi", "fem", "woman"), ("rasa", "rasa 1", "masc", "taste")]),
+    "itthi-phoṭṭhabbaṃ": W("itthiphoṭṭhabba", "nt nom sg", "the touch of a woman", role="subj", parts=[("itthi", "itthi", "fem", "woman"), ("phoṭṭhabba", "phoṭṭhabba 1", "nt", "touch")]),
+    "purisa-rūpaṃ": W("purisarūpa", "nt nom sg", "the form of a man", role="subj", parts=[("purisa", "purisa 1", "masc", "man"), ("rūpa", "rūpa 3", "nt", "visible form")]),
+    "purisa-saddo": W("purisasadda", "masc nom sg", "the sound of a man", role="subj", parts=[("purisa", "purisa 1", "masc", "man"), ("sadda", "sadda 1", "masc", "sound")]),
+    "purisa-gandho": W("purisagandha", "masc nom sg", "the odour of a man", role="subj", parts=[("purisa", "purisa 1", "masc", "man"), ("gandha", "gandha 1", "masc", "smell")]),
+    "purisa-raso": W("purisarasa", "masc nom sg", "the taste of a man", role="subj", parts=[("purisa", "purisa 1", "masc", "man"), ("rasa", "rasa 1", "masc", "taste")]),
+    "purisa-phoṭṭhabbaṃ": W("purisaphoṭṭhabba", "nt nom sg", "the touch of a man", role="subj", parts=[("purisa", "purisa 1", "masc", "man"), ("phoṭṭhabba", "phoṭṭhabba 1", "nt", "touch")]),
+}
+
+T["ncrp-2-1-1"] = {
+    "kiccho": W("kiccha 1", "masc nom sg", "hard (to obtain); rare"),
+    "kicchaṃ": W("kiccha 1", "nt nom sg", "hard (to obtain); rare"),
+    "manussa-paṭilābho": W("manussapaṭilābha", "masc nom sg", "gaining a human birth", role="subj",
+                           parts=[("manussa", "manussa", "masc", "human being"), ("paṭilābha", None, "masc", "obtaining; gaining")]),
+    "maccānaṃ": W("macca", "masc gen pl", "of mortals"),
+    "jīvitaṃ": W("jīvita 1", "nt nom sg", "life", role="subj"),
+    "saddhamma-savanaṃ": W("saddhammasavana", "nt nom sg", "hearing the good Dhamma", role="subj",
+                           parts=[("saddhamma", "saddhamma 1.1", "masc", "the good Dhamma"), ("savana", "savana 1.2", "nt", "hearing")]),
+    "buddhānaṃ": W("buddha 1", "masc gen pl", "of Buddhas"),
+    "uppādo": W("uppāda 1.1", "masc nom sg", "arising; appearance", role="subj"),
+    "sabba-pāpassa": W("sabbapāpa", "nt gen sg", "of all evil", parts=[("sabba", None, "adj", "all"), ("pāpa", None, "nt", "evil")]),
+    "akaraṇaṃ": W("akaraṇa 1", "nt nom sg", "the not doing", role="subj"),
+    "kusalassa": W("kusala 1", "nt gen sg", "of the good; of the wholesome"),
+    "upasampadā": W("upasampadā 1", "fem nom sg", "the undertaking; cultivating", role="subj"),
+    "sacitta-pariyodapanaṃ": W("sacittapariyodapana", "nt nom sg", "the purifying of one’s own mind", role="subj",
+                               parts=[("sa", None, "pron", "own"), ("citta", "citta 1.1", "nt", "mind"), ("pariyodapana", None, "nt", "purifying")]),
+    "etaṃ": W("eta", "nt nom sg", "this", role="subj"),
+    "buddhāna(ṃ)": W("buddha 1", "masc gen pl", "of the Buddhas",
+                     note="The book prints buddhāna(ṃ): the ṃ is left out in reciting, for the metre."),
+    "sāsanaṃ": W("sāsana 1", "nt nom sg", "the teaching"),
+    "hi": W("hi 1", "ind", "indeed"),
+    "verena": W("vera", "nt instr sg", "by hatred; by enmity"),
+    "verāni": W("vera", "nt nom pl", "hatreds; enmities", role="subj"),
+    "sammant’īdha": M("sammanti + idha", "sandhi", "are appeased here (in this world)", role="verb",
+                      parts=[("sammanti", "sammati 1.1", "pr 3rd pl", "are appeased"), ("idha", "idha 1", "ind", "here; in this world")],
+                      note="sammanti + idha: the i of sammanti drops out and the i of idha is lengthened."),
+    "kudācanaṃ": W("kudācanaṃ", "ind", "ever", note="With na: “never”."),
+    "averena": W("avera 2", "nt instr sg", "by non-hatred"),
+    "sammanti": W("sammati 1.1", "pr 3rd pl", "are appeased", role="verb"),
+    "esa": W("eta", "masc nom sg", "this"),
+    "dhammo": W("dhamma 1.09", "masc nom sg", "law; principle", role="subj"),
+    "sanantano": W("sanantana", "masc nom sg", "eternal"),
+}
+
+T["ncrp-2-1-2"] = {
+    "tīhi": W("ti 1", "nt instr pl", "with three", note="Instrumental with samannāgato: “endowed with three …”."),
+    "aṅgehi": W("aṅga 3", "nt instr pl", "with factors"),
+    "samannāgato": W("samannāgata", "masc nom sg", "endowed (with); possessing"),
+    "pāpaṇiko": W("pāpaṇika 2", "masc nom sg", "a shopkeeper", role="subj"),
+    "abhabbo": W("abhabba 1", "masc nom sg", "incapable (of)", note="Read as an equational sentence: “a shopkeeper … is incapable …”."),
+    "bhabbo": W("bhabba 1", "masc nom sg", "capable (of)"),
+    "anadhigataṃ": W("anadhigata 1", "masc acc sg", "not (yet) acquired"),
+    "adhigataṃ": W("adhigata 1", "masc acc sg", "(already) acquired"),
+    "bhogaṃ": W("bhoga 1.1", "masc acc sg", "wealth"),
+    "adhigantuṃ": W("adhigantuṃ", "inf", "to acquire"),
+    "phātiṃ": W("phāti 1", "fem acc sg", "increase", note="phātiṃ kātuṃ: “to make increase”, i.e. to increase."),
+    "kātuṃ": W("kātuṃ 2", "inf", "to make"),
+    "kātun’ti": M("kātuṃ + iti", "sandhi", "to make", parts=[("kātuṃ", "kātuṃ 2", "inf", "to make"), ("iti", "iti", "ind", "closes the quotation")],
+                  note="kātuṃ + iti: the ṃ becomes n and iti loses its first i."),
+    "katamehi": W("katama", "nt instr pl", "with which?"),
+    "idha": W("idha 2", "ind", "here; in this case"),
+    "pubbaṇha-samayaṃ": W("pubbaṇhasamaya", "masc acc sg", "in the morning",
+                          parts=[("pubbaṇha", None, "masc", "forenoon"), ("samaya", "samaya 1.1", "masc", "time")],
+                          note="Accusative of time: “at the time of …”."),
+    "majjhaṇhika-samayaṃ": M("majjhaṇhikasamaya", "masc acc sg", "in the middle of the day", dpd="midday time", pos="masc",
+                             parts=[("majjhaṇhika", "majjhanhika", "masc", "noon; midday"), ("samaya", "samaya 1.1", "masc", "time")],
+                             note="Accusative of time."),
+    "sāyaṇha-samayaṃ": W("sāyaṇhasamaya", "masc acc sg", "in the evening",
+                         parts=[("sāyaṇha", None, "masc", "evening"), ("samaya", "samaya 1.1", "masc", "time")], note="Accusative of time."),
+    "sakkaccaṃ": W("sakkaccaṃ", "ind", "diligently; carefully"),
+    "kammantaṃ": W("kammanta 1", "masc acc sg", "his work"),
+    "adhiṭṭhāti": W("adhiṭṭhāti 2", "pr 3rd sg", "applies himself to; attends to", role="verb"),
+    "imehi": W("ima 1.1", "nt instr pl", "with these"),
+    "dhammehi": W("dhamma 1.02", "masc instr pl", "with qualities"),
+    "kusalaṃ": W("kusala 1", "masc acc sg", "wholesome (describes dhammaṃ)"),
+    "dhammaṃ": W("dhamma 1.05", "masc acc sg", "state (of mind)"),
+    "samādhi-nimittaṃ": W("samādhinimitta 1", "nt acc sg", "the object of concentration",
+                          parts=[("samādhi", None, "masc", "concentration"), ("nimitta", None, "nt", "sign; object")]),
+    "pe": M("pe (peyyāla)", "ind", "… (repetition left out)", dpd="denoting an elided repetition within a text"),
+}
+
+T["ncrp-2-1-3"] = {
+    "appakā": W("appaka 1", "masc nom pl", "few"),
+    "te": W("ta 1.1", "masc nom pl", "those"),
+    "sattā": W("satta 2.1", "masc nom pl", "beings", role="subj"),
+    "ye": W("ya 2.1", "masc nom pl", "who", role="subj"),
+    "manussesu": W("manussa", "masc loc pl", "among human beings"),
+    "paccājāyanti": W("paccājāyati", "pr 3rd pl", "are reborn", role="verb"),
+    "atha": W("atha 2", "ind", "but", note="atha kho: “but; however”."),
+    "ete’va": M("ete + eva", "sandhi", "these very", parts=[("ete", "eta", "pron masc nom pl", "these"), ("eva", "eva 4", "ind", "indeed")],
+                note="ete + eva: the e of eva drops out; the apostrophe goes before the second word, since ete keeps its ending."),
+    "bahutarā": W("bahutara", "masc nom pl", "more numerous"),
+    "aññatra": W("aññatra 2", "ind", "apart (from); other than", note="With the instrumental (ablative): aññatra manussehi, “elsewhere than among humans”."),
+    "manussehi": W("manussa", "masc instr pl", "(than) human beings"),
+    "majjhimesu": W("majjhima 01", "masc loc pl", "in the middle (describes janapadesu)"),
+    "janapadesu": W("janapada", "masc loc pl", "in the provinces"),
+    "paccantimesu": W("paccantima", "masc loc pl", "in the outlying (provinces)"),
+    "paññavanto": W("paññavant 1", "masc nom pl", "wise"),
+    "ajaḷā": W("ajaḷa", "masc nom pl", "not dull; intelligent"),
+    "aneḷa-mūgā": W("aneḷamūga", "masc nom pl", "not stupid; astute", parts=[("an-", None, "prefix", "not"), ("eḷa", None, "masc", "drivel"), ("mūga", None, "adj", "dumb")]),
+    "paṭibalā": W("paṭibala", "masc nom pl", "able (to)"),
+    "subhāsita-dubbhāsitassa": W("subhāsitadubbhāsita", "nt gen sg", "of what is well spoken and badly spoken",
+                                 parts=[("subhāsita", None, "pp", "well spoken"), ("dubbhāsita", None, "pp", "badly spoken")]),
+    "atthamaññātuṃ": W("atthamaññātuṃ", "inf", "to understand the meaning",
+                       parts=[("atthaṃ", "attha 1.1", "masc acc sg", "the meaning"), ("aññātuṃ", None, "inf", "to understand")],
+                       note="atthaṃ + aññātuṃ: the ṃ becomes m before the vowel."),
+    "duppaññā": W("duppañña 1", "masc nom pl", "unwise"),
+    "jaḷā": W("jaḷa 1", "masc nom pl", "dull; stupid"),
+    "eḷa-mūgā": W("eḷamūga", "masc nom pl", "obtuse; stupid", parts=[("eḷa", None, "masc", "drivel"), ("mūga", None, "adj", "dumb")]),
+    "ariyena": W("ariya 1", "nt instr sg", "with the noble (describes paññā-cakkhunā)"),
+    "paññā-cakkhunā": W("paññācakkhu", "nt instr sg", "with the eye of wisdom", parts=[("paññā", None, "fem", "wisdom"), ("cakkhu", "cakkhu 1", "nt", "eye")]),
+    "samannāgatā": W("samannāgata", "masc nom pl", "endowed (with)"),
+    "avijjā-gatā": W("avijjāgata", "masc nom pl", "immersed in ignorance", parts=[("avijjā", None, "fem", "ignorance"), ("gata", None, "pp", "gone (into)")]),
+    "sammūḷhā": W("sammūḷha 1", "masc nom pl", "confused"),
+    "labhanti": W("labhati 1", "pr 3rd pl", "get (to)", role="verb"),
+    "tathāgataṃ": W("tathāgata", "masc acc sg", "the Tathāgata"),
+    "dassanāya": W("dassana 2", "nt dat sg", "to see", note="Dative of purpose: “get the Tathāgata for seeing”, i.e. get to see him."),
+    "tathāgata-ppaveditaṃ": W("tathāgatappavedita", "masc acc sg", "proclaimed by the Tathāgata",
+                              parts=[("tathāgata", "tathāgata", "masc", "the Tathāgata"), ("pavedita", None, "pp", "proclaimed")],
+                              note="The p of pavedita is doubled in the compound."),
+    "dhamma-vinayaṃ": W("dhammavinaya", "masc acc sg", "the Dhamma and discipline", parts=[("dhamma", "dhamma 1.03", "masc", "teaching"), ("vinaya", None, "masc", "discipline")]),
+    "savanāya": W("savana 1.2", "nt dat sg", "to hear", note="Dative of purpose."),
+}
+
+def kamma_words(root, rootlem, neg):
+    a = "a" if neg else ""
+    meaning = {"lobha": "greed", "dosa": "hatred", "moha": "delusion"}[root]
+    m = ("non-" if neg else "") + meaning
+    rl = rootlem if not neg else {"lobha": "alobha", "dosa": "adosa 1.1", "moha": "amoha 1"}[root]
+    R = a + root
+    part = (R, rl, "masc", m)
+    return {
+        f"{R}-pakataṃ": W(f"{R}pakata", "nt nom sg", f"fashioned by {m}", parts=[part, ("pakata", None, "pp", "made; done")]),
+        f"{R}-jaṃ": W(f"{R}ja", "nt nom sg", f"born of {m}", parts=[part, ("ja", None, "adj", "born")]),
+        f"{R}-nidānaṃ": W(f"{R}nidāna", "nt nom sg", f"caused by {m}", parts=[part, ("nidāna", "nidāna 1", "nt", "cause")]),
+        f"{R}-samudayaṃ": W(f"{R}samudaya", "nt nom sg", f"originating from {m}", parts=[part, ("samudaya", "samudaya 1", "masc", "origin")]),
+    }
+
+T["ncrp-2-2-1"] = {
+    "tīṇi’māni": W("tīṇimāni", "sandhi", "these three", parts=[("tīṇi", "ti 1", "card", "three"), ("imāni", "ima 1.1", "pron nt nom pl", "these")],
+                   note="tīṇi + imāni: the i of imāni drops out; the apostrophe goes before the second word, since tīṇi keeps its ending."),
+    "nidānāni": W("nidāna 1", "nt nom pl", "causes", role="subj"),
+    "nidānaṃ": W("nidāna 1", "nt nom sg", "a cause"),
+    "kammānaṃ": W("kamma 1", "nt gen pl", "of kamma (deeds)"),
+    "samudayāya": W("samudaya 1", "masc dat sg", "for the origination"),
+    "samudayāyā’ti": TI("samudayāya", "samudaya 1", "masc dat sg", "for the origination", "for the origination"),
+    "katamāni": W("katama", "nt nom pl", "which?"),
+    "tīṇi": W("ti 1", "nt nom pl", "three"),
+    "lobho": W("lobha", "masc nom sg", "greed", role="subj"),
+    "doso": W("dosa 1.1", "masc nom sg", "hatred", role="subj"),
+    "moho": W("moha 1", "masc nom sg", "delusion", role="subj"),
+    "alobho": W("alobha", "masc nom sg", "non-greed", role="subj"),
+    "adoso": W("adosa 1.1", "masc nom sg", "non-hatred", role="subj"),
+    "amoho": W("amoha 1", "masc nom sg", "non-delusion", role="subj"),
+    "yaṃ": W("ya 2.1", "nt nom sg", "which; whatever (kamma)"),
+    "kammaṃ": W("kamma 1", "nt nom sg", "kamma; deed", role="subj"),
+    "taṃ": W("ta 1.1", "nt nom sg", "that (kamma)"),
+    "akusalaṃ": W("akusala 3", "nt nom sg", "unwholesome"),
+    "kusalaṃ": W("kusala 1", "nt nom sg", "wholesome"),
+    "sāvajjaṃ": W("sāvajja 1", "nt nom sg", "blameworthy"),
+    "anavajjaṃ": W("anavajja 1", "nt nom sg", "blameless"),
+    "dukkha-vipākaṃ": W("dukkhavipāka", "nt nom sg", "resulting in suffering", parts=[("dukkha", "dukkha 3", "nt", "suffering"), ("vipāka", None, "masc", "result")]),
+    "sukha-vipākaṃ": W("sukhavipāka", "nt nom sg", "resulting in happiness", parts=[("sukha", "sukha 2", "nt", "happiness"), ("vipāka", None, "masc", "result")]),
+    "kamma-samudayāya": W("kammasamudaya", "masc dat sg", "to the origination of kamma", parts=[("kamma", "kamma 1", "nt", "kamma"), ("samudaya", "samudaya 1", "masc", "origination")]),
+    "kamma-nirodhāya": W("kammanirodha 2", "masc dat sg", "to the cessation of kamma", parts=[("kamma", "kamma 1", "nt", "kamma"), ("nirodha", None, "masc", "cessation")]),
+    "imāni": W("ima 1.1", "nt nom pl", "these"),
+    **kamma_words("lobha", "lobha", False), **kamma_words("dosa", "dosa 1.1", False), **kamma_words("moha", "moha 1", False),
+    **kamma_words("lobha", "lobha", True), **kamma_words("dosa", "dosa 1.1", True), **kamma_words("moha", "moha 1", True),
+}
+
+T["ncrp-2-2-2"] = {
+    "pañcahi": W("pañca", "masc instr pl", "with five"),
+    "dhammehi": W("dhamma 1.02", "masc instr pl", "with qualities"),
+    "samannāgato": W("samannāgata", "masc nom sg", "endowed (with)"),
+    "cavati": W("cavati 1", "pr 3rd sg", "falls away", role="verb"),
+    "nappatiṭṭhāti": W("nappatiṭṭhāti", "pr 3rd sg", "is not established", role="verb",
+                       parts=[("na", "na 1", "ind", "not"), ("patiṭṭhāti", "patiṭṭhāti 2", "pr 3rd sg", "is established")],
+                       note="na + patiṭṭhāti: the a of na drops out and the p is doubled."),
+    "patiṭṭhāti": W("patiṭṭhāti 2", "pr 3rd sg", "is established", role="verb"),
+    "saddhamme": W("saddhamma 1.1", "masc loc sg", "in the good Dhamma"),
+    "katamehi": W("katama", "masc instr pl", "with which?"),
+    "imehi": W("ima 1.1", "masc instr pl", "with these"),
+    "assaddho": W("assaddha 1", "masc nom sg", "devoid of faith"),
+    "ahiriko": W("ahirika 1", "masc nom sg", "morally shameless"),
+    "anottappī": W("anottappī", "masc nom sg", "without moral dread"),
+    "kusīto": W("kusīta 1", "masc nom sg", "lazy"),
+    "duppañño": W("duppañña 1", "masc nom sg", "unwise"),
+    "saddho": W("saddha 1", "masc nom sg", "having faith"),
+    "hirimā": W("hirimant", "masc nom sg", "having a sense of moral shame"),
+    "ottappī": W("ottappī", "masc nom sg", "having moral dread"),
+    "akusīto": W("akusīta 1", "masc nom sg", "not lazy; energetic"),
+    "paññavā": W("paññavant 1", "masc nom sg", "wise"),
+}
+
+T["ncrp-3-1-1"] = {
+    "koci": W("koci 1", "masc nom sg", "any", note="ko + ci: ci makes the question word indefinite, “anyone”."),
+    "satto": W("satta 2.1", "masc nom sg", "being", role="subj"),
+    "yo": W("ya 2.1", "masc nom sg", "who", role="subj"),
+    "imamhā": W("ima 1.1", "masc abl sg", "from this (describes kāyā)"),
+    "kāyā": W("kāya 1.1", "masc abl sg", "from the body"),
+    "aññaṃ": W("añña 1.1", "masc acc sg", "another (describes kāyaṃ)"),
+    "kāyaṃ": W("kāya 1.1", "masc acc sg", "body", note="Accusative of the goal: “to another body”."),
+    "saṅkamatī’": Q(W("saṅkamati 2", "pr 3rd sg", "transmigrates; passes over", role="verb")),
+    "hi": W("hi 1", "ind", "indeed", note="Na hi: “certainly not”."),
+    "yadi": W("yadi 1", "ind", "if"),
+    "saṅkamanto": M("saṅkamati", "masc nom sg", "one transmigrating; transmigrating", pos="prp", role="subj",
+                    dpd="shifts; transfers; moves across (to)", note="Present participle of saṅkamati, used as a noun."),
+    "saṅkamanto’": M("saṅkamati", "masc nom sg", "transmigrating", pos="prp", dpd="shifts; transfers; moves across (to)",
+                     note="Present participle of saṅkamati. " + JOIN),
+    "natthi": W("natthi 1", "pr 3rd sg", "there is not", role="verb", parts=[("na", "na 1", "ind", "not"), ("atthi", "atthi 1.1", "pr 3rd sg", "there is")]),
+    "nanu": W("nanu", "ind", "surely … not?; would not …?"),
+    "mutto": W("mutta 2.1", "masc nom sg", "freed (from)"),
+    "bhavissati": W("bhavati 1", "fut 3rd sg", "will be", role="verb"),
+    "kammehī’": Q(W("kamma 1", "nt abl pl", "from (bad) deeds")),
+    "āma": W("āma 1.1", "ind", "yes"),
+    "paṭisandaheyya": W("paṭisandahati", "opt 3rd sg", "were reborn; would link up again", role="verb",
+                        dpd="reunites; (of rebirth) links on to a new life", note="Optative in a condition: “if one were not reborn …”."),
+    "yasmā": W("yasmā 1", "ind", "because; since", note="yasmā … tasmā: “because … therefore”."),
+    "tasmā": W("tasmā 2", "ind", "therefore"),
+    "parimutto": W("parimutta", "masc nom sg", "fully freed (from)"),
+    "ca": W("ca 2.1", "ind", "and", note="na ca … ca: “not … but”."),
+    "kathaṃ": W("kathaṃ 1", "ind", "how?"),
+    "kocideva": W("kocideva", "sandhi", "some (man) or other",
+                  parts=[("koci", "koci 1", "pron masc nom sg", "someone; any"), ("eva", "eva 4", "ind", "indeed")],
+                  note="koci + eva with d inserted between them."),
+    "padīpato": W("padīpa", "masc abl sg", "from a lamp", note="The ending -to also forms an ablative."),
+    "padīpaṃ": W("padīpa", "masc acc sg", "a lamp"),
+    "padīpeyya": W("padīpeti", "opt 3rd sg", "would light", role="verb", note="Optative: “suppose a man would light …”."),
+    "kinnu": W("kinnu", "sandhi", "is it that …?", parts=[("kiṃ", "ka 1.1", "pron nt nom sg", "what"), ("nu", None, "ind", "(question particle)")]),
+    "so": W("so 1.1", "masc nom sg", "that (describes padīpo)"),
+    "padīpo": W("padīpa", "masc nom sg", "the lamp", role="subj"),
+    "padīpamhā": W("padīpa", "masc abl sg", "from the lamp"),
+}
+
+T["ncrp-3-1-2"] = {
+    "taṃ": W("ta 1.1", "nt acc sg", "that", note="Taṃ kiṃ maññatha: “What do you think of that?”"),
+    "evaṃ": W("evaṃ 2", "ind", "yes"),
+    "lobho’": Q(W("lobha", "masc nom sg", "greed", role="subj"), JOIN),
+    "doso’": Q(W("dosa 1.1", "masc nom sg", "hatred", role="subj"), JOIN),
+    "moho’": Q(W("moha 1", "masc nom sg", "delusion", role="subj"), JOIN),
+    "abhijjhā’ti": M("abhijjhā + iti", "sandhi", "longing (is …)", parts=[("abhijjhā", "abhijjhā", "fem nom sg", "longing; covetousness"), ("iti", "iti", "ind", "marks what is named or meant")],
+                     note="iti loses its first i and joins with an apostrophe. Abhijjhā’ti … etamatthaṃ vadāmi: “I say that this means longing”."),
+    "byāpādo’ti": M("byāpādo + iti", "sandhi", "ill will (is …)", parts=[("byāpādo", "byāpāda", "masc nom sg", "ill will"), ("iti", "iti", "ind", "marks what is named or meant")],
+                    note="iti loses its first i and joins with an apostrophe."),
+    "avijjā’ti": M("avijjā + iti", "sandhi", "ignorance (is …)", parts=[("avijjā", "avijjā", "fem nom sg", "ignorance"), ("iti", "iti", "ind", "marks what is named or meant")],
+                   note="iti loses its first i and joins with an apostrophe."),
+    "luddho": W("luddha 3", "masc nom sg", "greedy"),
+    "pi": PI_ALSO,
+    "duṭṭho": W("duṭṭha 2", "masc nom sg", "full of hate; angry"),
+    "byāpanna-citto": W("byāpannacitta", "masc nom sg", "with a mind of ill will", parts=[("byāpanna", None, "pp", "full of ill will"), ("citta", "citta 1.1", "nt", "mind")]),
+    "mūḷho": W("mūḷha 3", "masc nom sg", "deluded"),
+    "avijjā-gato": W("avijjāgata", "masc nom sg", "immersed in ignorance", parts=[("avijjā", "avijjā", "fem", "ignorance"), ("gata", None, "pp", "gone (into)")]),
+    "dukkhāyā’": Q(W("dukkha 3", "nt dat sg", "for the suffering")),
+}
+
+T["ncrp-3-1-3"] = {
+    "akusalaṃ": W("akusala 2", "nt nom/acc sg", "the unwholesome",
+                  note="Object of pajahatha; with pahīnaṃ (“when abandoned”) it is the subject. The form is the same."),
+    "kusalaṃ": W("kusala 1", "nt nom/acc sg", "the wholesome",
+                 note="Object of bhāvetha; with bhāvitaṃ (“when developed”) it is the subject. The form is the same."),
+    "pajahatha": W("pajahati", "imp 2nd pl", "abandon!", role="verb"),
+    "sakkā": W("sakkā 1", "ind", "it is possible", note="With an infinitive: sakkā pajahituṃ, “it is possible to abandon”."),
+    "pajahituṃ": W("pajahituṃ", "inf", "to abandon"),
+    "tasm’āhaṃ": M("tasmā + ahaṃ", "sandhi", "therefore I",
+                   parts=[("tasmā", "tasmā 2", "ind", "therefore"), ("ahaṃ", "ahaṃ", "1st nom sg", "I")],
+                   note="tasmā + ahaṃ: the ā of tasmā drops out, marked by the apostrophe."),
+    "pajahathā’ti": TI("pajahatha", "pajahati", "imp 2nd pl", "abandon!", "abandon!", role="verb"),
+    "h’idaṃ": W("hidaṃ", "sandhi", "if indeed this", parts=[("hi", "hi 1", "ind", "indeed"), ("idaṃ", "idaṃ 1", "pron nt nom sg", "this")],
+                note="hi + idaṃ: the i of hi drops out, marked by the apostrophe."),
+    "pahīnaṃ": W("pahīna", "nt nom sg", "(when) abandoned"),
+    "saṃvatteyya": W("saṃvattati 1", "opt 3rd sg", "were to lead (to)", role="verb", note="Optative in a condition contrary to fact."),
+    "vadeyyaṃ": W("vadati 1", "opt 1st sg", "I would say", role="verb"),
+    "bhāvetha": W("bhāveti", "imp 2nd pl", "develop!", role="verb"),
+    "bhāvetuṃ": W("bhāvetuṃ", "inf", "to develop"),
+    "bhāvethā’ti": TI("bhāvetha", "bhāveti", "imp 2nd pl", "develop!", "develop!", role="verb"),
+    "bhāvethā’": Q(W("bhāveti", "imp 2nd pl", "develop!", role="verb")),
+    "bhāvitaṃ": W("bhāvita 1", "nt nom sg", "(when) developed"),
+    "yasmā": W("yasmā 1", "ind", "because; since"),
+    "ca": W("ca 2.1", "ind", "and; but", note="With conditions, ca can mean “if”: akusalaṃ ca h’idaṃ … saṃvatteyya, “if this unwholesome … were to lead …”."),
+}
+
+T["ncrp-3-2-1"] = {
+    "taṃ": W("ta 1.1", "nt acc sg", "that", note="Taṃ kiṃ maññatha: “What do you think of that?”"),
+    "evaṃ": W("evaṃ 2", "ind", "yes"),
+    "alobho’": Q(W("alobha", "masc nom sg", "non-greed", role="subj"), JOIN),
+    "adoso’": Q(W("adosa 1.1", "masc nom sg", "non-hatred", role="subj"), JOIN),
+    "amoho’": Q(W("amoha 1", "masc nom sg", "non-delusion", role="subj"), JOIN),
+    "anabhijjhā’ti": M("anabhijjhā + iti", "sandhi", "absence of longing (is …)", parts=[("anabhijjhā", "anabhijjhā", "fem nom sg", "absence of longing"), ("iti", "iti", "ind", "marks what is named or meant")],
+                       note="iti loses its first i and joins with an apostrophe."),
+    "abyāpādo’ti": M("abyāpādo + iti", "sandhi", "good will (is …)", parts=[("abyāpādo", "abyāpāda", "masc nom sg", "non-ill-will; good will"), ("iti", "iti", "ind", "marks what is named or meant")],
+                     note="iti loses its first i and joins with an apostrophe."),
+    "vijjā’ti": M("vijjā + iti", "sandhi", "true knowledge (is …)", parts=[("vijjā", "vijjā 1", "fem nom sg", "true knowledge"), ("iti", "iti", "ind", "marks what is named or meant")],
+                  note="iti loses its first i and joins with an apostrophe."),
+    "aluddho": W("aluddha", "masc nom sg", "without greed"),
+    "anabhijjhālu": W("anabhijjhālu", "masc nom sg", "without longing"),
+    "aduṭṭho": W("aduṭṭha 1", "masc nom sg", "without hate"),
+    "abyāpanna-citto": W("abyāpannacitta", "masc nom sg", "with a mind of good will", parts=[("abyāpanna", None, "pp", "free of ill will"), ("citta", "citta 1.1", "nt", "mind")]),
+    "amūḷho": W("amūḷha 2", "masc nom sg", "undeluded"),
+    "vijjā-gato": W("vijjāgata", "masc nom sg", "arrived at true knowledge", parts=[("vijjā", "vijjā 1", "fem", "true knowledge"), ("gata", None, "pp", "gone (to)")]),
+    "n’eva": W("neva 1", "sandhi", "not", parts=[("na", "na 1", "ind", "not"), ("eva", "eva 4", "ind", "indeed")],
+               note="na + eva: the a of na drops out, marked by the apostrophe. n’eva … na …: “neither … nor …”."),
+    "paraṃ": W("para 1", "masc acc sg", "another (person)"),
+    "pi": PI_ALSO,
+    "tathattāya": W("tathatta 1.2", "nt dat sg", "to do likewise", note="Dative of purpose: “encourages another to such a state”."),
+    "samādapeti": W("samādapeti", "pr 3rd sg", "encourages", role="verb"),
+    "sukhāyā’": Q(W("sukha 2", "nt dat sg", "for the happiness")),
+    "samattā": W("samatta 1.1", "masc nom pl", "fully undertaken; completed"),
+    "samādinnā": W("samādinna", "masc nom pl", "taken up; undertaken"),
+    "no": W("no 1.1", "ind", "not", note="no vā: “or not?”"),
+    "saṃvattantī’": Q(W("saṃvattati 1", "pr 3rd pl", "lead (to)", role="verb")),
+    "saṃvattantī’ti": TI("saṃvattanti", "saṃvattati 1", "pr 3rd pl", "lead (to)", "lead (to)", role="verb"),
+    "yadā": W("yadā", "ind", "when", note="yadā … atha: “when … then”."),
+    "tumhe": W("tumhe 1", "2nd nom pl", "you all", role="subj"),
+    "attanā’va": M("attanā + eva", "sandhi", "by yourselves",
+                   parts=[("attanā", "attanā 1", "masc instr sg", "by oneself"), ("eva", "eva 4", "ind", "indeed; just")],
+                   note="attanā + eva: the e of eva drops out; the apostrophe goes before the second word, since attanā keeps its ending."),
+    "jāneyyātha": W("jānāti 1", "opt 2nd pl", "you know; you should know", role="verb"),
+    "atha": W("atha 1", "ind", "then"),
+    "upasampajja": W("upasampajja 3", "ger", "having undertaken; having entered upon",
+                     note="An absolutive: “having entered upon (them), you should dwell”."),
+    "vihareyyāthā’": Q(W("viharati 1", "opt 2nd pl", "you should dwell; you should live", role="verb")),
+}
+
+T["ncrp-3-2-2"] = {
+    "abhāvitaṃ": W("abhāvita", "nt nom sg", "undeveloped"),
+    "bhāvitaṃ": W("bhāvita 1", "nt nom sg", "developed"),
+    "akammaniyaṃ": W("akammaniya", "nt nom sg", "unwieldy"),
+    "kammaniyaṃ": W("kammaniya", "nt nom sg", "wieldy"),
+    "hotī’ti": TI("hoti", "hoti 1", "pr 3rd sg", "is", "is", role="verb"),
+    "apātu-bhūtaṃ": W("apātubhūta 1", "nt nom sg", "unmanifested", parts=[("a-", None, "prefix", "not"), ("pātu", None, "ind", "manifest; visible"), ("bhūta", None, "pp", "become")]),
+    "pātu-bhūtaṃ": W("pātubhūta", "nt nom sg", "manifested", parts=[("pātu", None, "ind", "manifest; visible"), ("bhūta", None, "pp", "become")]),
+    "abahulī-kataṃ": W("abahulīkata", "nt nom sg", "uncultivated", parts=[("a-", None, "prefix", "not"), ("bahulī", None, "ind", "much; often"), ("kata", None, "pp", "done; made")]),
+    "bahulī-kataṃ": W("bahulīkata", "nt nom sg", "cultivated", parts=[("bahulī", None, "ind", "much; often"), ("kata", None, "pp", "done; made")]),
+    "dukkh’ādhivāhaṃ": W("dukkhādhivāha", "nt nom sg", "bringing suffering",
+                         parts=[("dukkha", "dukkha 3", "nt", "suffering"), ("adhivāha", None, "adj", "bringing; entailing")],
+                         note="dukkha + adhivāha: the a of dukkha drops out and the a of adhivāha is lengthened."),
+    "sukh’ādhivāhaṃ": W("sukhādhivāha", "nt nom sg", "bringing happiness",
+                        parts=[("sukha", "sukha 2", "nt", "happiness"), ("adhivāha", None, "adj", "bringing; entailing")],
+                        note="sukha + adhivāha: the a of sukha drops out and the a of adhivāha is lengthened."),
+}
+
+T["ncrp-3-2-3"] = {
+    "idaṃ": W("idaṃ 1", "nt nom sg", "this", role="subj"),
+    "pana": W("pana", "ind", "now; moreover"),
+    "dukkhaṃ": W("dukkha 1", "nt nom sg", "suffering; painful"),
+    "ariya-saccaṃ": W("ariyasacca", "nt nom sg", "noble truth", parts=[("ariya", "ariya 1", "adj", "noble"), ("sacca", None, "nt", "truth")]),
+    "jāti": W("jāti 1", "fem nom sg", "birth", role="subj"),
+    "pi": PI_ALSO,
+    "dukkhā": W("dukkha 1", "fem nom sg", "suffering; painful"),
+    "jarā": W("jarā", "fem nom sg", "aging", role="subj"),
+    "vyādhi": W("vyādhi", "masc nom sg", "illness", role="subj"),
+    "maraṇaṃ": W("maraṇa", "nt nom sg", "death", role="subj"),
+    "appiyehi": W("appiya 3", "nt instr pl", "with what is unpleasant"),
+    "sampayogo": W("sampayoga", "masc nom sg", "union", role="subj"),
+    "dukkho": W("dukkha 1", "masc nom sg", "suffering; painful"),
+    "piyehi": W("piya 2", "nt abl pl", "from what is pleasing"),
+    "vippayogo": W("vippayoga", "masc nom sg", "separation", role="subj"),
+    "yaṃ": W("ya 2.1", "nt acc sg", "what"),
+    "p’icchaṃ": M("pi + icchaṃ", "sandhi", "also wishing",
+                  parts=[("pi", "pi 1.2", "ind", "also"), ("icchaṃ", "icchanta", "masc nom sg", "wishing (present participle of icchati)")],
+                  note="pi + icchaṃ: the i of pi drops out, marked by the apostrophe. yaṃ p’icchaṃ na labhati: “what one wishes for and does not get”."),
+    "labhati": W("labhati 1", "pr 3rd sg", "gets", role="verb"),
+    "taṃ": W("ta 1.1", "nt nom sg", "that"),
+    "saṅkhittena": W("saṅkhittena", "ind", "in brief"),
+    "pañc’upādāna-kkhandhā": W("pañcupādānakkhandhā", "masc nom pl", "the five aggregates subject to clinging", role="subj",
+                               parts=[("pañca", "pañca", "card", "five"), ("upādāna", None, "nt", "clinging"), ("khandha", None, "masc", "aggregate; heap")],
+                               note="pañca + upādāna: the a of pañca drops out (apostrophe); the k of khandha is doubled in the compound."),
+}
+
+T["ncrp-3-2-4"] = {
+    "kiṃ-lakkhaṇaṃ": W("kiṃlakkhaṇa", "nt nom sg", "having what characteristic?", parts=[("kiṃ", "ka 1.1", "pron", "what"), ("lakkhaṇa", None, "nt", "characteristic mark")]),
+    "viññāṇan’": Q(W("viññāṇa 1", "nt nom sg", "consciousness", role="subj"), "The ṃ becomes n and the apostrophe joins it to ti (iti), which closes the quotation."),
+    "vijānana-lakkhaṇaṃ": W("vijānanalakkhaṇa", "nt nom sg", "having knowing as its characteristic", parts=[("vijānana", None, "nt", "knowing; cognizing"), ("lakkhaṇa", None, "nt", "characteristic mark")]),
+    "nagara-guttiko": W("nagaraguttika", "masc nom sg", "a city-watchman", role="subj", parts=[("nagara", "nagara 1", "nt", "city"), ("guttika", None, "masc", "guard")]),
+    "majjhe": W("majjha 1", "nt loc sg", "in the middle (of)"),
+    "nagare": W("nagara 1", "nt loc sg", "in the city"),
+    "siṅghāṭake": W("siṅghāṭaka 1", "nt loc sg", "at the crossroads; in the square"),
+    "nisinno": W("nisinna 1", "masc nom sg", "sitting"),
+    "passeyya": W("passati 1", "opt 3rd sg", "would see", role="verb"),
+    "āgacchantaṃ": W("āgacchanta", "masc acc sg", "coming", note="Present participle of āgacchati, describing purisaṃ."),
+    "puratthima-disato": W("puratthimadisā", "fem abl sg", "from the eastern direction", parts=[("puratthima", None, "adj", "eastern"), ("disā", "disā 1", "fem", "direction")], note="The ending -to forms an ablative: “from”."),
+    "dakkhiṇa-disato": W("dakkhiṇadisā", "fem abl sg", "from the southern direction", parts=[("dakkhiṇa", None, "adj", "southern"), ("disā", "disā 1", "fem", "direction")], note="The ending -to forms an ablative: “from”."),
+    "pacchima-disato": M("pacchimadisā", "fem abl sg", "from the western direction", dpd="western direction", pos="fem",
+                         parts=[("pacchima", "pacchima 2", "adj", "western"), ("disā", "disā 1", "fem", "direction")], note="The ending -to forms an ablative: “from”."),
+    "uttara-disato": W("uttaradisā", "fem abl sg", "from the northern direction", parts=[("uttara", None, "adj", "northern"), ("disā", "disā 1", "fem", "direction")], note="The ending -to forms an ablative: “from”."),
+    "evameva": C["evameva"],
+    "yañ": W("ya 2.1", "nt acc sg", "what; whatever", note="yaṃ + ca: the ṃ becomes ñ before c. yañ ca … taṃ: “whatever … that …”."),
+    "ca": W("ca 2.1", "ind", "and"),
+    "cakkhunā": W("cakkhu 1", "nt instr sg", "with the eye"),
+    "rūpaṃ": W("rūpa 3", "nt acc sg", "a visible form"),
+    "passati": W("passati 1", "pr 3rd sg", "sees", role="verb"),
+    "taṃ": W("ta 1.1", "nt acc sg", "that"),
+    "viññāṇena": W("viññāṇa 1", "nt instr sg", "by consciousness"),
+    "vijānāti": W("vijānāti 1", "pr 3rd sg", "knows; cognizes", role="verb"),
+    "sotena": W("sota 2.1", "nt instr sg", "with the ear"),
+    "saddaṃ": W("sadda 1", "masc acc sg", "a sound"),
+    "suṇāti": W("suṇāti 1", "pr 3rd sg", "hears", role="verb"),
+    "ghānena": W("ghāna", "nt instr sg", "with the nose"),
+    "gandhaṃ": W("gandha 1", "masc acc sg", "an odour"),
+    "ghāyati": W("ghāyati", "pr 3rd sg", "smells", role="verb"),
+    "jivhāya": W("jivhā", "fem instr sg", "with the tongue"),
+    "rasaṃ": W("rasa 1", "masc acc sg", "a taste"),
+    "sāyati": W("sāyati", "pr 3rd sg", "tastes", role="verb"),
+    "kāyena": W("kāya 1.1", "masc instr sg", "with the body"),
+    "phoṭṭhabbaṃ": W("phoṭṭhabba 1", "nt acc sg", "a touch"),
+    "phusati": W("phusati 1", "pr 3rd sg", "touches; feels", role="verb"),
+    "manasā": W("manas", "masc instr sg", "with the mind", note="manas has an irregular instrumental, manasā."),
+    "dhammaṃ": W("dhamma 1.04", "masc acc sg", "a mental object"),
+    "evaṃ": W("evaṃ 1", "ind", "thus; in this way"),
+    "kallo’si": W("kallosi", "sandhi", "you are clever",
+                  parts=[("kallo", None, "adj masc nom sg", "clever; able"), ("asi", "atthi 1.1", "pr 2nd sg", "you are")],
+                  note="kallo + asi: the a of asi drops out; the apostrophe goes before the second word, since kallo keeps its ending."),
+    "nāgasenā’": Q(W("nāgasena", "masc voc sg", "Nāgasena (addressed)")),
+}
+
+
+def build_texts():
+    import re
+    tok = re.compile(r"[^\s,.;:!?“”\"‘()…*—–]+(?:\([^\s()]+\))?")
+    out = []
+    for tid, ref, title, title_en, source, credit, paras in META:
+        local = T.get(tid, {})
+        words = {}
+        for pa, _ in paras:
+            for w in tok.findall(pa):
+                k = w.lower()
+                if k in words:
+                    continue
+                if k in local:
+                    words[k] = local[k]
+                elif k == "evaṃ" and tid in ("ncrp-3-1-2", "ncrp-3-2-1"):
+                    words[k] = C["evaṃ_yes"]
+                elif k in C:
+                    words[k] = C[k]
+                else:
+                    raise SystemExit(f"{tid}: no analysis for {k!r}")
+        out.append(dict(id=tid, ref=ref, title=title, titleEn=title_en, source=source, credit=credit,
+                        paras=paras, words=words))
+    return out
+
+
+TEXTS = build_texts()
