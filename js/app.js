@@ -192,15 +192,19 @@
     try { deck = await getDeck(); d = dueInfo(deck); } catch (e) { /* ignore */ }
     const lib = await load("library/index.json");
     const titleOf = (id) => (lib.find((x) => x.id === id) || {}).titleEn || id;
+    const play = `<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l12.5-7.5z"/></svg>`;
     const rows = lessons.map((l) => `
-      <a class="row${l.published ? "" : " draft"}" href="#/${g.id}/lesson/${l.n}">
-        <div class="num"><small>LESSON</small><b>${l.n}</b></div>
-        <div class="t"><b>${esc(l.title || "Lesson " + l.n)}</b><span>${esc(l.items.map((i) => i.text ? titleOf(i.text) : i.label || "").filter(Boolean).join(" · "))}</span></div>
-        <div class="meta">${fmtShort(l.date)}${l.published ? (l.recording ? "<br>Recording ready" : "") : "<br>Draft (preview)"}</div>
-        <div class="arr" aria-hidden="true">›</div></a>`).join("");
+      <div class="lcard${l.published ? "" : " draft"}">
+        <a class="lmain" href="#/${g.id}/lesson/${l.n}">
+          <div class="num"><small>LESSON</small><b>${l.n}</b></div>
+          <div class="t"><b>${esc(l.title || "Lesson " + l.n)}</b><span class="dt-m">${fmtShort(l.date)}</span><span>${esc(l.items.map((i) => i.text ? titleOf(i.text) : i.label || "").filter(Boolean).join(" · "))}</span></div>
+          <div class="meta">${fmtShort(l.date)}${l.published ? "" : "<br>Draft (preview)"}</div>
+          <div class="arr" aria-hidden="true">›</div></a>
+        ${l.recording ? `<a class="recbtn" href="${esc(l.recording)}" target="_blank" rel="noopener" aria-label="Recording of lesson ${l.n}">${play}<span>Recording</span></a>` : ""}
+      </div>`).join("");
     const earlier = (g.earlier || []).length ? `
-      <details class="earlier"${lessons.length ? "" : " open"}><summary>Lessons ${g.earlier[0].n}–${g.earlier[g.earlier.length - 1].n}: recordings</summary>
-      <ul class="rec-list">${g.earlier.map((e) => `<li><a href="${esc(e.recording)}" target="_blank" rel="noopener"><span>Lesson ${e.n}</span><span class="muted">${fmtShort(e.date)}</span></a></li>`).join("")}</ul></details>` : "";
+      <details class="earlier"><summary><span>Earlier lessons ${g.earlier[0].n}–${g.earlier[g.earlier.length - 1].n}: recordings</span></summary>
+      <ul class="rec-list">${g.earlier.map((e) => `<li><a href="${esc(e.recording)}" target="_blank" rel="noopener"><span>${play} Lesson ${e.n}</span><span class="muted">${fmtShort(e.date)}</span></a></li>`).join("")}</ul></details>` : "";
     $("#main").innerHTML = `
       <div class="head"><div class="eyebrow">${esc(g.title)}</div><h1>Lessons</h1>
         <p class="sub">Each lesson holds the texts we read together, the recording and the new words.</p></div>

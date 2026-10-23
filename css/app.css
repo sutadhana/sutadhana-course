@@ -269,3 +269,32 @@ body.modal-open{overflow:hidden}
 .dana-d p{font-size:1.12rem;line-height:1.55}
 .dana-d .dana-btn-copper{box-shadow:0 0 0 1px rgba(253,252,247,.55);font-size:1.08rem;min-height:48px}
 main:focus{outline:none}
+
+/* lesson cards with their own recording button */
+.lcard{display:flex;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--card-shadow)}
+.lcard.draft{border-style:dashed}
+.lcard:hover{border-color:var(--accent)}
+.lmain{flex:1;min-width:0;display:flex;align-items:center;gap:16px;padding:14px 18px;min-height:72px;text-decoration:none;color:var(--ink)}
+.lmain:hover{color:var(--ink)}
+.lmain .num{flex:none;width:52px;text-align:center}
+.lmain .num small{display:block;font-size:.7rem;letter-spacing:.1em;color:var(--muted)}
+.lmain .num b{display:block;font-size:1.7rem;font-weight:400;line-height:1}
+.lmain .t{flex:1;min-width:0}.lmain .t b{display:block;font-weight:400;font-size:1.25rem;line-height:1.25}
+.lmain .t span{display:block;color:var(--muted);font-size:.98rem}
+.lmain .meta{flex:none;text-align:right;color:var(--muted);font-size:.9rem;line-height:1.4}
+.lmain .arr{flex:none;color:var(--accent);font-size:1.4rem}
+.recbtn{flex:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;margin:0 16px 0 0;padding:9px 16px;min-height:44px;border-radius:999px;background:var(--accent);color:var(--accent-ink);text-decoration:none;font-size:1rem}
+.recbtn:hover{background:var(--accent-hover);color:var(--accent-ink)}
+@media (max-width:600px){
+  .lcard{flex-wrap:wrap}
+  .lmain .meta{display:block;font-size:.85rem}
+  .recbtn{width:100%;margin:0 14px 14px;width:calc(100% - 28px)}
+}
+details.earlier{margin-top:10px}
+details.earlier summary{list-style:none;display:flex;align-items:center;gap:10px;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 18px;min-height:52px;color:var(--ink)}
+details.earlier summary::-webkit-details-marker{display:none}
+details.earlier summary::before{content:"›";color:var(--accent);font-size:1.4rem;line-height:1;transition:transform .15s}
+details.earlier[open] summary::before{transform:rotate(90deg)}
+.rec-list{margin-top:8px}.rec-list a span:first-child{display:inline-flex;align-items:center;gap:8px}.rec-list svg{color:var(--accent)}
+.lmain .t .dt-m{display:none}
+@media (max-width:600px){.lmain .meta{display:none}.lmain .t .dt-m{display:block;color:var(--accent);font-size:.92rem}.lmain{gap:12px;padding:14px}.lmain .num{width:44px}}
