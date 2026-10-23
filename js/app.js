@@ -164,6 +164,24 @@
     } catch (e) { return ""; }
   }
 
+  /* dāna card: three looks to choose from (settings.danaStyle a / b / c) */
+  function danaCard(g, style) {
+    if (!g.dana) return "";
+    const text = `You may express your support and appreciation for the lessons by giving dāna, <span lang="pi">yathā-pasādanaṃ</span>: according to your inspiration and ability. No act of generosity is too small, and it is always appreciated.`;
+    const btn = (cls) => `<a class="btn ${cls}" href="${esc(g.dana)}" target="_blank" rel="noopener">Give dāna</a>`;
+    if (style === "b") return `<div class="card dana dana-b"><div class="dana-h">Supporting the lessons</div><p>${text}</p>${btn("dana-btn-light")}</div>`;
+    if (style === "c") return `<div class="card dana dana-c"><div class="dana-top"><svg class="dana-ic" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 8c4 5 6 10 6 15s-2 9-6 12c-4-3-6-7-6-12s2-10 6-15z"/><path d="M24 35c-6 0-12-3-16-9 5-1 10 0 14 3M24 35c6 0 12-3 16-9-5-1-10 0-14 3"/></svg><div class="dana-h">Dāna</div></div><p>${text}</p>${btn("primary block")}</div>`;
+    return `<div class="card dana dana-a"><div class="dana-h">Dāna</div><p>${text}</p>${btn("dana-btn-copper")}</div>`;
+  }
+  async function viewDanaOptions() {
+    const g = state.group;
+    await headerWithDue("lessons");
+    const classes = `<div class="card"><div class="eyebrow">Classes</div><p style="margin:6px 0 0">${esc(g.schedule.days)}, ${esc(utcLabel(g.schedule.utc))}</p></div>`;
+    $("#main").innerHTML = `<div class="head"><div class="eyebrow">For Mor only</div><h1>Dāna box: three versions</h1>
+      <p class="sub">Each is shown as it would sit in the right-hand column, above the class times.</p></div>
+      <div class="dana-opts">${["a", "b", "c"].map((k, i) => `<div><h2>Version ${i + 1}</h2><div class="side" style="display:flex;flex-direction:column;gap:14px">${danaCard(g, k)}${classes}</div></div>`).join("")}</div>`;
+  }
+
   /* ---------------- views ---------------- */
   async function viewGroup() {
     const g = state.group;
@@ -192,7 +210,7 @@
             <div class="big">${d.total}</div><div class="muted">${d.total === 1 ? "card" : "cards"} to review today</div>
             <a class="btn primary block" style="margin-top:14px" href="#/${g.id}/review">${d.total ? "Start review" : "Open review"}</a>
             <p class="muted" style="font-size:.85rem;margin:10px 0 0">Progress is saved on this device.</p></div>
-          ${g.dana ? `<div class="card soft"><p style="margin:0">You may express your support for the lessons by <a href="${esc(g.dana)}" target="_blank" rel="noopener">giving dāna</a>, yathā-pasādanaṃ: according to your inspiration and ability.</p></div>` : ""}
+          ${danaCard(g, g.settings?.danaStyle || "a")}
           <div class="card"><div class="eyebrow">Classes</div>
             <p style="margin:6px 0 0">${esc(g.schedule.days)}, <button class="timebtn" id="lessonTime" aria-describedby="pop">${esc(utcLabel(g.schedule.utc))}</button></p>
             ${g.materials ? `<p style="margin:10px 0 0"><a href="${esc(g.materials)}" target="_blank" rel="noopener">Course materials folder</a></p>` : ""}</div>
@@ -568,6 +586,7 @@
       else if (v === "review") await viewReview();
       else if (v === "grammar") await viewGrammar(parts[2]);
       else if (v === "library") await viewLibrary();
+      else if (v === "dana-options" && PREVIEW) await viewDanaOptions();
       else await viewGroup();
       if (v !== "review") session = null;
       footer();

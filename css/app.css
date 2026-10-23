@@ -39,6 +39,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .loading{color:var(--muted);text-align:center;padding:60px 0}
 main{flex:1;width:100%;max-width:1040px;margin:0 auto;padding:22px max(16px,env(safe-area-inset-right)) 56px max(16px,env(safe-area-inset-left))}
 body.sheet-open main{padding-bottom:48vh}
+@media (min-width:768px){body.sheet-open main{padding-bottom:calc(42vh + 24px)}}
 
 /* header */
 header.top{background:var(--surface);border-bottom:1px solid var(--line)}
@@ -234,3 +235,29 @@ body.modal-open{overflow:hidden}
   .rows .lbl{border-top:1px solid rgba(45,48,46,.16);padding-top:9px;margin-top:4px}
   .rows .lbl:first-child{border-top:0;margin-top:0}
 }
+
+/* word panel on computers: one fixed height, so it never jumps between words */
+@media (min-width:768px){
+  .sheet{height:42vh;max-height:none}
+}
+
+/* dāna box */
+.dana p{margin:8px 0 14px;line-height:1.5}
+.dana-h{font-size:1.35rem;line-height:1.2}
+.dana .btn{width:100%}
+.dana-a{background:#F6E6D3;border-color:#E2C8A6}
+.dana-a .dana-h{color:#7A4518}
+.dana-btn-copper{background:#9A5F2A;border-color:#9A5F2A;color:#FDFCF7}
+.dana-btn-copper:hover{background:#7A4518;border-color:#7A4518;color:#FDFCF7}
+.dana-b{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.dana-b p{opacity:.95}
+.dana-btn-light{background:var(--accent-ink);border-color:var(--accent-ink);color:var(--accent)}
+.dana-btn-light:hover{background:var(--bg);color:var(--accent-hover)}
+.dana-c{border:1.5px solid var(--copper)}
+.dana-top{display:flex;align-items:center;gap:10px}
+.dana-ic{width:34px;height:34px;flex:none;fill:none;stroke:var(--copper);stroke-width:2.2;stroke-linejoin:round;stroke-linecap:round}
+.dana-opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:28px}
+.dana-opts>div{max-width:340px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .dana-a{background:#3E2F22;border-color:#5A4228}:root:not([data-theme="light"]) .dana-a .dana-h{color:#E2AE7D}}
+:root[data-theme="dark"] .dana-a{background:#3E2F22;border-color:#5A4228}
+:root[data-theme="dark"] .dana-a .dana-h{color:#E2AE7D}
