@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# NOTE: superseded. Grammar now comes only from Mor’s own grammar guide (data/grammar/index.json).
 """Build data/grammar/index.json.
 
 Until Mor's own grammar guide is added, each section holds a short interim

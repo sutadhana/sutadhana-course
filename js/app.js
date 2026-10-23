@@ -102,11 +102,14 @@
     ["sandhi", "sandhi"], ["compound", "sandhi"], ["pronoun", "pronouns"], ["indeclinable", "indeclinables"],
     ["ordinal number", "numbers"], ["adjective", "adjectives"],
   ];
+  let GRAMMAR_IDS = null;
   function linkGrammar(label) {
     let html = esc(label);
+    if (GRAMMAR_IDS && !GRAMMAR_IDS.size) return html;
     const re = new RegExp("\\b(" + GRAMMAR_TERMS.map((t) => t[0]).join("|") + ")\\b", "g");
     html = html.replace(re, (m) => {
       const id = GRAMMAR_TERMS.find((t) => t[0] === m)[1];
+      if (GRAMMAR_IDS && !GRAMMAR_IDS.has(id)) return m;
       return `<a href="#/${state.gid}/grammar/${id}" data-gram="${id}">${m}</a>`;
     });
     return html;
@@ -183,6 +186,8 @@
       <div class="dana-opts">${["d", "a", "b", "c"].map((k, i) => `<div><h2>${i ? "Version " + i : "Combined version"}</h2><div class="side" style="display:flex;flex-direction:column;gap:14px">${danaCard(g, k)}${classes}</div></div>`).join("")}</div>`;
   }
 
+  const DEMO_REC = "The recording of this lesson will be linked here after class.";
+
   /* ---------------- views ---------------- */
   async function viewGroup() {
     const g = state.group;
@@ -200,7 +205,8 @@
           <div class="t"><b>${esc(l.title || "Lesson " + l.n)}</b><span class="dt-m">${fmtShort(l.date)}</span><span>${esc(l.items.map((i) => i.text ? titleOf(i.text) : i.label || "").filter(Boolean).join(" · "))}</span></div>
           <div class="meta">${fmtShort(l.date)}${l.published ? "" : "<br>Draft (preview)"}</div>
           <div class="arr" aria-hidden="true">›</div></a>
-        ${l.recording ? `<a class="recbtn" href="${esc(l.recording)}" target="_blank" rel="noopener" aria-label="Recording of lesson ${l.n}">${play}<span>Recording</span></a>` : ""}
+        ${l.recording === "demo" ? `<button class="recbtn demo" data-note="${DEMO_REC}" data-label="Recording" aria-label="Recording of lesson ${l.n} (example)">${play}<span>Recording</span></button>`
+          : l.recording ? `<a class="recbtn" href="${esc(l.recording)}" target="_blank" rel="noopener" aria-label="Recording of lesson ${l.n}">${play}<span>Recording</span></a>` : ""}
       </div>`).join("");
     const earlier = (g.earlier || []).length ? `
       <details class="earlier"><summary><span>Earlier lessons ${g.earlier[0].n}–${g.earlier[g.earlier.length - 1].n}: recordings</span></summary>
@@ -264,7 +270,8 @@
         <h1>${esc(l.title || "Lesson " + l.n)}</h1></div>
       <div class="cols">
         <div class="main">
-          ${l.recording ? `<a class="btn" href="${esc(l.recording)}" target="_blank" rel="noopener" style="align-self:flex-start"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4"/></svg>Watch the recording</a>` : ""}
+          ${l.recording === "demo" ? `<button class="btn recbtn-l demo" data-note="${DEMO_REC}" data-label="Recording" style="align-self:flex-start"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4"/></svg>Watch the recording</button>` : ""}
+          ${l.recording && l.recording !== "demo" ? `<a class="btn" href="${esc(l.recording)}" target="_blank" rel="noopener" style="align-self:flex-start"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4"/></svg>Watch the recording</a>` : ""}
           <div class="eyebrow" style="margin-top:4px">What we read, in order</div>
           ${items}
           ${l.next ? `<div class="notice"><b style="font-weight:700">For next time:</b> ${esc(l.next)}</div>` : ""}
@@ -579,6 +586,7 @@
     try {
       const idx = await load("groups/index.json");
       state.dataVersion = idx.version || "";
+      if (!GRAMMAR_IDS) { try { GRAMMAR_IDS = new Set((await load("grammar/index.json")).sections.map((x) => x.id)); } catch (e) { GRAMMAR_IDS = new Set(); } }
       if (!parts.length) { location.replace(`#/${idx.current}`); return; }
       const gid = parts[0];
       if (!idx.groups.some((x) => x.id === gid)) { $("#main").innerHTML = `<div class="notice">This group page doesn't exist. <a href="#/${idx.current}">Go to the current group</a>.</div>`; return; }
@@ -612,6 +620,8 @@
     if (e.target.id === "gmodal" || e.target.closest("#gmClose")) closeGrammar();
   });
   document.addEventListener("click", (e) => {
+    const demo = e.target.closest("button.demo");
+    if (demo) { e.stopPropagation(); togglePop(demo); return; }
     if (!e.target.closest(".nmark") && !e.target.closest("#pop") && !e.target.closest(".timebtn")) hidePop();
   });
   addEventListener("hashchange", route);
