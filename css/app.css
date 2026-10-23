@@ -261,3 +261,11 @@ body.modal-open{overflow:hidden}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .dana-a{background:#3E2F22;border-color:#5A4228}:root:not([data-theme="light"]) .dana-a .dana-h{color:#E2AE7D}}
 :root[data-theme="dark"] .dana-a{background:#3E2F22;border-color:#5A4228}
 :root[data-theme="dark"] .dana-a .dana-h{color:#E2AE7D}
+
+/* combined dāna version: sage card, copper frame, lotus, copper button */
+.dana-d{background:var(--accent);border:2px solid #9A5F2A;color:#FDFCF7}
+.dana-d .dana-h{font-size:1.5rem}
+.dana-d .dana-ic{stroke:#EBC39C}
+.dana-d p{font-size:1.12rem;line-height:1.55}
+.dana-d .dana-btn-copper{box-shadow:0 0 0 1px rgba(253,252,247,.55);font-size:1.08rem;min-height:48px}
+main:focus{outline:none}
