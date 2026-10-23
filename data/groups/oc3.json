@@ -14,7 +14,8 @@
  "dana": "https://www.sutadhana.com/d%C4%81na",
  "settings": {
   "markNewWords": true,
-  "colourHints": true
+  "colourHints": true,
+  "danaStyle": "d"
  },
  "earlier": [
   {
