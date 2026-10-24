@@ -759,7 +759,7 @@
     closeSheet(); stopAudio();
     $("#gmBody").innerHTML = `<div class="eyebrow">Take a tour</div><h2 id="gmTitle">How the course app works</h2>
       <video class="tourvid" controls autoplay playsinline preload="metadata" poster="assets/tour-poster.jpg" src="assets/tour.mp4"></video>
-      <p class="gm-src">About 4 minutes. You can pause and skip at any point.</p>`;
+      <p class="gm-src">About 4 minutes.</p>`;
     const m = $("#gmodal");
     m.hidden = false; document.body.classList.add("modal-open");
     requestAnimationFrame(() => m.classList.add("show"));
@@ -995,6 +995,52 @@
     if (!e.target.closest(".nmark") && !e.target.closest("#pop") && !e.target.closest(".timebtn")) hidePop();
   });
   document.addEventListener("click", (e) => { if (e.target.closest("#tourBtn")) openTour(); });
+
+  /* phones only: a small button to save the app to the home screen, with instructions */
+  {
+    const ua = navigator.userAgent;
+    const isIOS = /iPhone|iPod/.test(ua) || (/iPad|Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+    const isAndroid = /Android/.test(ua);
+    const isPhone = (isIOS || isAndroid || /Mobi/.test(ua)) && matchMedia("(pointer:coarse)").matches;
+    const installed = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+    let dismissed = false; try { dismissed = localStorage.getItem("sd:a2hs") === "no"; } catch (e) {}
+    let deferred = null;
+    addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); deferred = e; });
+    if (isPhone && !installed && !dismissed) {
+      const bar = document.createElement("div");
+      bar.className = "a2hs";
+      bar.innerHTML = `<button class="a2hs-go" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M12 7v7M8.5 10.5 12 14l3.5-3.5"/></svg>Save this app to your home screen</button><button class="a2hs-x" type="button" aria-label="Hide">×</button>`;
+      document.body.appendChild(bar);
+      document.body.classList.add("has-a2hs");
+      bar.querySelector(".a2hs-x").onclick = () => {
+        bar.remove(); document.body.classList.remove("has-a2hs");
+        try { localStorage.setItem("sd:a2hs", "no"); } catch (e) {}
+      };
+      bar.querySelector(".a2hs-go").onclick = () => {
+        const shareIc = `<svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="Share"><path d="M12 3v12M7.5 7.5 12 3l4.5 4.5"/><path d="M6 11H5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1"/></svg>`;
+        const dots = `<b class="ic" aria-label="menu">⋮</b>`;
+        const ios = `<section class="a2-sec"><h3>iPhone</h3><ol>
+            <li>Open this page in <b>Safari</b>.</li>
+            <li>Tap the <b>Share</b> button ${shareIc}. It’s at the bottom of the screen, or on newer iPhones inside the <b>•••</b> menu.</li>
+            <li>Scroll down and tap <b>Add to Home Screen</b>.</li>
+            <li>Tap <b>Add</b>, at the top right.</li></ol></section>`;
+        const and = `<section class="a2-sec"><h3>Android</h3>
+            ${deferred ? `<button class="btn primary" id="a2Install" type="button" style="margin:2px 0 10px">Add it now</button><p class="muted" style="margin:0 0 6px">Or do it yourself:</p>` : ""}<ol>
+            <li>Open this page in <b>Chrome</b>.</li>
+            <li>Tap the menu ${dots} at the top right.</li>
+            <li>Tap <b>Add to Home screen</b> (on some phones: <b>Install app</b>).</li>
+            <li>Tap <b>Add</b> (or <b>Install</b>).</li></ol></section>`;
+        $("#gmBody").innerHTML = `<div class="eyebrow">On your phone</div><h2 id="gmTitle">Save the app to your home screen</h2>
+          <p style="margin:0 0 12px">Then it opens like any other app, with its own icon.</p>
+          <div class="a2-grid">${isAndroid ? and + ios : ios + and}</div>`;
+        const m = $("#gmodal");
+        m.hidden = false; document.body.classList.add("modal-open");
+        requestAnimationFrame(() => m.classList.add("show"));
+        const ib = $("#a2Install");
+        if (ib) ib.onclick = async () => { deferred.prompt(); try { await deferred.userChoice; } catch (e) {} deferred = null; closeGrammar(); };
+      };
+    }
+  }
   // word panel: a tap anywhere outside it closes it (a tap on another word just switches)
   document.addEventListener("click", (e) => {
     if ($("#sheet").hidden) return;
