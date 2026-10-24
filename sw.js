@@ -21,6 +21,7 @@ self.addEventListener("fetch", (e) => {
   const sameOrigin = url.origin === location.origin;
   const fonts = /fonts\.(googleapis|gstatic)\.com$/.test(url.hostname);
   if (!sameOrigin && !fonts) return;
+  if (/\.mp4$/.test(url.pathname)) return;   // the tour video streams; not kept offline
   e.respondWith(
     fetch(req).then((res) => {
       if (res && (res.ok || res.type === "opaque")) {

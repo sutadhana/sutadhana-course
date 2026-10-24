@@ -139,7 +139,8 @@
     const g = state.group;
     const tab = (id, label, href, extra = "") => `<a href="${href}"${active === id ? ' aria-current="page"' : ""}>${label}${extra}</a>`;
     $("#top").innerHTML = `<div class="top-in">
-      <a class="brand" href="#/${g.id}"><b>Sutadhana</b><span>Pāḷi course</span></a>
+      <div class="brandrow"><a class="brand" href="#/${g.id}"><b>Sutadhana</b><span>Pāḷi course</span></a>
+        <button class="tourbtn" id="tourBtn" type="button"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="7 4 20 12 7 20 7 4"/></svg>Take a tour</button></div>
       <nav class="tabs" aria-label="Sections">
         ${tab("lessons", "Lessons", `#/${g.id}`)}
         ${tab("review", "Review", `#/${g.id}/review`, dueCount ? `<span class="due" aria-label="${dueCount} cards due">${dueCount}</span>` : "")}
@@ -754,9 +755,19 @@
       if (top > box.clientHeight * 0.7) box.scrollTo({ top: top - box.clientHeight / 3, behavior: "smooth" });
     }, 120);
   }
+  function openTour() {
+    closeSheet(); stopAudio();
+    $("#gmBody").innerHTML = `<div class="eyebrow">Take a tour</div><h2 id="gmTitle">How the course app works</h2>
+      <video class="tourvid" controls autoplay playsinline preload="metadata" poster="assets/tour-poster.jpg" src="assets/tour.mp4"></video>
+      <p class="gm-src">About 4 minutes. You can pause and skip at any point.</p>`;
+    const m = $("#gmodal");
+    m.hidden = false; document.body.classList.add("modal-open");
+    requestAnimationFrame(() => m.classList.add("show"));
+  }
   function closeGrammar() {
     const m = $("#gmodal");
     if (m.hidden) return false;
+    m.querySelectorAll("video").forEach((v) => v.pause());
     m.classList.remove("show");
     document.body.classList.remove("modal-open");
     setTimeout(() => { if (!m.classList.contains("show")) m.hidden = true; }, 180);
@@ -983,6 +994,7 @@
     if (demo) { e.stopPropagation(); togglePop(demo); return; }
     if (!e.target.closest(".nmark") && !e.target.closest("#pop") && !e.target.closest(".timebtn")) hidePop();
   });
+  document.addEventListener("click", (e) => { if (e.target.closest("#tourBtn")) openTour(); });
   // word panel: a tap anywhere outside it closes it (a tap on another word just switches)
   document.addEventListener("click", (e) => {
     if ($("#sheet").hidden) return;
