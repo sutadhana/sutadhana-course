@@ -498,3 +498,5 @@ body.has-a2hs:not(.sheet-open) main{padding-bottom:84px}
 .a2-sec li{margin:3px 0}
 .a2-sec .ic{display:inline-block;vertical-align:-4px;color:var(--accent)}
 @media print{.a2hs{display:none}}
+.a2-tip{margin:4px 0 2px;padding:6px 10px;border-radius:10px;background:var(--soft2);font-size:.95em;line-height:1.5}
+.ic-more{display:inline-grid;place-items:center;min-width:2.1em;height:1.55em;padding:0 .35em;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:.8em;letter-spacing:1px;vertical-align:2px}

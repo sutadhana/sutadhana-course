@@ -1019,9 +1019,10 @@
       bar.querySelector(".a2hs-go").onclick = () => {
         const shareIc = `<svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="Share"><path d="M12 3v12M7.5 7.5 12 3l4.5 4.5"/><path d="M6 11H5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1"/></svg>`;
         const dots = `<b class="ic" aria-label="menu">⋮</b>`;
+        const moreIc = `<span class="ic-more" aria-label="three dots">•••</span>`;
         const ios = `<section class="a2-sec"><h3>iPhone</h3><ol>
             <li>Open this page in <b>Safari</b>.</li>
-            <li>Tap the <b>Share</b> button ${shareIc}. It’s at the bottom of the screen, or on newer iPhones inside the <b>•••</b> menu.</li>
+            <li>Tap the <b>Share</b> button ${shareIc}.<div class="a2-tip">Don’t see it? Tap the ${moreIc} button next to the web address first, then tap <b>Share</b>.</div></li>
             <li>Scroll down and tap <b>Add to Home Screen</b>.</li>
             <li>Tap <b>Add</b>, at the top right.</li></ol></section>`;
         const and = `<section class="a2-sec"><h3>Android</h3>
