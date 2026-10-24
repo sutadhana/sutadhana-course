@@ -426,6 +426,9 @@ def main(path):
     nouns = next(s for s in sections if s["id"] == "nouns")
     nouns["html"] = re.sub(r'<p class="ctr">((?:(?!</p>).)*)</p>\s*<div class="tbl">',
                            r'<p class="ctr ttl">\1</p><div class="tbl tc">', nouns["html"])
+    # any table right under a centred heading is centred too, so the heading sits over its middle
+    for sec in sections:
+        sec["html"] = re.sub(r'(<p class="ctr">(?:(?!</p>).)*</p>)\s*<div class="tbl">', r'\1<div class="tbl tc">', sec["html"])
     cases = next(s for s in sections if s["id"] == "cases")
     case_def = {}
     for row in re.findall(r"<tr>(.*?)</tr>", cases["html"]):

@@ -55,16 +55,13 @@
    "date": "2026-10-24",
    "title": "First readings from the book",
    "published": true,
-   "recording": "demo",
+   "recording": "https://1drv.ms/v/c/6c1280ffd770ad5b/IQA8BnD69AKWRKSGCaRxRo2ZARzLi855E-7Km-w6BUUz01Q?e=s6VIPJ",
    "items": [
     {
      "text": "ncrp-1-1-1"
     },
     {
      "text": "ncrp-1-1-2"
-    },
-    {
-     "text": "ncrp-1-1-3"
     }
    ],
    "next": ""
