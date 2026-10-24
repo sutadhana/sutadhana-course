@@ -298,8 +298,12 @@
           ${l.next ? `<div class="notice"><b style="font-weight:700">For next time:</b> ${esc(l.next)}</div>` : ""}
         </div>
         <aside class="side"><div class="card">
-          ${l.published || PREVIEW ? `<a class="btn primary block" href="#/${g.id}/review?lesson=${l.n}" style="margin-bottom:6px">Review vocabulary from this lesson${lessonDue ? ` <span class="badge">${lessonDue}</span>` : ""}</a>
-          <p class="muted" style="font-size:.85rem;margin:0 0 14px">Only this lesson’s words, with their own schedule.</p>` : ""}
+          ${l.published || PREVIEW ? `<a class="rvbtn" href="#/${g.id}/review?lesson=${l.n}">
+            <span class="rv-ic" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="6" width="13" height="15" rx="2"/><path d="M8 3h11a2 2 0 0 1 2 2v12"/></svg></span>
+            <span class="rv-t"><b>Review vocabulary</b><small>from this lesson</small></span>
+            ${lessonDue ? `<span class="rv-n" title="${lessonDue} cards ready">${lessonDue}</span>` : ""}
+            <span class="rv-go" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></a>
+          <p class="muted" style="font-size:.85rem;margin:8px 0 18px">Practise only this lesson’s words, with their own schedule.</p>` : ""}
           <div class="eyebrow">Words in this lesson</div>
           <div class="seg" role="group" aria-label="Word list">
             <button aria-pressed="true" data-wl="new">New · ${fresh.length}</button>
