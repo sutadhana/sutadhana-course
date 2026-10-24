@@ -209,6 +209,31 @@
   const DEMO_REC = "The recording of this lesson will be linked here after class.";
 
   /* ---------------- views ---------------- */
+  // the next class day after a given day (from the Saturday / Tuesday schedule)
+  function nextClassDate(g, after) {
+    const wd = g.schedule?.weekdays || [];
+    const base = after ? new Date(after + "T12:00:00Z") : new Date();
+    const today = new Date(); today.setUTCHours(0, 0, 0, 0);
+    for (let i = 1; i < 15; i++) {
+      const d = new Date(Date.UTC(base.getUTCFullYear(), base.getUTCMonth(), base.getUTCDate() + i, 12));
+      if (wd.includes(d.getUTCDay()) && d >= today) return d.toISOString().slice(0, 10);
+    }
+    return "";
+  }
+  async function nextLesson(g) {
+    const done = visibleLessons(g);
+    const last = done[done.length - 1];
+    const n = g.next?.n || (last ? last.n + 1 : 1);
+    if (g.next?.items?.length) return { n, date: g.next.date || nextClassDate(g, last?.date), items: g.next.items, set: true };
+    const lib = await load("library/index.json");
+    const read = new Set(done.flatMap((l) => lessonTexts(l)));
+    const lastText = last ? lessonTexts(last).slice(-1)[0] : null;
+    let i = lastText ? lib.findIndex((x) => x.id === lastText) + 1 : 0;
+    const items = [];
+    for (; i < lib.length && items.length < 3; i++) if (!read.has(lib[i].id)) items.push({ text: lib[i].id });
+    return items.length ? { n, date: nextClassDate(g, last?.date), items, set: false } : null;
+  }
+
   async function viewGroup() {
     const g = state.group;
     const lessons = visibleLessons(g).slice().reverse();
@@ -216,9 +241,10 @@
     let deck = [], d = { total: 0 };
     try { deck = await getDeck(); d = dueInfo(deck); } catch (e) { /* ignore */ }
     const lib = await load("library/index.json");
-    const titleOf = (id) => (lib.find((x) => x.id === id) || {}).titleEn || id;
+    const meta = (id) => lib.find((x) => x.id === id) || { id, title: id, titleEn: id };
+    const titleOf = (id) => meta(id).titleEn || id;
     const play = `<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l12.5-7.5z"/></svg>`;
-    const rows = lessons.map((l) => `
+    const card = (l) => `
       <div class="lcard${l.published ? "" : " draft"}">
         <a class="lmain" href="#/${g.id}/lesson/${l.n}">
           <div class="num"><small>LESSON</small><b>${l.n}</b></div>
@@ -227,20 +253,46 @@
           <div class="arr" aria-hidden="true">›</div></a>
         ${l.recording === "demo" ? `<button class="recbtn demo" data-note="${DEMO_REC}" data-label="Recording" aria-label="Recording of lesson ${l.n} (example)">${play}<span>Recording</span></button>`
           : l.recording ? `<a class="recbtn" href="${esc(l.recording)}" target="_blank" rel="noopener" aria-label="Recording of lesson ${l.n}">${play}<span>Recording</span></a>` : ""}
-      </div>`).join("");
+      </div>`;
+    // prepare for the next lesson
+    const nx = await nextLesson(g);
+    let prep = "";
+    if (nx) {
+      const nDeck = await buildDeck([{ n: nx.n, items: nx.items }]);
+      const nDue = dueInfo(nDeck, String(nx.n)).total;
+      const when = nx.date ? new Date(nx.date + "T12:00:00").toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" }) : "";
+      prep = `<section class="prep" aria-labelledby="prepH">
+        <div class="prep-h"><div><h2 id="prepH" class="prep-title">Prepare for next lesson</h2>
+          <div class="prep-sub">Lesson ${nx.n}${when ? " · " + esc(when) : ""}</div></div>
+          <span class="prep-tag">Coming up</span></div>
+        <div class="prep-list">${nx.items.filter((i) => i.text).map((i, k) => { const m = meta(i.text); return `<a class="prep-row" href="#/${g.id}/read/${m.id}">
+          <span class="dot">${k + 1}</span><span class="t"><b lang="pi">${esc(m.title)}</b><small>${esc(m.titleEn || "")} · ${esc(m.ref || "")}${m.audio ? ` · <span class="has-audio">${HP_ICON}Audio</span>` : ""}</small></span><span class="arr" aria-hidden="true">›</span></a>`; }).join("")}</div>
+        <a class="rvbtn" href="#/${g.id}/review?lesson=${nx.n}"><span class="rv-ic" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="6" width="13" height="15" rx="2"/><path d="M8 3h11a2 2 0 0 1 2 2v12"/></svg></span>
+          <span class="rv-t"><b>Learn the new words</b><small>before the class</small></span>${nDue ? `<span class="rv-n" title="${nDue} cards ready">${nDue}</span>` : ""}
+          <span class="rv-go" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></a>
+        <p class="muted" style="font-size:.88rem;margin:2px 0 0">Read the texts, listen to them and try your own translation before class.${nx.set ? "" : " The plan may still change."}</p>
+      </section>`;
+    }
+    const latest = lessons[0];
+    const band = latest || prep ? `<div class="band">
+        ${latest ? `<h2 class="band-h">Latest lesson</h2>${card(latest)}` : ""}
+        ${prep ? `<div style="height:${latest ? 18 : 0}px"></div>${prep}` : ""}</div>` : "";
+    const older = lessons.slice(1);
     const earlier = (g.earlier || []).length ? `
-      <details class="earlier"><summary><span>Earlier lessons ${g.earlier[0].n}–${g.earlier[g.earlier.length - 1].n}: recordings</span></summary>
+      <details class="earlier"><summary><span>Lessons ${g.earlier[0].n}–${g.earlier[g.earlier.length - 1].n}: recordings</span></summary>
       <ul class="rec-list">${g.earlier.map((e) => `<li><a href="${esc(e.recording)}" target="_blank" rel="noopener"><span>${play} Lesson ${e.n}</span><span class="muted">${fmtShort(e.date)}</span></a></li>`).join("")}</ul></details>` : "";
+    const below = older.length || earlier ? `<h2 class="divider"><span>Earlier lessons</span></h2>${older.map(card).join("")}${earlier}` : "";
     $("#main").innerHTML = `
-      <div class="head"><div class="eyebrow">${esc(g.title)}</div><h1>Lessons</h1>
+      <div class="site-title"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 8c4 5 6 10 6 15s-2 9-6 12c-4-3-6-7-6-12s2-10 6-15z"/><path d="M24 35c-6 0-12-3-16-9 5-1 10 0 14 3M24 35c6 0 12-3 16-9-5-1-10 0-14 3"/></svg><span>Sutadhana Learning Platform</span></div>
+      <div class="head"><h1>Lessons</h1>
         <p class="sub">Each lesson holds the texts we read together, the recording and the new words.</p></div>
       <div class="cols">
-        <div class="main">${rows || `<div class="notice">The first lesson in the app will appear here after class.</div>`}${earlier}</div>
+        <div class="main">${band || `<div class="notice">The first lesson in the app will appear here after class.</div>`}${below}</div>
         <aside class="side">
           <div class="card"><div class="eyebrow">Word review</div>
             <div class="big">${d.total}</div><div class="muted">${d.total === 1 ? "card" : "cards"} to review today</div>
             <a class="btn primary block" style="margin-top:14px" href="#/${g.id}/review">${d.total ? "Start review" : "Open review"}</a>
-            <p class="muted" style="font-size:.85rem;margin:10px 0 0">Progress is saved on this device.</p></div>
+            <p class="muted" style="font-size:.85rem;margin:10px 0 0">Words from all lessons. Progress is saved on this device.</p></div>
           ${danaCard(g, g.settings?.danaStyle || "d")}
           <div class="card"><div class="eyebrow">Classes</div>
             <p style="margin:6px 0 0">${esc(g.schedule.days)}, <button class="timebtn" id="lessonTime" aria-describedby="pop">${esc(utcLabel(g.schedule.utc))}</button></p>
@@ -781,8 +833,10 @@
     sc = sc ? String(sc) : "";
     let deck;
     if (sc) {
-      const l = g.lessons.find((x) => String(x.n) === sc);
-      if (!l || (!l.published && !PREVIEW)) { location.replace(`#/${g.id}/review`); return; }
+      let l = g.lessons.find((x) => String(x.n) === sc && (x.published || PREVIEW));
+      if (!l) { const nx = await nextLesson(g); if (nx && String(nx.n) === sc) l = { n: nx.n, items: nx.items, upcoming: true }; }
+      if (!l) { location.replace(`#/${g.id}/review`); return; }
+      state.reviewUpcoming = !!l.upcoming;
       deck = await buildDeck([l]);
       await headerWithDue("review");
     } else {
@@ -801,8 +855,9 @@
     const g = state.group;
     const s = session, sc = s.sc;
     const c = loadCards(sc);
-    const backHref = sc ? `#/${g.id}/lesson/${sc}` : `#/${g.id}`, backTxt = sc ? `Lesson ${sc}` : "Lessons";
-    const title = sc ? `Lesson ${sc} · words review` : "Word review";
+    const up = sc && state.reviewUpcoming;
+    const backHref = sc && !up ? `#/${g.id}/lesson/${sc}` : `#/${g.id}`, backTxt = sc && !up ? `Lesson ${sc}` : "Lessons";
+    const title = up ? `Lesson ${sc} · new words before class` : sc ? `Lesson ${sc} · words review` : "Word review";
     if (!s.queue.length) {
       const all = deck.length, seen = deck.filter((k) => c[k.id]).length;
       const learned = deck.filter((k) => c[k.id] && c[k.id].s >= LEARNED_DAYS).length;
