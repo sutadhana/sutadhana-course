@@ -449,3 +449,17 @@ body.wide .gram-nav{flex-basis:280px}
 /* noun-type headings above their tables */
 .gram-body p.ttl{font-size:1.3em;margin:1.8em 0 .5em;line-height:1.35}
 .gram-body .tbl.tc table{margin:0 auto}
+
+.nowrap{white-space:nowrap}
+/* reader: the size buttons also resize both translations */
+.eng{font-size:calc(17.5px * var(--ps,1))}
+.mytr textarea{font-size:calc(17.5px * var(--ps,1))}
+/* word panel: its own text size */
+.sheet .sheet-in{zoom:var(--ss,1)}
+.s-size{display:flex;gap:6px;margin-right:8px}
+.s-size .icon{font-size:1rem;width:auto;padding:0 10px}
+.s-head{align-items:flex-start}
+/* lesson page */
+.badge{display:inline-block;min-width:1.6em;padding:0 .45em;border-radius:999px;background:var(--copper);color:#fff;font-size:.85em;line-height:1.5;margin-left:6px}
+.two-btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.two-btns .btn{flex:1 1 160px;justify-content:center}

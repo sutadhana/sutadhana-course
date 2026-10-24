@@ -41,9 +41,10 @@
   const lessonTexts = (l) => l.items.filter((i) => i.text).map((i) => i.text);
 
   /* ---------------- review deck ---------------- */
-  const cardKey = () => `sd:${state.gid}:cards`;
-  const loadCards = () => store.get(cardKey(), {});
-  const saveCards = (c) => store.set(cardKey(), c);
+  // sc: undefined = the main review of all lessons; a lesson number = that lesson's own review
+  const scopeKey = (sc) => `sd:${state.gid}${sc ? ":L" + sc : ""}`;
+  const loadCards = (sc) => store.get(scopeKey(sc) + ":cards", {});
+  const saveCards = (c, sc) => store.set(scopeKey(sc) + ":cards", c);
 
   function sentenceOf(para, form) {
     const text = para.t.map((t) => t[0]).join("");
@@ -83,12 +84,12 @@
     for (const id in c) if (id.startsWith("m:") && c[id].s >= LEARNED_DAYS) out.add(id.slice(2));
     return out;
   }
-  function dueInfo(deck) {
-    const c = loadCards(), now = Date.now();
+  function dueInfo(deck, sc) {
+    const c = loadCards(sc), now = Date.now();
     const due = deck.filter((k) => c[k.id] && c[k.id].due <= now);
     const fresh = deck.filter((k) => !c[k.id]);
     const today = new Date().toDateString();
-    const nd = store.get(`sd:${state.gid}:newday`, { day: "", n: 0 });
+    const nd = store.get(scopeKey(sc) + ":newday", { day: "", n: 0 });
     const newLeft = Math.max(0, NEW_PER_DAY - (nd.day === today ? nd.n : 0));
     return { due, fresh, newToday: fresh.slice(0, newLeft), total: due.length + Math.min(fresh.length, newLeft) };
   }
@@ -188,9 +189,9 @@
   /* dāna card: three looks to choose from (settings.danaStyle a / b / c) */
   function danaCard(g, style) {
     if (!g.dana) return "";
-    const text = `You may express your support and appreciation for the lessons by giving dāna, <span lang="pi">yathā-pasādanaṃ</span>: according to your inspiration and ability. No act of generosity is too small, and it is always appreciated.`;
+    const text = `You may express your support and appreciation for the lessons by giving dāna, <span lang="pi" class="nowrap">yathā-pasādanaṃ</span>: according to your inspiration and ability. No act of generosity is too small, and it is always appreciated.`;
     const btn = (cls) => `<a class="btn ${cls}" href="${esc(g.dana)}" target="_blank" rel="noopener">Give dāna</a>`;
-    if (style === "d") return `<div class="card dana dana-d"><div class="dana-top"><svg class="dana-ic" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 8c4 5 6 10 6 15s-2 9-6 12c-4-3-6-7-6-12s2-10 6-15z"/><path d="M24 35c-6 0-12-3-16-9 5-1 10 0 14 3M24 35c6 0 12-3 16-9-5-1-10 0-14 3"/></svg><div class="dana-h">Dāna</div></div><p>You may express your support and appreciation for the lessons by giving dāna, <span lang="pi">yathā-pasādanaṃ</span>: according to your inspiration and ability.</p>${btn("dana-btn-copper")}</div>`;
+    if (style === "d") return `<div class="card dana dana-d"><div class="dana-top"><svg class="dana-ic" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 8c4 5 6 10 6 15s-2 9-6 12c-4-3-6-7-6-12s2-10 6-15z"/><path d="M24 35c-6 0-12-3-16-9 5-1 10 0 14 3M24 35c6 0 12-3 16-9-5-1-10 0-14 3"/></svg><div class="dana-h">Dāna</div></div><p>You may express your support and appreciation for the lessons by giving dāna, <span lang="pi" class="nowrap">yathā-pasādanaṃ</span>: according to your inspiration and ability.</p>${btn("dana-btn-copper")}</div>`;
     if (style === "b") return `<div class="card dana dana-b"><div class="dana-h">Supporting the lessons</div><p>${text}</p>${btn("dana-btn-light")}</div>`;
     if (style === "c") return `<div class="card dana dana-c"><div class="dana-top"><svg class="dana-ic" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 8c4 5 6 10 6 15s-2 9-6 12c-4-3-6-7-6-12s2-10 6-15z"/><path d="M24 35c-6 0-12-3-16-9 5-1 10 0 14 3M24 35c6 0 12-3 16-9-5-1-10 0-14 3"/></svg><div class="dana-h">Dāna</div></div><p>${text}</p>${btn("primary block")}</div>`;
     return `<div class="card dana dana-a"><div class="dana-h">Dāna</div><p>${text}</p>${btn("dana-btn-copper")}</div>`;
@@ -278,7 +279,9 @@
       if (pl.n >= l.n) break;
       for (const c of await buildDeck([pl])) if (c.kind === "meaning") before.add(c.lemma);
     }
-    const here = (await buildDeck([l])).filter((c) => c.kind === "meaning");
+    const lessonDeck = await buildDeck([l]);
+    const lessonDue = dueInfo(lessonDeck, String(l.n)).total;
+    const here = lessonDeck.filter((c) => c.kind === "meaning");
     const fresh = here.filter((c) => !before.has(c.lemma)), seen = here.filter((c) => before.has(c.lemma));
     const listHtml = (arr) => arr.length ? `<div class="wl">${arr.map((c) => `<div class="p">${esc(c.lemma)}</div><div class="m">${esc(c.meaning)}</div>`).join("")}</div>` : `<p class="muted">None.</p>`;
 
@@ -295,15 +298,16 @@
           ${l.next ? `<div class="notice"><b style="font-weight:700">For next time:</b> ${esc(l.next)}</div>` : ""}
         </div>
         <aside class="side"><div class="card">
-          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap">
-            <div class="eyebrow">Words in this lesson</div>
-            <button class="linkbtn" id="anki">Export to Anki</button></div>
+          ${l.published || PREVIEW ? `<a class="btn primary block" href="#/${g.id}/review?lesson=${l.n}" style="margin-bottom:6px">Review vocabulary from this lesson${lessonDue ? ` <span class="badge">${lessonDue}</span>` : ""}</a>
+          <p class="muted" style="font-size:.85rem;margin:0 0 14px">Only this lesson’s words, with their own schedule.</p>` : ""}
+          <div class="eyebrow">Words in this lesson</div>
           <div class="seg" role="group" aria-label="Word list">
             <button aria-pressed="true" data-wl="new">New · ${fresh.length}</button>
             <button aria-pressed="false" data-wl="seen">Seen before · ${seen.length}</button></div>
           <div id="wlNew">${listHtml(fresh)}</div><div id="wlSeen" hidden>${listHtml(seen)}</div>
           <p class="muted" style="font-size:.85rem;margin:10px 0 0">${l.published ? "These words are in your review." : "Words join the review when the lesson is published."}</p>
-          <a class="btn block" style="margin-top:12px" href="#/${g.id}/glossary/${l.n}?print=1">Save glossary as PDF</a>
+          <div class="two-btns"><a class="btn" href="#/${g.id}/glossary/${l.n}?print=1">Save glossary as PDF</a>
+            <button class="btn" id="anki">Export to Anki</button></div>
         </div></aside>
       </div>`;
     $("#main").querySelectorAll("[data-wl]").forEach((b) => b.onclick = () => {
@@ -572,6 +576,7 @@
       <div class="s-head"><div style="flex:1;min-width:0">
           <div class="s-word" lang="pi">${esc(btn.textContent)}</div>
           ${w.lemma && w.lemma.toLowerCase() !== btn.textContent.toLowerCase() ? `<div class="s-lemma">from <b lang="pi">${esc(w.lemma)}</b></div>` : ""}</div>
+        <span class="s-size" role="group" aria-label="Panel text size"><button class="icon" data-ssize="-1" aria-label="Smaller text">A−</button><button class="icon" data-ssize="1" aria-label="Larger text">A+</button></span>
         <button class="icon" id="sheetClose" aria-label="Close">×</button></div>
       <div class="rows">
         <div class="lbl">Grammar</div><div class="gram">${linkGrammar(w.label, { lemma: w.lemma, t: t.id, k: btn.dataset.k })}${/\p{L}-\p{L}/u.test(btn.textContent) && !/compound/.test(w.label) ? ` · ${linkGrammar("compound")}` : ""}</div>
@@ -593,6 +598,13 @@
     sh.hidden = false; document.body.classList.add("sheet-open");
     sh.scrollTop = 0;
     $("#sheetClose").onclick = closeSheet;
+    sh.style.setProperty("--ss", sheetScale());
+    sh.querySelectorAll("[data-ssize]").forEach((b) => b.onclick = () => {
+      const steps = [0.85, 1, 1.15, 1.3, 1.5], i = steps.indexOf(sheetScale());
+      const v = steps[Math.max(0, Math.min(steps.length - 1, i + +b.dataset.ssize))];
+      try { localStorage.setItem("sd:sheetscale", v); } catch (e) {}
+      sh.style.setProperty("--ss", v);
+    });
     // keep the tapped word visible above the sheet on small screens
     {
       const r = btn.getBoundingClientRect(), limit = innerHeight * 0.5;
@@ -619,6 +631,7 @@
     box.innerHTML = rows;
   }
 
+  function sheetScale() { try { const v = parseFloat(localStorage.getItem("sd:sheetscale")); return [0.85, 1, 1.15, 1.3, 1.5].includes(v) ? v : 1; } catch (e) { return 1; } }
   function closeSheet() {
     $("#sheet").hidden = true; document.body.classList.remove("sheet-open");
     document.querySelectorAll(".w.on").forEach((x) => x.classList.remove("on"));
@@ -748,32 +761,45 @@
 
   /* ---------------- review ---------------- */
   let session = null;
-  async function viewReview() {
+  async function viewReview(sc) {
     const g = state.group;
-    const deck = await getDeck();
-    const d = dueInfo(deck);
-    header("review", d.total);
-    if (!session || session.gid !== g.id) {
-      const queue = [...d.due.sort((a, b) => loadCards()[a.id].due - loadCards()[b.id].due), ...d.newToday];
-      session = { gid: g.id, queue, done: 0, start: queue.length, shown: false };
+    sc = sc ? String(sc) : "";
+    let deck;
+    if (sc) {
+      const l = g.lessons.find((x) => String(x.n) === sc);
+      if (!l || (!l.published && !PREVIEW)) { location.replace(`#/${g.id}/review`); return; }
+      deck = await buildDeck([l]);
+      await headerWithDue("review");
+    } else {
+      deck = await getDeck();
+    }
+    const d = dueInfo(deck, sc);
+    if (!sc) header("review", d.total);
+    if (!session || session.gid !== g.id || session.sc !== sc) {
+      const c = loadCards(sc);
+      const queue = [...d.due.sort((a, b) => c[a.id].due - c[b.id].due), ...d.newToday];
+      session = { gid: g.id, sc, queue, done: 0, start: queue.length, shown: false };
     }
     renderReview(deck);
   }
   function renderReview(deck) {
     const g = state.group;
-    const s = session;
-    const c = loadCards();
+    const s = session, sc = s.sc;
+    const c = loadCards(sc);
+    const backHref = sc ? `#/${g.id}/lesson/${sc}` : `#/${g.id}`, backTxt = sc ? `Lesson ${sc}` : "Lessons";
+    const title = sc ? `Lesson ${sc} · words review` : "Word review";
     if (!s.queue.length) {
       const all = deck.length, seen = deck.filter((k) => c[k.id]).length;
       const learned = deck.filter((k) => c[k.id] && c[k.id].s >= LEARNED_DAYS).length;
-      const nextDue = Object.values(c).map((x) => x.due).filter((x) => x > Date.now()).sort((a, b) => a - b)[0];
+      const nextDue = deck.map((k) => c[k.id]?.due).filter((x) => x > Date.now()).sort((a, b) => a - b)[0];
       $("#main").innerHTML = `<div class="rv">
-        <div class="head"><div class="eyebrow">Word review</div><h1>${s.start ? "Done for now" : "Nothing to review"}</h1>
+        ${sc ? `<a class="back" href="${backHref}"><span aria-hidden="true" style="color:var(--accent)">←</span> Back to ${backTxt}</a>` : ""}
+        <div class="head"><div class="eyebrow">${title}</div><h1>${s.start ? "Done for now" : "Nothing to review"}</h1>
           <p class="sub">${deck.length ? (nextDue ? "Next cards are due " + relDay(nextDue) + "." : "") : "Words appear here after each lesson is published."}</p></div>
         <div class="stats"><div><b>${s.done}</b><span>reviewed now</span></div><div><b>${seen}</b><span>cards started</span></div>
           <div><b>${learned}</b><span>well learned</span></div><div><b>${all}</b><span>cards in all</span></div></div>
-        ${deck.length ? `<p><button class="linkbtn" id="ankiAll">Export all words to Anki</button></p>` : ""}
-        <p class="muted" style="font-size:.9rem">Two kinds of card: the meaning of a word, and parsing a form as it appears in a text. Progress is saved on this device only.</p></div>`;
+        ${deck.length && !sc ? `<p><button class="linkbtn" id="ankiAll">Export all words to Anki</button></p>` : ""}
+        <p class="muted" style="font-size:.9rem">${sc ? `This review has only the words of Lesson ${sc}, with its own schedule. The Review tab at the top mixes the words of all lessons.` : "Two kinds of card: the meaning of a word, and parsing a form as it appears in a text."} Progress is saved on this device only.</p></div>`;
       const ab = $("#ankiAll"); if (ab) ab.onclick = () => exportAnki(deck.filter((k) => k.kind === "meaning"), `${g.id}-all-words`);
       return;
     }
@@ -787,8 +813,8 @@
       ? `<div class="kv"><div class="lbl">Meaning</div><div style="font-size:1.2rem">${esc(k.meaning)}</div><div class="lbl">Here</div><div>${esc(k.ctx)}</div></div>`
       : `<div class="kv"><div class="lbl">From</div><div style="font-size:1.2rem" lang="pi">${esc(k.lemma)}</div><div class="lbl">Form</div><div class="gram" style="font-size:1.1rem">${linkGrammar(k.label, { lemma: k.lemma, t: k.text, k: k.wk })}</div><div class="lbl">Here</div><div>${esc(k.ctx)}</div></div>`;
     $("#main").innerHTML = `<div class="rv">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><a class="back" href="#/${g.id}"><span aria-hidden="true" style="color:var(--accent)">←</span> Lessons</a>
-        <span class="muted" style="font-size:.95rem">${s.done + 1} of ${s.start}${c[k.id] ? "" : " · new"}</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><a class="back" href="${backHref}"><span aria-hidden="true" style="color:var(--accent)">←</span> ${backTxt}</a>
+        <span class="muted" style="font-size:.95rem">${sc ? `Lesson ${sc} · ` : ""}${s.done + 1} of ${s.start}${c[k.id] ? "" : " · new"}</span></div>
       <div class="progress"><i style="width:${Math.round(100 * s.done / Math.max(1, s.start))}%"></i></div>
       <div class="qcard">${front}
         <div class="q-ans" id="ans" ${s.shown ? "" : "hidden"}>${back}
@@ -801,14 +827,14 @@
     $("#main").querySelectorAll("[data-g]").forEach((b) => b.onclick = () => grade(deck, +b.dataset.g));
   }
   function grade(deck, gr) {
-    const s = session, k = s.queue.shift(), c = loadCards();
+    const s = session, sc = s.sc, k = s.queue.shift(), c = loadCards(sc);
     const wasNew = !c[k.id];
     c[k.id] = FSRS.review(c[k.id] || {}, gr);
-    saveCards(c);
+    saveCards(c, sc);
     if (wasNew) {
-      const today = new Date().toDateString();
-      const nd = store.get(`sd:${state.gid}:newday`, { day: "", n: 0 });
-      store.set(`sd:${state.gid}:newday`, { day: today, n: (nd.day === today ? nd.n : 0) + 1 });
+      const today = new Date().toDateString(), key = scopeKey(sc) + ":newday";
+      const nd = store.get(key, { day: "", n: 0 });
+      store.set(key, { day: today, n: (nd.day === today ? nd.n : 0) + 1 });
     }
     if (gr === 1) s.queue.push(k); else s.done += 1;
     s.shown = false;
@@ -922,7 +948,7 @@
       if (!v) await viewGroup();
       else if (v === "lesson") await viewLesson(parts[2]);
       else if (v === "read") await viewReader(parts[2], q.get("lesson"));
-      else if (v === "review") await viewReview();
+      else if (v === "review") await viewReview(q.get("lesson"));
       else if (v === "grammar") await viewGrammar(parts[2]);
       else if (v === "library") await viewLibrary();
       else if (v === "glossary") await viewGlossary(parts[2], q.get("print") === "1");
