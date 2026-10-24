@@ -270,7 +270,7 @@
         <a class="rvbtn" href="#/${g.id}/review?lesson=${nx.n}"><span class="rv-ic" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="6" width="13" height="15" rx="2"/><path d="M8 3h11a2 2 0 0 1 2 2v12"/></svg></span>
           <span class="rv-t"><b>Learn the new words</b><small>before the class</small></span>${nDue ? `<span class="rv-n" title="${nDue} cards ready">${nDue}</span>` : ""}
           <span class="rv-go" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></a>
-        <p class="muted" style="font-size:.88rem;margin:2px 0 0">Read the texts, listen to them and try your own translation before class.${nx.set ? "" : " The plan may still change."}</p>
+        <p class="muted" style="font-size:.88rem;margin:2px 0 0">Read the texts, listen to them and try your own translation before class.</p>
       </section>`;
     }
     const latest = lessons[0];
