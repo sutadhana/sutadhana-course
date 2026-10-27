@@ -199,7 +199,7 @@ TEXTS.append(dict(
     titleEn="Finger Snap",
     source="NCRP Lesson 1 · Initial reading 4",
     credit=BODHI,
-    intro="The book puts (Bhikkhu …) once, before the first passage: a bhikkhu is the one who does all this, in each of the four passages.",
+    intro="The book puts (bhikkhu …) once, before the first passage: a bhikkhu is the one who does all this, in each of the four passages.",
     paras=[
         ("(Bhikkhu …) … anuppannānaṃ pāpakānaṃ akusalānaṃ dhammānaṃ anuppādāya chandaṃ janeti; vāyamati; viriyaṃ ārabhati; cittaṃ paggaṇhāti; padahati;",
          "“… generates desire for the non-arising of unarisen bad unwholesome qualities; makes an effort, arouses energy, applies his mind, and strives …"),

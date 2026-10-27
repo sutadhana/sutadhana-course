@@ -39,6 +39,22 @@
   const visibleLessons = (g) => g.lessons.filter((l) => l.published || PREVIEW).sort((a, b) => a.n - b.n);
   const publishedLessons = (g) => g.lessons.filter((l) => l.published).sort((a, b) => a.n - b.n);
   const lessonTexts = (l) => l.items.filter((i) => i.text).map((i) => i.text);
+  // which passages of a text belong to a lesson item (1-based, inclusive)
+  const inRange = (it, pi) => !((it.from && pi + 1 < it.from) || (it.to && pi + 1 > it.to));
+  const BOOK_GRAMMAR = {
+    I: { pages: "20–27", lesson: 1, sections: [["Nouns", "nouns"], ["Verbs", "present"], ["Postposed particles (clitics)", null],
+      ["Relative pronoun", "relative-pronouns"], ["Sandhi", "sandhi"], ["Negatives", null], ["Agreement of adjectives", "adjectives"],
+      ["Accusative of destination", null], ["Conjoining in series", null], ["Compounds", "compounds"]] },
+  };
+  // a small heading for each group of items: "Lesson 1 · Initial readings", "Lesson 1 · Further readings", "Lesson 1 · Grammar"
+  function itemGroup(it, meta) {
+    if (it.bookGrammar) { const b = BOOK_GRAMMAR[it.bookGrammar]; return b ? `Lesson ${b.lesson} · Grammar` : "Grammar"; }
+    if (!it.text) return "";
+    const m = meta(it.text);
+    if (!m.bookLesson) return "Other texts";
+    return `Lesson ${m.bookLesson} · ${m.section === "initial" ? "Initial readings" : m.section === "further" ? "Further readings" : "Extra readings"}`;
+  }
+  const partLabel = (it) => it.from && it.to ? `passages ${it.from}–${it.to}` : it.from ? `from passage ${it.from}` : it.to ? `passages 1–${it.to}` : "";
 
   /* ---------------- review deck ---------------- */
   // sc: undefined = the main review of all lessons; a lesson number = that lesson's own review
@@ -57,9 +73,9 @@
   async function buildDeck(lessons) {
     const cards = new Map();
     for (const l of lessons) {
-      for (const tid of lessonTexts(l)) {
-        const t = await load(`library/${tid}.json`);
-        t.paras.forEach((p) => p.t.forEach((tok) => {
+      for (const it of l.items.filter((i) => i.text)) {
+        const t = await load(`library/${it.text}.json`);
+        t.paras.forEach((p, pi) => inRange(it, pi) && p.t.forEach((tok) => {
           if (tok.length < 2) return;
           const w = t.words[tok[1]];
           for (const h of w.heads || []) {
@@ -226,12 +242,45 @@
     const n = g.next?.n || (last ? last.n + 1 : 1);
     if (g.next?.items?.length) return { n, date: g.next.date || nextClassDate(g, last?.date), items: g.next.items, set: true };
     const lib = await load("library/index.json");
-    const read = new Set(done.flatMap((l) => lessonTexts(l)));
-    const lastText = last ? lessonTexts(last).slice(-1)[0] : null;
+    const read = new Set(done.flatMap((l) => l.items.filter((it) => it.text && !it.to).map((it) => it.text)));
+    const lastItem = last ? last.items.filter((it) => it.text).slice(-1)[0] : null;
+    const lastText = lastItem?.text;
     let i = lastText ? lib.findIndex((x) => x.id === lastText) + 1 : 0;
     const items = [];
+    if (lastItem?.to) items.push({ text: lastText, from: lastItem.to + 1 });
     for (; i < lib.length && items.length < 3; i++) if (!read.has(lib[i].id)) items.push({ text: lib[i].id });
     return items.length ? { n, date: nextClassDate(g, last?.date), items, set: false } : null;
+  }
+
+  // the rows of a lesson's items, with a small heading wherever the group changes
+  function itemRows(items, meta, href, cls) {
+    let k = 0, last = null;
+    return items.map((it) => {
+      const grp = itemGroup(it, meta);
+      const head = grp && grp !== last ? `<div class="grp-h">${esc(grp)}</div>` : "";
+      last = grp || last;
+      k++;
+      if (it.bookGrammar) {
+        const b = BOOK_GRAMMAR[it.bookGrammar] || {};
+        return `${head}<button type="button" class="${cls} bookg" data-bookg="${esc(it.bookGrammar)}"><span class="dot">${k}</span>
+          <span class="t"><b>Grammar ${esc(it.bookGrammar)}</b><small>In the book, pages ${esc(b.pages || "")} · with links to Mor’s grammar guide</small></span><span class="arr" aria-hidden="true">›</span></button>`;
+      }
+      if (!it.text) return `${head}<div class="${cls}"><span class="dot">${k}</span><span class="t"><b>${esc(it.label || "")}</b>${it.detail ? `<small>${esc(it.detail)}</small>` : ""}</span></div>`;
+      const m = meta(it.text), part = partLabel(it);
+      return `${head}<a class="${cls}" href="${href(m)}"><span class="dot">${k}</span><span class="t"><b lang="pi">${esc(m.title)}${part ? ` <span class="part">${part}</span>` : ""}</b>
+        <small>${esc(m.titleEn || "")} · ${esc(m.ref || "")}${m.audio ? ` · <span class="has-audio">${HP_ICON}Audio</span>` : ""}</small></span><span class="arr" aria-hidden="true">›</span></a>`;
+    }).join("");
+  }
+  function openBookGrammar(id) {
+    const b = BOOK_GRAMMAR[id]; if (!b) return;
+    const g = state.group;
+    $("#gmBody").innerHTML = `<div class="eyebrow">A New Course in Reading Pāḷi</div><h2 id="gmTitle">Grammar ${esc(id)}</h2>
+      <p style="margin:0 0 12px">In the book, <b>pages ${esc(b.pages)}</b>. Its sections, with the matching topic in Mor’s grammar guide:</p>
+      <ol class="bookg-list">${b.sections.map(([t, gid]) => `<li><span>${esc(t)}</span>${gid ? `<a href="#" data-gram="${gid}">Grammar guide ›</a>` : ""}</li>`).join("")}</ol>
+      ${g.materials ? `<p style="margin:14px 0 0"><a class="btn" href="${esc(g.materials)}" target="_blank" rel="noopener">Open the course materials folder</a></p>` : ""}`;
+    const m = $("#gmodal");
+    m.hidden = false; document.body.classList.add("modal-open");
+    requestAnimationFrame(() => m.classList.add("show"));
   }
 
   async function viewGroup() {
@@ -265,8 +314,7 @@
         <div class="prep-h"><div><h2 id="prepH" class="prep-title">Prepare for next lesson</h2>
           <div class="prep-sub">Lesson ${nx.n}${when ? " · " + esc(when) : ""}</div></div>
           <span class="prep-tag">Coming up</span></div>
-        <div class="prep-list">${nx.items.filter((i) => i.text).map((i, k) => { const m = meta(i.text); return `<a class="prep-row" href="#/${g.id}/read/${m.id}">
-          <span class="dot">${k + 1}</span><span class="t"><b lang="pi">${esc(m.title)}</b><small>${esc(m.titleEn || "")} · ${esc(m.ref || "")}${m.audio ? ` · <span class="has-audio">${HP_ICON}Audio</span>` : ""}</small></span><span class="arr" aria-hidden="true">›</span></a>`; }).join("")}</div>
+        <div class="prep-list">${itemRows(nx.items, meta, (m) => `#/${g.id}/read/${m.id}?lesson=${nx.n}`, "prep-row")}</div>
         <a class="rvbtn" href="#/${g.id}/review?lesson=${nx.n}"><span class="rv-ic" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="6" width="13" height="15" rx="2"/><path d="M8 3h11a2 2 0 0 1 2 2v12"/></svg></span>
           <span class="rv-t"><b>Learn the new words</b><small>before the class</small></span>${nDue ? `<span class="rv-n" title="${nDue} cards ready">${nDue}</span>` : ""}
           <span class="rv-go" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></a>
@@ -314,6 +362,7 @@
     if (!l || (!l.published && !PREVIEW)) { $("#main").innerHTML = `<a class="back" href="#/${g.id}"><span aria-hidden="true" style="color:var(--accent)">←</span> All lessons</a><div class="notice">This lesson isn't available yet.</div>`; return; }
     const lib = await load("library/index.json");
     const meta = (id) => lib.find((x) => x.id === id) || { id, titleEn: id };
+    const items0 = itemRows(l.items, meta, (m) => `#/${g.id}/read/${m.id}?lesson=${l.n}`, "row lrow");
     let k = 0;
     const items = l.items.map((i) => {
       k++;
@@ -347,7 +396,7 @@
           ${l.recording === "demo" ? `<button class="btn recbtn-l demo" data-note="${DEMO_REC}" data-label="Recording" style="align-self:flex-start"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4"/></svg>Watch the recording</button>` : ""}
           ${l.recording && l.recording !== "demo" ? `<a class="btn" href="${esc(l.recording)}" target="_blank" rel="noopener" style="align-self:flex-start"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4"/></svg>Watch the recording</a>` : ""}
           <div class="eyebrow" style="margin-top:4px">What we read, in order</div>
-          ${items}
+          ${items0}
           ${l.next ? `<div class="notice"><b style="font-weight:700">For next time:</b> ${esc(l.next)}</div>` : ""}
         </div>
         <aside class="side"><div class="card">
@@ -380,10 +429,10 @@
     await headerWithDue("lessons");
     if (!l || (!l.published && !PREVIEW)) { $("#main").innerHTML = `<div class="notice">This lesson isn't available yet.</div>`; return; }
     const sections = [];
-    for (const tid of lessonTexts(l)) {
-      const t = await load(`library/${tid}.json`);
+    for (const it of l.items.filter((i) => i.text)) {
+      const t = await load(`library/${it.text}.json`);
       const seen = new Set(), rows = [];
-      t.paras.forEach((p) => p.t.forEach((tok) => {
+      t.paras.forEach((p, pi) => inRange(it, pi) && p.t.forEach((tok) => {
         if (tok.length < 2 || seen.has(tok[1])) return;
         seen.add(tok[1]);
         const w = t.words[tok[1]];
@@ -490,7 +539,10 @@
     state.lastReader = location.hash;
     const notes = (g.notes || {})[tid] || [];
     const learned = learnedSet();
-    const lesson = lessonN ? g.lessons.find((x) => String(x.n) === String(lessonN)) : null;
+    let lesson = lessonN ? g.lessons.find((x) => String(x.n) === String(lessonN) && (x.published || PREVIEW)) : null;
+    let upcoming = false;
+    if (lessonN && !lesson) { const nx = await nextLesson(g); if (nx && String(nx.n) === String(lessonN)) { lesson = nx; upcoming = true; } }
+    const item = lesson ? lesson.items.find((it) => it.text === tid) : null;
     const showHints = g.settings?.colourHints !== false;
     const markNew = g.settings?.markNewWords !== false;
     const h = hints();
@@ -505,7 +557,11 @@
         const wn = notes.find((n) => n.p === pi && n.w && n.w.toLowerCase() === tok[1]);
         return `<button class="${cls}" data-k="${esc(tok[1])}" data-p="${pi}" data-t="${ti}" lang="pi">${esc(tok[0])}</button>${wn ? `<button class="nmark" data-note="${esc(wn.text)}" aria-label="Teacher's note">i</button>` : ""}`;
       }).join("");
-      return `<section class="box">
+      const out = item && !inRange(item, pi);
+      const mark = item && item.to && pi === item.to ? `<div class="stopmark"><span>We stopped here in Lesson ${lesson.n}</span></div>`
+        : item && item.from && pi === item.from - 1 ? `<div class="stopmark start" id="pickup"><span>${upcoming ? "We pick up here next lesson" : "Picking up here in Lesson " + lesson.n}</span></div>` : "";
+      return `${mark}<section class="box${out ? " out" : ""}">
+        ${out ? `<div class="out-tag">${item.to ? "Not yet read in class" : "Read in an earlier lesson"}</div>` : ""}
         ${pnote ? `<button class="nmark box-note" data-note="${esc(pnote.text)}" aria-label="Teacher's note">i</button>` : ""}
         <div class="box-no">${t.paras.length > 1 ? "Passage " + (pi + 1) : "Text"}</div>
         <div class="pali">${toks}</div>
@@ -529,12 +585,13 @@
       const nm = (id) => (lib.find((x) => x.id === id) || {}).title || id;
       prevNext = `<div class="nav-next">
         ${i > 0 ? `<a class="btn" href="#/${g.id}/read/${ids[i - 1]}?lesson=${lesson.n}">← <span lang="pi">${esc(nm(ids[i - 1]))}</span></a>` : "<span></span>"}
-        ${i >= 0 && i < ids.length - 1 ? `<a class="btn primary" href="#/${g.id}/read/${ids[i + 1]}?lesson=${lesson.n}">Next: <span lang="pi">${esc(nm(ids[i + 1]))}</span> →</a>` : `<a class="btn" href="#/${g.id}/lesson/${lesson.n}">Back to lesson ${lesson.n}</a>`}
+        ${i >= 0 && i < ids.length - 1 ? `<a class="btn primary" href="#/${g.id}/read/${ids[i + 1]}?lesson=${lesson.n}">Next: <span lang="pi">${esc(nm(ids[i + 1]))}</span> →</a>` : upcoming ? `<a class="btn" href="#/${g.id}">Back to all lessons</a>` : `<a class="btn" href="#/${g.id}/lesson/${lesson.n}">Back to lesson ${lesson.n}</a>`}
       </div>`;
     }
 
     $("#main").innerHTML = `
-      <a class="back" href="${lesson ? `#/${g.id}/lesson/${lesson.n}` : `#/${g.id}/library`}"><span aria-hidden="true" style="color:var(--accent)">←</span> ${lesson ? "Back to Lesson " + lesson.n : "Back to the library"}</a>
+      <a class="back" href="${upcoming ? `#/${g.id}` : lesson ? `#/${g.id}/lesson/${lesson.n}` : `#/${g.id}/library`}"><span aria-hidden="true" style="color:var(--accent)">←</span> ${upcoming ? "Back to all lessons" : lesson ? "Back to Lesson " + lesson.n : "Back to the library"}</a>
+      ${upcoming ? `<div class="upnote">Preparing for <b>Lesson ${lesson.n}</b></div>` : ""}
       <div class="head"><div class="eyebrow">${esc(t.source)} · ${esc(t.ref)}</div>
         <h1 lang="pi">${esc(t.title)}</h1><p class="sub">${esc(t.titleEn || "")}</p></div>
       ${t.audio ? listenBar(t) : ""}
@@ -554,6 +611,7 @@
       <p class="textcredit">${esc(t.credit || "")}</p>`;
 
     if (t.audio) wireListen(t);
+    const pk = $("#pickup"); if (pk) setTimeout(() => pk.scrollIntoView({ block: "center", behavior: "smooth" }), 250);
     const box = $("#text");
     box.addEventListener("click", (e) => {
       const b = e.target.closest(".w");
@@ -877,8 +935,8 @@
     const prev = FSRS.preview(c[k.id] || {});
     const line = esc(k.line).replace(new RegExp(esc(k.form).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")), (m) => `<b>${m}</b>`);
     const front = k.kind === "meaning"
-      ? `<div class="q-kind">What does it mean?</div><div class="q-word" lang="pi">${esc(k.lemma)}</div><div class="q-line" lang="pi">${line} · ${esc(k.ref)}</div>`
-      : `<div class="q-kind">Parse this form</div><div class="q-word" lang="pi">${esc(k.form)}</div><div class="q-line" lang="pi">${line} · ${esc(k.ref)}</div>`;
+      ? `<div class="q-kind">What does this word mean?</div><div class="q-word" lang="pi">${esc(k.lemma)}</div><div class="q-line" lang="pi">${line} · ${esc(k.ref)}</div>`
+      : `<div class="q-kind">What is the grammatical form of this word?</div><div class="q-word" lang="pi">${esc(k.form)}</div><div class="q-line" lang="pi">${line} · ${esc(k.ref)}</div>`;
     const back = k.kind === "meaning"
       ? `<div class="kv"><div class="lbl">Meaning</div><div style="font-size:1.2rem">${esc(k.meaning)}</div><div class="lbl">Here</div><div>${esc(k.ctx)}</div></div>`
       : `<div class="kv"><div class="lbl">From</div><div style="font-size:1.2rem" lang="pi">${esc(k.lemma)}</div><div class="lbl">Form</div><div class="gram" style="font-size:1.1rem">${linkGrammar(k.label, { lemma: k.lemma, t: k.text, k: k.wk })}</div><div class="lbl">Here</div><div>${esc(k.ctx)}</div></div>`;
@@ -892,13 +950,30 @@
             ${["Again", "Hard", "Good", "Easy"].map((n, i) => `<button data-g="${i + 1}" class="${i === 2 ? "good" : ""}">${n}<small>${prev[i]}</small></button>`).join("")}
           </div></div>
         ${s.shown ? "" : `<button class="btn primary block" id="show" style="margin-top:22px">Show answer</button>`}
-      </div></div>`;
+      </div>
+      ${s.hist?.length ? `<button class="linkbtn prevcard" id="prevCard" type="button">← Previous card</button>` : ""}</div>`;
+    const pc = $("#prevCard"); if (pc) pc.onclick = () => undoGrade(deck);
     const sb = $("#show"); if (sb) { sb.onclick = () => { s.shown = true; renderReview(deck); }; sb.focus(); }
     $("#main").querySelectorAll("[data-g]").forEach((b) => b.onclick = () => grade(deck, +b.dataset.g));
+  }
+  // go back one card: undo its grade and show it again
+  function undoGrade(deck) {
+    const s = session, h = s.hist.pop(); if (!h) return;
+    const c = loadCards(s.sc);
+    if (h.prev) c[h.k.id] = h.prev; else delete c[h.k.id];
+    saveCards(c, s.sc);
+    if (h.wasNew) {
+      const key = scopeKey(s.sc) + ":newday", nd = store.get(key, { day: "", n: 0 });
+      store.set(key, { day: nd.day, n: Math.max(0, nd.n - 1) });
+    }
+    if (h.gr === 1) { const i = s.queue.lastIndexOf(h.k); if (i >= 0) s.queue.splice(i, 1); } else s.done = Math.max(0, s.done - 1);
+    s.queue.unshift(h.k); s.shown = true;
+    renderReview(deck);
   }
   function grade(deck, gr) {
     const s = session, sc = s.sc, k = s.queue.shift(), c = loadCards(sc);
     const wasNew = !c[k.id];
+    (s.hist = s.hist || []).push({ k, gr, wasNew, prev: c[k.id] ? { ...c[k.id] } : null });
     c[k.id] = FSRS.review(c[k.id] || {}, gr);
     saveCards(c, sc);
     if (wasNew) {
@@ -1049,7 +1124,10 @@
     if (demo) { e.stopPropagation(); togglePop(demo); return; }
     if (!e.target.closest(".nmark") && !e.target.closest("#pop") && !e.target.closest(".timebtn")) hidePop();
   });
-  document.addEventListener("click", (e) => { if (e.target.closest("#tourBtn")) openTour(); });
+  document.addEventListener("click", (e) => {
+    if (e.target.closest("#tourBtn")) openTour();
+    const bg = e.target.closest("[data-bookg]"); if (bg) openBookGrammar(bg.dataset.bookg);
+  });
 
   /* phones only: a small button to save the app to the home screen, with instructions */
   {

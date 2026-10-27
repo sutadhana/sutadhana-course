@@ -128,7 +128,7 @@ details.earlier summary{cursor:pointer;color:var(--accent);padding:10px 2px;min-
 .marknew .w.new{text-decoration-line:underline;text-decoration-style:dotted;text-decoration-color:var(--accent)}
 .hint-subj .w.subj{background:var(--subj-bg);color:var(--subj)}
 .hint-verb .w.verb{background:var(--verb-bg);color:var(--verb)}
-.w.on,.hint-subj .w.subj.on,.hint-verb .w.verb.on{background:var(--mark);color:var(--ink);box-shadow:inset 0 0 0 2px var(--copper)}
+.w.on,.hint-subj .w.subj.on,.hint-verb .w.verb.on{background:rgba(94,110,88,.2);color:var(--ink);box-shadow:inset 0 0 0 2px var(--accent)}
 .punct{color:var(--muted)}
 .nmark{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font:700 .78rem/1 var(--ui);border:0;cursor:pointer;vertical-align:super;margin-left:2px;padding:0}
 .box-note{position:absolute;top:12px;right:14px}
@@ -535,3 +535,31 @@ h2.divider{font-weight:700;font-size:1.15rem;letter-spacing:0;text-transform:non
 .divider::before,.divider::after{background:var(--line)}
 @media (max-width:600px){.prep-title{font-size:1.32rem}.band{padding:12px}}
 @media (max-width:600px){.site-title{gap:8px;margin:2px 0 12px}.site-title span{font-size:1.38rem;white-space:nowrap}.site-title svg{width:26px;height:26px}}
+
+/* lesson items grouped: "Lesson 1 · Initial readings" … */
+.grp-h{font-size:.85rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:10px 2px 2px}
+.grp-h:first-child{margin-top:0}
+.part{display:inline-block;font-size:.78rem;color:var(--copper);background:var(--mark);border-radius:999px;padding:0 8px;vertical-align:2px;font-family:var(--ui)}
+button.prep-row,button.lrow{font:inherit;text-align:left;width:100%;cursor:pointer}
+.bookg .dot{background:var(--mark)}
+.bookg-list{margin:0;padding-left:1.4em;line-height:1.5}
+.bookg-list li{margin:6px 0}
+.bookg-list li span{margin-right:10px}
+.bookg-list a{font-size:.92rem;white-space:nowrap}
+.cols .main .lrow{display:flex;align-items:center;gap:16px;text-decoration:none;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 18px;min-height:72px;box-shadow:var(--card-shadow)}
+.cols .main .lrow:hover{border-color:var(--accent)}
+.lrow .dot{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--soft)}
+.lrow .t{flex:1;min-width:0;display:flex;flex-direction:column}.lrow .t b{font-weight:400;font-size:1.25rem}.lrow .t small{color:var(--muted);font-size:.98rem}
+.lrow .arr{color:var(--accent);font-size:1.4rem}
+/* reader: where we stopped / pick up */
+.box.out{opacity:.45;filter:grayscale(.4)}
+.box.out:hover{opacity:.8}
+.out-tag{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.stopmark{display:flex;align-items:center;gap:12px;color:var(--copper);font-weight:700;font-size:1rem;margin:2px 0}
+.stopmark::before,.stopmark::after{content:"";flex:1;height:2px;background:var(--copper);opacity:.55;border-radius:2px}
+.stopmark span{white-space:nowrap}
+.upnote{display:inline-block;margin:0 0 8px;font-size:.92rem;color:var(--copper);background:var(--mark);border-radius:999px;padding:2px 12px}
+/* review: clearer questions */
+.q-kind{font-size:1.3rem;letter-spacing:0;text-transform:none;color:var(--ink);font-weight:700;line-height:1.3}
+.prevcard{margin-top:12px;font-size:1rem}
+.t .part{display:inline-block!important;width:auto}

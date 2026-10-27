@@ -228,6 +228,14 @@ def build_word(form, spec):
     return w
 
 
+# Mor's rule: Pāḷi is written in small letters everywhere, except proper names
+NAME_STARTS = ("Buddh", "Nāgasen", "Sāḷh", "Milind", "Ānand", "Sāriputt", "Moggallān")
+
+
+def pali_case(s):
+    return s if s.startswith(NAME_STARTS) else s[:1].lower() + s[1:]
+
+
 TOKEN = re.compile(r"[^\s,.;:!?“”\"‘()…*—–]+(?:\([^\s()]+\))?|[\s,.;:!?“”\"‘()…*—–]+")
 
 
@@ -244,7 +252,7 @@ def build_text(t):
             if re.match(r"[\s,.;:!?“”\"‘()…*—–]+$", s):
                 toks.append([s])
             elif key in words:
-                toks.append([s, key])
+                toks.append([pali_case(s), key])
             else:
                 raise SystemExit(f"{t['id']}: no analysis for '{s}'")
         paras.append({"t": toks, "en": en})
@@ -252,6 +260,7 @@ def build_text(t):
     if unused:
         print(f"  note: {t['id']} unused analyses: {sorted(unused)}")
     out = {k: t[k] for k in ("id", "ref", "title", "titleEn", "source", "credit") if k in t}
+    out["title"] = pali_case(out["title"])
     m = re.match(r"ncrp-(\d+)-(\d+)-\d+$", t["id"])
     if m:
         out["bookLesson"] = int(m.group(1))

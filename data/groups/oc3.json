@@ -65,7 +65,42 @@
     }
    ],
    "next": ""
+  },
+  {
+   "n": 8,
+   "date": "2026-10-27",
+   "title": "Initial readings, continued",
+   "published": true,
+   "recording": "https://1drv.ms/v/c/6c1280ffd770ad5b/IQBxFtzbufH3R5tI_Nx3paGtAYBBYYWoT6a90yfnER4aLQ0?e=FNNI8y",
+   "items": [
+    {
+     "text": "ncrp-1-1-3"
+    },
+    {
+     "text": "ncrp-1-1-4",
+     "to": 2
+    }
+   ],
+   "next": ""
   }
  ],
- "notes": {}
+ "notes": {},
+ "next": {
+  "n": 9,
+  "items": [
+   {
+    "text": "ncrp-1-1-4",
+    "from": 3
+   },
+   {
+    "bookGrammar": "I"
+   },
+   {
+    "text": "ncrp-1-2-1"
+   },
+   {
+    "text": "ncrp-1-2-2"
+   }
+  ]
+ }
 }
