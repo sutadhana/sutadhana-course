@@ -156,7 +156,7 @@
     const tab = (id, label, href, extra = "") => `<a href="${href}"${active === id ? ' aria-current="page"' : ""}>${label}${extra}</a>`;
     $("#top").innerHTML = `<div class="top-in">
       <div class="brandrow"><a class="brand" href="#/${g.id}"><b>Sutadhana</b><span>Pāḷi course</span></a>
-        <button class="tourbtn" id="tourBtn" type="button"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="7 4 20 12 7 20 7 4"/></svg>Take a tour</button></div>
+        <button class="tourbtn" id="tourBtn" type="button"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="7 4 20 12 7 20 7 4"/></svg><span class="t-long">Take a tour</span><span class="t-short">Tour</span></button></div>
       <nav class="tabs" aria-label="Sections">
         ${tab("lessons", "Lessons", `#/${g.id}`)}
         ${tab("review", "Review", `#/${g.id}/review`, dueCount ? `<span class="due" aria-label="${dueCount} cards due">${dueCount}</span>` : "")}

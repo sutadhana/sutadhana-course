@@ -580,4 +580,6 @@ button.prep-row,button.lrow{font:inherit;text-align:left;width:100%;cursor:point
 .ac-later{margin-top:4px}
 .ac-small{font-size:.8rem;color:var(--muted);margin-top:14px!important}
 @media print{.acctbtn{display:none}}
-@media (max-width:560px){.acctbtn span{display:none}.acctbtn{padding:4px 8px}.acctbtn svg{width:16px;height:16px}}
+.t-short{display:none}
+@media (max-width:560px){.t-long{display:none}.t-short{display:inline}.acctbtn{font-weight:700;border-color:var(--accent)}}
+@media (max-width:340px){.acctbtn svg{display:none}}
