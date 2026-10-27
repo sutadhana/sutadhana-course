@@ -39,6 +39,37 @@
   const visibleLessons = (g) => g.lessons.filter((l) => l.published || PREVIEW).sort((a, b) => a.n - b.n);
   const publishedLessons = (g) => g.lessons.filter((l) => l.published).sort((a, b) => a.n - b.n);
   const lessonTexts = (l) => l.items.filter((i) => i.text).map((i) => i.text);
+  /* Words the class has already met.  Nouns, adjectives, pronouns and indeclinables count
+     as met in any form; a verb only in the same tense or mood (all present forms are one;
+     infinitive, absolutive, aorist … each separate).  A word built from parts (compounds,
+     sandhi) is met when all its parts are. */
+  function formKind(label) {
+    const m = /^verb · (\w+)/.exec(label || "");
+    if (m) return m[1];
+    if (/^infinitive/.test(label)) return "infinitive";
+    if (/^absolutive/.test(label)) return "absolutive";
+    return "";
+  }
+  function wordKeys(w) {
+    const parts = (w.parts || []).filter((p) => p.lemma);
+    if (parts.length) return parts.map((p) => p.lemma + "|" + formKind(p.label));
+    return w.lemma ? [w.lemma + "|" + formKind(w.label)] : [];
+  }
+  const seenCache = {};
+  async function seenInClass(g, beforeN) {
+    const key = g.id + ":" + beforeN + ":" + state.dataVersion;
+    if (seenCache[key]) return seenCache[key];
+    const out = new Set();
+    for (const l of visibleLessons(g).filter((x) => x.n < beforeN)) {
+      for (const it of l.items.filter((i) => i.text)) {
+        const t = await load(`library/${it.text}.json`);
+        t.paras.forEach((p, pi) => inRange(it, pi) && p.t.forEach((tok) => {
+          if (tok.length > 1) wordKeys(t.words[tok[1]]).forEach((k) => out.add(k));
+        }));
+      }
+    }
+    return (seenCache[key] = out);
+  }
   // which passages of a text belong to a lesson item (1-based, inclusive)
   const inRange = (it, pi) => !((it.from && pi + 1 < it.from) || (it.to && pi + 1 > it.to));
   const BOOK_GRAMMAR = {
@@ -546,7 +577,11 @@
     const showHints = g.settings?.colourHints !== false;
     const markNew = g.settings?.markNewWords !== false;
     const h = hints();
-    const isNew = (w) => (w.heads || []).some((x) => !learned.has(x.lemma));
+    // a word is new unless the class met it in an earlier lesson (see seenInClass)
+    let before = lesson ? lesson.n : null;
+    if (before == null) { const home = visibleLessons(g).find((l) => lessonTexts(l).includes(tid)); before = home ? home.n : Infinity; }
+    const seen = await seenInClass(g, before);
+    const isNew = (w) => wordKeys(w).some((k) => !seen.has(k));
 
     const boxes = t.paras.map((p, pi) => {
       const pnote = notes.find((n) => n.p === pi && !n.w);
@@ -602,7 +637,7 @@
         <span class="sizer" role="group" aria-label="Text size"><span class="muted">Text size:</span>
           <button class="chip" data-size="-1" aria-label="Smaller text">A−</button>
           <button class="chip" data-size="1" aria-label="Larger text">A+</button></span>
-        ${markNew ? `<span class="legend"><span class="nw">word</span> not yet learned</span>` : ""}
+        ${markNew ? `<span class="legend"><span class="nw">word</span> new: not met in an earlier lesson</span>` : ""}
       </div>
       ${t.intro ? `<p class="intro">${esc(t.intro)}</p>` : ""}
       <div id="text" style="--ps:${textScale()}" class="boxes${markNew ? " marknew" : ""}${h.subj ? " hint-subj" : ""}${h.verb ? " hint-verb" : ""}">${boxes}</div>
