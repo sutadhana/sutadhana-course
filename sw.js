@@ -1,6 +1,6 @@
 /* Offline support: always try the network first (so updates show at once),
    and fall back to the saved copy when there is no connection. */
-const CACHE = "sutadhana-v1";
+const CACHE = "sutadhana-v2";
 const SHELL = ["./", "index.html", "css/app.css", "js/app.js", "js/fsrs.js", "manifest.webmanifest",
   "assets/icon.svg", "assets/icon-192.png", "assets/apple-touch-icon.png"];
 

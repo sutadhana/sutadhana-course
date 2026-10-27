@@ -553,7 +553,7 @@ button.prep-row,button.lrow{font:inherit;text-align:left;width:100%;cursor:point
 .lrow .arr{color:var(--accent);font-size:1.4rem}
 /* reader: where we stopped / pick up */
 .box.out{opacity:.45;filter:grayscale(.4)}
-.box.out:hover{opacity:.8}
+@media (hover:hover){.box.out:hover{opacity:.8}}
 .out-tag{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
 .stopmark{display:flex;align-items:center;gap:12px;color:var(--copper);font-weight:700;font-size:1rem;margin:2px 0}
 .stopmark::before,.stopmark::after{content:"";flex:1;height:2px;background:var(--copper);opacity:.55;border-radius:2px}
