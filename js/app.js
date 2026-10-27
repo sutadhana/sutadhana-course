@@ -50,10 +50,16 @@
     if (/^absolutive/.test(label)) return "absolutive";
     return "";
   }
-  function wordKeys(w) {
-    const parts = (w.parts || []).filter((p) => p.lemma);
-    if (parts.length) return parts.map((p) => p.lemma + "|" + formKind(p.label));
-    return w.lemma ? [w.lemma + "|" + formKind(w.label)] : [];
+  // the whole word, and its parts (by dictionary form, or by the part as written when it has none)
+  const wholeKey = (w) => (w.lemma || w.form || "").toLowerCase() + "|" + formKind(w.label);
+  const partKeys = (w) => (w.parts || []).filter((p) => p.lemma || /\p{L}/u.test(p.form || ""))
+    .map((p) => (p.lemma || p.form).toLowerCase() + "|" + formKind(p.label));
+  const wordKeys = (w) => [wholeKey(w), ...partKeys(w)];
+  // met before: the same word met as a whole, or every one of its parts met
+  function metBefore(w, seen) {
+    if (seen.has(wholeKey(w))) return true;
+    const pk = partKeys(w);
+    return pk.length > 0 && pk.every((k) => seen.has(k));
   }
   const seenCache = {};
   async function seenInClass(g, beforeN) {
@@ -581,7 +587,7 @@
     let before = lesson ? lesson.n : null;
     if (before == null) { const home = visibleLessons(g).find((l) => lessonTexts(l).includes(tid)); before = home ? home.n : Infinity; }
     const seen = await seenInClass(g, before);
-    const isNew = (w) => wordKeys(w).some((k) => !seen.has(k));
+    const isNew = (w) => !metBefore(w, seen);
 
     const boxes = t.paras.map((p, pi) => {
       const pnote = notes.find((n) => n.p === pi && !n.w);
@@ -637,7 +643,7 @@
         <span class="sizer" role="group" aria-label="Text size"><span class="muted">Text size:</span>
           <button class="chip" data-size="-1" aria-label="Smaller text">A−</button>
           <button class="chip" data-size="1" aria-label="Larger text">A+</button></span>
-        ${markNew ? `<span class="legend"><span class="nw">word</span> new: not met in an earlier lesson</span>` : ""}
+        ${markNew ? `<span class="legend"><span class="nw">New words</span><span class="seen">Words we’ve met</span></span>` : ""}
       </div>
       ${t.intro ? `<p class="intro">${esc(t.intro)}</p>` : ""}
       <div id="text" style="--ps:${textScale()}" class="boxes${markNew ? " marknew" : ""}${h.subj ? " hint-subj" : ""}${h.verb ? " hint-verb" : ""}">${boxes}</div>
