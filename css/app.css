@@ -563,3 +563,21 @@ button.prep-row,button.lrow{font:inherit;text-align:left;width:100%;cursor:point
 .q-kind{font-size:1.3rem;letter-spacing:0;text-transform:none;color:var(--ink);font-weight:700;line-height:1.3}
 .prevcard{margin-top:12px;font-size:1rem}
 .t .part{display:inline-block!important;width:auto}
+/* accounts */
+.topbtns{display:inline-flex;gap:6px;align-items:center}
+.acct .gmodal-box{width:min(460px,100%)}
+.acct .gmodal-box h2{font-size:1.5rem}
+.acct p{margin:0 0 12px}
+.ac-google{width:100%;margin:6px 0 2px}
+.ac-or{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:.85rem;margin:12px 0}
+.ac-or::before,.ac-or::after{content:"";flex:1;border-top:1px solid var(--line)}
+.ac-form{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.ac-form label:not(.sr){width:100%;font-size:.92rem;color:var(--muted)}
+.ac-form input{flex:1 1 200px;min-height:44px;border:1px solid var(--line);border-radius:10px;padding:8px 12px;font:inherit;background:var(--surface);color:var(--ink)}
+.ac-form input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.ac-st{min-height:1.2em;font-size:.92rem;color:var(--accent)}
+.ac-st:empty{margin:0}
+.ac-later{margin-top:4px}
+.ac-small{font-size:.8rem;color:var(--muted);margin-top:14px!important}
+@media print{.acctbtn{display:none}}
+@media (max-width:560px){.acctbtn span{display:none}.acctbtn{padding:4px 8px}.acctbtn svg{width:16px;height:16px}}
