@@ -282,6 +282,27 @@ def build_text(t):
     return out
 
 
+BY_CLEAN = {}
+for _l, _v in by_lemma.items():
+    BY_CLEAN.setdefault(clean_lemma(_l), []).extend(_v)
+
+
+def find_dpd(lemma, kind):
+    """A DPD headword for a plain lemma, preferring the part of speech the label shows."""
+    ids = BY_CLEAN.get(lemma, [])
+    if not ids:
+        return None
+    if kind:
+        for i in ids:
+            if info[i]["pos"] in kind:
+                return info[i]
+        return None
+    return info[ids[0]]
+
+
+API = {"find": find_dpd, "declension": lambda g, label, d: declension(g, label, d), "pali_case": lambda s: pali_case(s)}
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
     catalogue = []
@@ -289,13 +310,21 @@ def main():
         spec = importlib.util.spec_from_file_location("m", f)
         m = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(m)
+        for data in getattr(m, "build_prebuilt", lambda api: [])(API):
+            # texts that come with their own word analyses (e.g. from the workshop reader)
+            with open(os.path.join(OUT, data["id"] + ".json"), "w", encoding="utf-8") as fh:
+                json.dump(data, fh, ensure_ascii=False, separators=(",", ":"))
+            catalogue.append({k: data[k] for k in ("id", "ref", "title", "titleEn", "source", "section", "collection", "group", "groupSub") if k in data})
+            print("built", data["id"], len(data["words"]), "words (prebuilt)")
         for t in getattr(m, "TEXTS", []):
             data = build_text(t)
             with open(os.path.join(OUT, t["id"] + ".json"), "w", encoding="utf-8") as fh:
                 json.dump(data, fh, ensure_ascii=False, separators=(",", ":"))
             catalogue.append({k: data[k] for k in ("id", "ref", "title", "titleEn", "source", "bookLesson", "section", "audio") if k in data})
             print("built", t["id"], len(data["words"]), "words")
-    catalogue.sort(key=lambda c: [int(x) if x.isdigit() else x for x in re.split(r"[-.]", c["id"])])
+    # the book's texts first, in book order; then the other collections, in their own order
+    book = sorted([c for c in catalogue if c["id"].startswith("ncrp-")], key=lambda c: [int(x) if x.isdigit() else x for x in re.split(r"[-.]", c["id"])])
+    catalogue = book + [c for c in catalogue if not c["id"].startswith("ncrp-")]
     # concordance: dictionary headword -> texts it occurs in (for "Also found in")
     conc = {}
     for c in catalogue:

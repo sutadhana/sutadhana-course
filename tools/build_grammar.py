@@ -351,6 +351,40 @@ IDS = {
 }
 
 
+DPD_IDX = None
+
+
+def practice_words(sec):
+    import pickle
+    idx, info = pickle.load(open(DPD_IDX, "rb"))
+    clean = lambda l: re.sub(r"\s+\d[\d.]*$", "", l)
+    html_ = sec["html"]
+    gloss = {}
+    for w, m in re.findall(r"<b>([^<]+)</b>\s*\(([^)]*)\)", html_):
+        gloss.setdefault(unicodedata.normalize("NFC", w.strip()), m.strip())
+    missing = set()
+
+    def word(m):
+        f = m.group(0)
+        key = f.lower()
+        lemma = key if key in gloss else None
+        if not lemma:
+            for _id, l1, _g in idx.get(key, []) + idx.get(key.replace("’", ""), []):
+                if clean(l1) in gloss:
+                    lemma = clean(l1); break
+        if not lemma:
+            missing.add(f); return f
+        return f'<button type="button" class="gw" data-label="{html.escape(lemma)}" data-note="{html.escape(gloss[lemma])}">{f}</button>'
+
+    def cell(m):
+        inner = re.sub(r"(?<=>)([^<]+)(?=<)", lambda t: re.sub(r"[^\W\d_][\w’]*", word, t.group(1)), m.group(1))
+        return m.group(0).replace(m.group(1), inner)
+    def table(m):
+        return re.sub(r"<td>(.*?)</td>", cell, m.group(0))
+    sec["html"] = re.sub(r'<table class="t-practice">.*?</table>', table, html_)
+    print("practice words without a glossary entry:", sorted(missing))
+
+
 def main(path):
     z = zipfile.ZipFile(path)
     num = Numbering(z)
@@ -429,6 +463,16 @@ def main(path):
     # any table right under a centred heading is centred too, so the heading sits over its middle
     for sec in sections:
         sec["html"] = re.sub(r'(<p class="ctr">(?:(?!</p>).)*</p>)\s*<div class="tbl">', r'\1<div class="tbl tc">', sec["html"])
+    # compounds: each type's title ("tappurisa – Case Compound") a little larger
+    comp = next(s for s in sections if s["id"] == "compounds")
+    comp["html"] = re.sub(r'<p class="ctr">(<b><u>[^<]*–[^<]*</u></b>)</p>', r'<p class="ctr ttl2">\1</p>', comp["html"])
+    # phonetics: the vowels spread across their box
+    ph = next(s for s in sections if s["id"] == "phonetics")
+    ph["html"] = re.sub(r'(<b>sarā \(vowels\):</b>)\s*((?:[aāiīuūeo]\s*)+)',
+                        lambda m: m.group(1) + '<span class="vowels">' + "".join(f"<span>{v}</span>" for v in m.group(2).split()) + "</span>", ph["html"])
+    # practising the cases: each word opens its meaning from the section's own word lists
+    if DPD_IDX:
+        practice_words(next(s for s in sections if s["id"] == "practicing-cases"))
     cases = next(s for s in sections if s["id"] == "cases")
     case_def = {}
     for row in re.findall(r"<tr>(.*?)</tr>", cases["html"]):
@@ -453,4 +497,6 @@ def main(path):
 
 
 if __name__ == "__main__":
+    if len(sys.argv) > 2:
+        DPD_IDX = sys.argv[2]
     main(sys.argv[1])

@@ -589,3 +589,46 @@ button.prep-row,button.lrow{font:inherit;text-align:left;width:100%;cursor:point
 /* phones: "Pāḷi course" under "Sutadhana", smaller, so the header row stays tidy */
 @media (max-width:560px){.brand{flex-direction:column;align-items:flex-start;gap:0;line-height:1.1}.brand b{font-size:1.4rem}.brand span{font-size:.68rem;letter-spacing:.12em}}
 .legend{display:inline-flex;gap:16px;align-items:baseline}.legend .seen{color:var(--ink)}
+
+/* progress saved: on this device, or to the account when signed in */
+html:not(.signed-in) .only-acct,html.signed-in .only-dev{display:none}
+/* review: three choices and progress */
+.rchoices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:6px}
+@media (max-width:760px){.rchoices{grid-template-columns:1fr}}
+.rchoice{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;min-height:96px;text-decoration:none;color:var(--ink);box-shadow:var(--card-shadow);transition:border-color .15s,transform .12s}
+.rchoice:hover{border-color:var(--accent);color:var(--ink);transform:translateY(-1px)}
+.rchoice.main{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.rchoice.main:hover{color:var(--accent-ink)}
+.rchoice.next{border-left:5px solid var(--copper)}
+.rc-t{display:flex;flex-direction:column;gap:2px;min-width:0}
+.rc-t b{font-size:1.25rem;font-weight:700}
+.rc-t small{font-size:.92rem;opacity:.8}
+.rc-n{flex:none;display:flex;flex-direction:column;align-items:center;font-size:1.7rem;line-height:1}
+.rc-n small{font-size:.75rem;opacity:.8;margin-top:3px}
+.rc-n.zero{opacity:.55}
+.stats-sec{margin-top:30px}
+.stats-sec h2{font-weight:700;font-size:1.3rem;margin:0 0 4px}
+.pcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-top:12px}
+.pc-h{font-weight:700;margin-bottom:6px}
+.fc{display:flex;align-items:flex-end;gap:8px;height:110px}
+.fc-d{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:2px;font-size:.85rem}
+.fc-b{width:100%;max-width:38px;background:var(--accent);border-radius:6px 6px 2px 2px;opacity:.8}
+.fc-d small{color:var(--muted)}
+.pl{display:grid;grid-template-columns:90px 1fr auto;gap:10px;align-items:center;margin:6px 0}
+.pl-bar{position:relative;height:10px;background:var(--soft);border-radius:5px;overflow:hidden}
+.pl-bar i{position:absolute;left:0;top:0;bottom:0;border-radius:5px}
+.pl-st{background:var(--mark)}.pl-ok{background:var(--accent)}
+.pl-v{font-size:.88rem;color:var(--muted);white-space:nowrap}
+.lg{display:inline-block;width:12px;height:10px;border-radius:3px;margin:0 4px 0 8px;vertical-align:0}.lg.st{background:var(--mark)}.lg.ok{background:var(--accent)}
+@media (max-width:520px){.pl{grid-template-columns:70px 1fr}.pl-v{grid-column:1/-1;margin-top:-4px}}
+/* library tabs */
+.libtabs{display:inline-flex;margin-top:6px}
+.libtabs a{text-decoration:none;color:var(--ink);padding:7px 16px;border-radius:999px}
+.libtabs a[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+/* grammar: compound types, vowels, practice words */
+.gram-body p.ttl2{font-size:1.18em;margin:1.6em 0 .4em}
+.vowels{display:flex;justify-content:space-between;gap:10px;font-size:1.2em;margin-top:6px}
+.gram-body .gw{font:inherit;color:inherit;background:none;border:0;padding:0 .05em;cursor:pointer;border-bottom:1px dotted var(--accent);border-radius:3px}
+.gram-body .gw:hover,.gram-body .gw[data-pinned]{background:rgba(94,110,88,.15)}
+
+.pop .lbl.pl{text-transform:none;letter-spacing:0;font-size:1rem;font-weight:700;opacity:1}

@@ -178,5 +178,148 @@
   "bookLesson": 3,
   "section": "further",
   "audio": "audio/ncrp-3-2-4.m4a"
+ },
+ {
+  "id": "ws1-dhp-1",
+  "ref": "",
+  "title": "Dhammapada Verses",
+  "titleEn": "",
+  "source": "Pāḷi Workshop booklet · page 7",
+  "section": "extra",
+  "collection": "workshop",
+  "group": "1 · sīla, dāna & saddhā",
+  "groupSub": "And Other Wholesome Qualities"
+ },
+ {
+  "id": "ws1-panca-sila",
+  "ref": "",
+  "title": "pañcasīlāni",
+  "titleEn": "The Five Precepts",
+  "source": "Pāḷi Workshop booklet · page 8",
+  "section": "extra",
+  "collection": "workshop",
+  "group": "1 · sīla, dāna & saddhā",
+  "groupSub": "And Other Wholesome Qualities"
+ },
+ {
+  "id": "ws1-morning-chanting",
+  "ref": "",
+  "title": "Daily Morning Chanting",
+  "titleEn": "",
+  "source": "Pāḷi Workshop booklet · page 9",
+  "section": "extra",
+  "collection": "workshop",
+  "group": "1 · sīla, dāna & saddhā",
+  "groupSub": "And Other Wholesome Qualities"
+ },
+ {
+  "id": "ws1-tiratana-vandana",
+  "ref": "",
+  "title": "tiratana vandana",
+  "titleEn": "Homage to the Triple Gem",
+  "source": "Pāḷi Workshop booklet · page 10",
+  "section": "extra",
+  "collection": "workshop",
+  "group": "1 · sīla, dāna & saddhā",
+  "groupSub": "And Other Wholesome Qualities"
+ },
+ {
+  "id": "ws1-an6-10",
+  "ref": "AN 6.10 · excerpt",
+  "title": "dhammaveda",
+  "titleEn": "Inspiration in the Dhamma",
+  "source": "Pāḷi Workshop booklet · page 11",
+  "section": "extra",
+  "collection": "workshop",
+  "group": "1 · sīla, dāna & saddhā",
+  "groupSub": "And Other Wholesome Qualities"
+ },
+ {
+  "id": "ws1-sn11-3",
+  "ref": "SN 11.3",
+  "title": "anussaretha sambuddhaṃ",
+  "titleEn": "Recollect the Buddha",
+  "source": "Pāḷi Workshop booklet · page 12",
+  "section": "extra",
+  "collection": "workshop",
+  "group": "1 · sīla, dāna & saddhā",
+  "groupSub": "And Other Wholesome Qualities"
+ },
+ {
+  "id": "ws1-an5-202",
+  "ref": "AN 5.202",
+  "title": "dhammassavana sutta",
+  "titleEn": "Listening to the Dhamma",
+  "source": "Pāḷi Workshop booklet · page 12",
+  "section": "extra",
+  "collection": "workshop",
+  "group": "1 · sīla, dāna & saddhā",
+  "groupSub": "And Other Wholesome Qualities"
+ },
+ {
+  "id": "ws1-sn55-37",
+  "ref": "SN 55.37",
+  "title": "mahānāma sutta",
+  "titleEn": "Mahānāma",
+  "source": "Pāḷi Workshop booklet · page 13",
+  "section": "extra",
+  "collection": "workshop",
+  "group": "1 · sīla, dāna & saddhā",
+  "groupSub": "And Other Wholesome Qualities"
+ },
+ {
+  "id": "ws1-an8-39",
+  "ref": "AN 8.39",
+  "title": "mahādānāni",
+  "titleEn": "Great Gifts",
+  "source": "Pāḷi Workshop booklet · page 14",
+  "section": "extra",
+  "collection": "workshop",
+  "group": "1 · sīla, dāna & saddhā",
+  "groupSub": "And Other Wholesome Qualities"
+ },
+ {
+  "id": "ws1-an2-19",
+  "ref": "AN 2.19",
+  "title": "sakkā",
+  "titleEn": "Possible",
+  "source": "Pāḷi Workshop booklet · page 16",
+  "section": "extra",
+  "collection": "workshop",
+  "group": "1 · sīla, dāna & saddhā",
+  "groupSub": "And Other Wholesome Qualities"
+ },
+ {
+  "id": "ws1-an11-1",
+  "ref": "AN 11.1",
+  "title": "kimatthiya sutta",
+  "titleEn": "For What Purpose?",
+  "source": "Pāḷi Workshop booklet · page 17",
+  "section": "extra",
+  "collection": "workshop",
+  "group": "1 · sīla, dāna & saddhā",
+  "groupSub": "And Other Wholesome Qualities"
+ },
+ {
+  "id": "ws1-mn117",
+  "ref": "MN 117",
+  "title": "sammādiṭṭhi pubbaṅgamā",
+  "titleEn": "Right View Comes First",
+  "source": "Pāḷi Workshop booklet · page 19",
+  "section": "extra",
+  "collection": "workshop",
+  "group": "1 · sīla, dāna & saddhā",
+  "groupSub": "And Other Wholesome Qualities"
+ },
+ {
+  "id": "ws1-kn5-16",
+  "ref": "KN 5.16 · excerpt",
+  "title": "maṅgala sutta",
+  "titleEn": "Blessings",
+  "source": "Pāḷi Workshop booklet · page 20",
+  "section": "extra",
+  "collection": "workshop",
+  "group": "1 · sīla, dāna & saddhā",
+  "groupSub": "And Other Wholesome Qualities"
  }
 ]

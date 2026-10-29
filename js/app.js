@@ -38,6 +38,7 @@
   }
   const visibleLessons = (g) => g.lessons.filter((l) => l.published || PREVIEW).sort((a, b) => a.n - b.n);
   const publishedLessons = (g) => g.lessons.filter((l) => l.published).sort((a, b) => a.n - b.n);
+  const SAVED = `<span class="only-dev">Progress is saved on this device.</span><span class="only-acct">Progress is saved to your account.</span>`;
   const lessonTexts = (l) => l.items.filter((i) => i.text).map((i) => i.text);
   /* Words the class has already met.  Nouns, adjectives, pronouns and indeclinables count
      as met in any form; a verb only in the same tense or mood (all present forms are one;
@@ -278,7 +279,7 @@
     const last = done[done.length - 1];
     const n = g.next?.n || (last ? last.n + 1 : 1);
     if (g.next?.items?.length) return { n, date: g.next.date || nextClassDate(g, last?.date), items: g.next.items, set: true };
-    const lib = await load("library/index.json");
+    const lib = (await load("library/index.json")).filter((x) => x.id.startsWith("ncrp-"));
     const read = new Set(done.flatMap((l) => l.items.filter((it) => it.text && !it.to).map((it) => it.text)));
     const lastItem = last ? last.items.filter((it) => it.text).slice(-1)[0] : null;
     const lastText = lastItem?.text;
@@ -376,8 +377,8 @@
         <aside class="side">
           <div class="card"><div class="eyebrow">Word review</div>
             <div class="big">${d.total}</div><div class="muted">${d.total === 1 ? "card" : "cards"} to review today</div>
-            <a class="btn primary block" style="margin-top:14px" href="#/${g.id}/review">${d.total ? "Start review" : "Open review"}</a>
-            <p class="muted" style="font-size:.85rem;margin:10px 0 0">Words from all lessons. Progress is saved on this device.</p></div>
+            <a class="btn primary block" style="margin-top:14px" href="#/${g.id}/review?all=1">${d.total ? "Start review" : "Open review"}</a>
+            <p class="muted" style="font-size:.85rem;margin:10px 0 0">Words from all the lessons we’ve covered so far. ${SAVED}</p></div>
           ${danaCard(g, g.settings?.danaStyle || "d")}
           <div class="card"><div class="eyebrow">Classes</div>
             <p style="margin:6px 0 0">${esc(g.schedule.days)}, <button class="timebtn" id="lessonTime" aria-describedby="pop">${esc(utcLabel(g.schedule.utc))}</button></p>
@@ -569,6 +570,18 @@
     };
   }
 
+  // where a new sentence should start on its own line: after . ? ! — but not around
+  // very short sentences (two words or fewer)
+  function sentenceBreaks(toks) {
+    const ends = [], counts = [0];
+    toks.forEach((tok, i) => {
+      if (tok.length > 1) counts[counts.length - 1]++;
+      else if (/[.?!][”’"')\]]*\s/.test(tok[0]) && i < toks.length - 1) { ends.push(i); counts.push(0); }
+    });
+    const out = new Set();
+    ends.forEach((i, k) => { if (counts[k] > 2 && counts[k + 1] > 2) out.add(i); });
+    return out;
+  }
   async function viewReader(tid, lessonN) {
     const g = state.group;
     const t = await load(`library/${tid}.json`);
@@ -589,10 +602,17 @@
     const seen = await seenInClass(g, before);
     const isNew = (w) => !metBefore(w, seen);
 
+    const workshop = t.collection === "workshop";
     const boxes = t.paras.map((p, pi) => {
       const pnote = notes.find((n) => n.p === pi && !n.w);
+      const brk = sentenceBreaks(p.t);
       const toks = p.t.map((tok, ti) => {
-        if (tok.length < 2) return `<span class="punct">${esc(tok[0])}</span>`;
+        if (tok.length < 2) {
+          let s = tok[0];
+          if (ti > 0 && /^[ \u00a0]+[?!.;:,]/.test(s)) s = s.replace(/^[ \u00a0]+/, "");   // no punctuation alone at a line start
+          if (brk.has(ti)) { const m = s.match(/^(.*?[.?!…][”’"')\]]*)\s+(.*)$/s); if (m) return `<span class="punct">${esc(m[1])}</span><br><span class="punct">${esc(m[2])}</span>`; }
+          return `<span class="punct">${esc(s)}</span>`;
+        }
         const w = t.words[tok[1]];
         const cls = ["w", w.role || "", isNew(w) ? "new" : ""].join(" ").trim();
         const wn = notes.find((n) => n.p === pi && n.w && n.w.toLowerCase() === tok[1]);
@@ -604,7 +624,7 @@
       return `${mark}<section class="box${out ? " out" : ""}">
         ${out ? `<div class="out-tag">${item.to ? "Not yet read in class" : "Read in an earlier lesson"}</div>` : ""}
         ${pnote ? `<button class="nmark box-note" data-note="${esc(pnote.text)}" aria-label="Teacher's note">i</button>` : ""}
-        <div class="box-no">${t.paras.length > 1 ? "Passage " + (pi + 1) : "Text"}</div>
+        <div class="box-no">${t.paras.length > 1 ? (workshop ? "Box " : "Passage ") + (pi + 1) : "Text"}${p.ref ? " · " + esc(p.ref) : ""}</div>
         <div class="pali">${toks}</div>
         <div class="tgls">
           <button class="tgl" data-tr="${pi}" aria-expanded="false">Show translation</button>
@@ -613,13 +633,23 @@
         <div class="mytr" id="my${pi}" hidden>
           <label for="myta${pi}" class="sr">My translation of passage ${pi + 1}</label>
           <textarea id="myta${pi}" data-myta="${pi}" rows="3" placeholder="Write your own translation here…">${esc(myTr(tid, pi))}</textarea>
-          <div class="mytr-st" id="myst${pi}">Saved on this device as you type.</div>
+          <div class="mytr-st" id="myst${pi}">Saved <span class="only-dev">on this device</span><span class="only-acct">to your account</span> as you type.</div>
         </div>
         <div class="eng" id="tr${pi}" hidden>${esc(p.en)}</div></section>`;
     }).join("");
 
-    // previous / next text within the lesson
+    // previous / next text within the lesson, or within the library collection
     let prevNext = "";
+    const libBack = `#/${g.id}/library${workshop ? "?tab=more" : ""}`;
+    if (!lesson) {
+      const lib = await load("library/index.json");
+      const ids = lib.filter((x) => x.id.startsWith("ncrp-") === tid.startsWith("ncrp-")).map((x) => x.id), i = ids.indexOf(tid);
+      const nm = (id) => (lib.find((x) => x.id === id) || {}).title || id;
+      prevNext = `<div class="nav-next">
+        ${i > 0 ? `<a class="btn" href="#/${g.id}/read/${ids[i - 1]}">← <span lang="pi">${esc(nm(ids[i - 1]))}</span></a>` : "<span></span>"}
+        ${i >= 0 && i < ids.length - 1 ? `<a class="btn primary" href="#/${g.id}/read/${ids[i + 1]}">Next: <span lang="pi">${esc(nm(ids[i + 1]))}</span> →</a>` : `<a class="btn" href="${libBack}">Back to the library</a>`}
+      </div>`;
+    }
     if (lesson) {
       const ids = lessonTexts(lesson), i = ids.indexOf(tid);
       const lib = await load("library/index.json");
@@ -631,7 +661,7 @@
     }
 
     $("#main").innerHTML = `
-      <a class="back" href="${upcoming ? `#/${g.id}` : lesson ? `#/${g.id}/lesson/${lesson.n}` : `#/${g.id}/library`}"><span aria-hidden="true" style="color:var(--accent)">←</span> ${upcoming ? "Back to all lessons" : lesson ? "Back to Lesson " + lesson.n : "Back to the library"}</a>
+      <a class="back" href="${upcoming ? `#/${g.id}` : lesson ? `#/${g.id}/lesson/${lesson.n}` : libBack}"><span aria-hidden="true" style="color:var(--accent)">←</span> ${upcoming ? "Back to all lessons" : lesson ? "Back to Lesson " + lesson.n : "Back to the library"}</a>
       ${upcoming ? `<div class="upnote">Preparing for <b>Lesson ${lesson.n}</b></div>` : ""}
       <div class="head"><div class="eyebrow">${esc(t.source)} · ${esc(t.ref)}</div>
         <h1 lang="pi">${esc(t.title)}</h1><p class="sub">${esc(t.titleEn || "")}</p></div>
@@ -678,7 +708,7 @@
         tm = setTimeout(() => {
           const pi = ta.dataset.myta, v = ta.value;
           store.set(`sd:mytr:${tid}:${pi}`, v);
-          $("#myst" + pi).textContent = "Saved on this device.";
+          $("#myst" + pi).innerHTML = `Saved <span class="only-dev">on this device</span><span class="only-acct">to your account</span>.`;
           const btn = $(`[data-my="${pi}"]`); if (btn) btn.textContent = v.trim() ? "My translation ✓" : "My translation";
         }, 400);
       };
@@ -701,7 +731,7 @@
   const pop = () => $("#pop");
   function showPop(btn) {
     const p = pop();
-    p.innerHTML = `<span class="lbl">${esc(btn.dataset.label || "Mor’s note")}</span>${esc(btn.dataset.note)}`;
+    p.innerHTML = btn.classList.contains("gw") ? `<span class="lbl pl" lang="pi">${esc(btn.dataset.label)}</span>${esc(btn.dataset.note)}` : `<span class="lbl">${esc(btn.dataset.label || "Mor’s note")}</span>${esc(btn.dataset.note)}`;
     p.hidden = false;
     const r = btn.getBoundingClientRect(), pw = Math.min(320, innerWidth - 24);
     p.style.maxWidth = pw + "px";
@@ -710,7 +740,7 @@
     const below = r.bottom + 8, ph = p.offsetHeight;
     p.style.top = (below + ph < innerHeight ? below : Math.max(8, r.top - ph - 8)) + "px";
   }
-  function hidePop() { const p = pop(); p.hidden = true; document.querySelectorAll(".nmark[data-pinned]").forEach((b) => delete b.dataset.pinned); }
+  function hidePop() { const p = pop(); p.hidden = true; document.querySelectorAll("[data-pinned]").forEach((b) => delete b.dataset.pinned); }
   function togglePop(btn) {
     if (btn.dataset.pinned) { hidePop(); return; }
     hidePop(); showPop(btn); btn.dataset.pinned = "1";
@@ -927,6 +957,65 @@
 
   /* ---------------- review ---------------- */
   let session = null;
+  async function viewReviewHome() {
+    const g = state.group;
+    const done = visibleLessons(g), last = done[done.length - 1];
+    const allDeck = await getDeck(), all = dueInfo(allDeck);
+    header("review", all.total);
+    const nx = await nextLesson(g);
+    const lastDeck = last ? await buildDeck([last]) : [], lastD = last ? dueInfo(lastDeck, String(last.n)) : null;
+    const nxDeck = nx ? await buildDeck([{ n: nx.n, items: nx.items }]) : [], nxD = nx ? dueInfo(nxDeck, String(nx.n)) : null;
+    const choice = (href, title, sub, n, cls = "") => `<a class="rchoice ${cls}" href="${href}">
+        <span class="rc-t"><b>${title}</b><small>${sub}</small></span>
+        <span class="rc-n${n ? "" : " zero"}">${n}<small>${n === 1 ? "card" : "cards"}</small></span></a>`;
+    $("#main").innerHTML = `<div class="rv">
+      <div class="head"><h1>Review</h1><p class="sub">A few minutes a day. Choose what to practise.</p></div>
+      <div class="rchoices">
+        ${last ? choice(`#/${g.id}/review?lesson=${last.n}`, "Last lesson", `Lesson ${last.n} · ${esc(last.title || "")}`, lastD.total) : ""}
+        ${nx ? choice(`#/${g.id}/review?lesson=${nx.n}`, "Next lesson", `Lesson ${nx.n} · new words to prepare`, nxD.total, "next") : ""}
+        ${choice(`#/${g.id}/review?all=1`, "All lessons so far", "Words from every lesson we’ve covered", all.total, "main")}
+      </div>
+      <p class="muted" style="font-size:.9rem;margin:10px 2px 0">Each choice keeps its own schedule. ${SAVED}</p>
+      <section class="stats-sec"><h2>Your progress</h2>${progressHtml(g, done, allDeck)}</section></div>`;
+  }
+  // friendly progress overview (all lessons so far)
+  function progressHtml(g, done, deck) {
+    const c = loadCards(), now = Date.now(), DAYMS = 864e5;
+    const started = deck.filter((k) => c[k.id]), learned = started.filter((k) => c[k.id].s >= LEARNED_DAYS);
+    const fresh = deck.length - started.length;
+    const startOfDay = (t) => { const d = new Date(t); d.setHours(0, 0, 0, 0); return d.getTime(); };
+    const today0 = startOfDay(now);
+    const days = [...Array(7)].map((_, i) => {
+      const a = today0 + i * DAYMS, b = a + DAYMS;
+      return started.filter((k) => (i === 0 ? c[k.id].due < b : c[k.id].due >= a && c[k.id].due < b)).length;
+    });
+    const maxD = Math.max(1, ...days);
+    const log = store.get(`sd:${g.id}:log`, []);
+    const todayN = log.filter((x) => x[0] >= today0).length;
+    const weekN = log.filter((x) => x[0] >= today0 - 6 * DAYMS).length;
+    const month = log.filter((x) => x[0] >= now - 30 * DAYMS && !x[2]);
+    const remembered = month.length ? Math.round(100 * month.filter((x) => x[1] > 1).length / month.length) : null;
+    const activeDays = new Set(log.filter((x) => x[0] >= today0 - 6 * DAYMS).map((x) => startOfDay(x[0]))).size;
+    const wd = (i) => i === 0 ? "Today" : i === 1 ? "Tmrw" : new Date(today0 + i * DAYMS).toLocaleDateString("en-GB", { weekday: "short" });
+    const perLesson = done.map((l) => {
+      const ids = new Set(); deck.filter((k) => k.lesson === l.n && k.kind === "meaning").forEach((k) => ids.add(k.id));
+      const tot = ids.size, ok = [...ids].filter((id) => c[id] && c[id].s >= LEARNED_DAYS).length, st = [...ids].filter((id) => c[id]).length;
+      return tot ? `<div class="pl"><span class="pl-n">Lesson ${l.n}</span><span class="pl-bar"><i class="pl-st" style="width:${100 * st / tot}%"></i><i class="pl-ok" style="width:${100 * ok / tot}%"></i></span><span class="pl-v">${ok} of ${tot} words learned</span></div>` : "";
+    }).join("");
+    return `<div class="stats">
+        <div><b>${learned.length}</b><span>well learned</span></div>
+        <div><b>${started.length - learned.length}</b><span>still learning</span></div>
+        <div><b>${fresh}</b><span>not started yet</span></div>
+        <div><b>${remembered == null ? "–" : remembered + "%"}</b><span>remembered<br><small>last 30 days</small></span></div>
+      </div>
+      <div class="pcard"><div class="pc-h">Coming up</div>
+        <div class="fc">${days.map((n, i) => `<div class="fc-d"><span class="fc-b" style="height:${Math.round(70 * n / maxD) + 4}px" title="${n}"></span><b>${n}</b><small>${wd(i)}</small></div>`).join("")}</div>
+        <p class="muted" style="margin:6px 0 0;font-size:.9rem">Cards due each day this week, for the cards you’ve started.</p></div>
+      <div class="pcard"><div class="pc-h">Your practice</div>
+        <p style="margin:4px 0">${todayN} cards reviewed today · ${weekN} this week · on ${activeDays} of the last 7 days</p></div>
+      ${perLesson ? `<div class="pcard"><div class="pc-h">Words by lesson</div>${perLesson}
+        <p class="muted" style="margin:8px 0 0;font-size:.85rem"><span class="lg st"></span> started <span class="lg ok"></span> well learned (remembered for 3 weeks or more)</p></div>` : ""}`;
+  }
   async function viewReview(sc) {
     const g = state.group;
     sc = sc ? String(sc) : "";
@@ -955,7 +1044,7 @@
     const s = session, sc = s.sc;
     const c = loadCards(sc);
     const up = sc && state.reviewUpcoming;
-    const backHref = sc && !up ? `#/${g.id}/lesson/${sc}` : `#/${g.id}`, backTxt = sc && !up ? `Lesson ${sc}` : "Lessons";
+    const backHref = `#/${g.id}/review`, backTxt = "Review";
     const title = up ? `Lesson ${sc} · new words before class` : sc ? `Lesson ${sc} · words review` : "Word review";
     if (!s.queue.length) {
       const all = deck.length, seen = deck.filter((k) => c[k.id]).length;
@@ -968,7 +1057,7 @@
         <div class="stats"><div><b>${s.done}</b><span>reviewed now</span></div><div><b>${seen}</b><span>cards started</span></div>
           <div><b>${learned}</b><span>well learned</span></div><div><b>${all}</b><span>cards in all</span></div></div>
         ${deck.length && !sc ? `<p><button class="linkbtn" id="ankiAll">Export all words to Anki</button></p>` : ""}
-        <p class="muted" style="font-size:.9rem">${sc ? `This review has only the words of Lesson ${sc}, with its own schedule. The Review tab at the top mixes the words of all lessons.` : "Two kinds of card: the meaning of a word, and parsing a form as it appears in a text."} Progress is saved on this device only.</p></div>`;
+        <p class="muted" style="font-size:.9rem">${sc ? `This review has only the words of Lesson ${sc}, with its own schedule. The Review tab at the top mixes the words of all lessons.` : "Words from all the lessons we’ve covered so far: the meaning of each word, and the grammatical form of words as they appear in the texts."} ${SAVED}</p></div>`;
       const ab = $("#ankiAll"); if (ab) ab.onclick = () => exportAnki(deck.filter((k) => k.kind === "meaning"), `${g.id}-all-words`);
       return;
     }
@@ -1000,6 +1089,7 @@
   // go back one card: undo its grade and show it again
   function undoGrade(deck) {
     const s = session, h = s.hist.pop(); if (!h) return;
+    const log = store.get(`sd:${state.gid}:log`, []); log.pop(); store.set(`sd:${state.gid}:log`, log);
     const c = loadCards(s.sc);
     if (h.prev) c[h.k.id] = h.prev; else delete c[h.k.id];
     saveCards(c, s.sc);
@@ -1015,6 +1105,9 @@
     const s = session, sc = s.sc, k = s.queue.shift(), c = loadCards(sc);
     const wasNew = !c[k.id];
     (s.hist = s.hist || []).push({ k, gr, wasNew, prev: c[k.id] ? { ...c[k.id] } : null });
+    const log = store.get(`sd:${state.gid}:log`, []);
+    log.push([Date.now(), gr, wasNew ? 1 : 0]);
+    store.set(`sd:${state.gid}:log`, log.slice(-3000));
     c[k.id] = FSRS.review(c[k.id] || {}, gr);
     saveCards(c, sc);
     if (wasNew) {
@@ -1088,30 +1181,51 @@
           tr.appendChild(td); requestAnimationFrame(fit);
         });
       });
-      $("#main").querySelector(".gram-body").insertAdjacentHTML("afterbegin", `<p class="gp-note">Write your translation next to each sentence. It’s saved on this device.</p>`);
+      $("#main").querySelector(".gram-body").insertAdjacentHTML("afterbegin", `<p class="gp-note">Write your translation next to each sentence. It’s saved <span class="only-dev">on this device</span><span class="only-acct">to your account</span>.</p>`);
     }
     if (sid) window.scrollTo(0, 0);
   }
   function gramScale() { try { const v = parseFloat(localStorage.getItem("sd:gscale")); return [0.9, 1, 1.1, 1.2, 1.35].includes(v) ? v : 1; } catch (e) { return 1; } }
 
   /* ---------------- library ---------------- */
-  async function viewLibrary() {
+  async function viewLibrary(tab) {
     const g = state.group;
     const lib = await load("library/index.json");
     await headerWithDue("library");
-    const books = [];
-    lib.forEach((x) => {
-      const key = x.bookLesson ? `Lesson ${x.bookLesson}` : "Other texts";
-      let b = books.find((y) => y.key === key);
-      if (!b) books.push(b = { key, initial: [], further: [], extra: [] });
-      b[x.section || "extra"].push(x);
-    });
-    const row = (x) => `<a class="row" href="#/${g.id}/read/${x.id}"><div class="t"><b lang="pi">${esc(x.title)} <span class="muted" style="display:inline;font-size:1rem">· ${esc(x.titleEn)}</span></b><span>${esc(x.ref)}${x.audio ? ` · <span class="has-audio">${HP_ICON}Audio</span>` : ""}</span></div><div class="arr" aria-hidden="true">›</div></a>`;
+    const more = tab === "more";
+    const row = (x) => `<a class="row librow" href="#/${g.id}/read/${x.id}"><div class="t"><b lang="pi">${esc(x.title)}${x.titleEn ? ` <span class="muted" style="display:inline;font-size:1rem">· ${esc(x.titleEn)}</span>` : ""}</b><span>${esc(x.ref || x.source || "")}${x.audio ? ` · <span class="has-audio">${HP_ICON}Audio</span>` : ""}</span></div><div class="arr" aria-hidden="true">›</div></a>`;
     const part = (title, arr) => arr.length ? `<div class="eyebrow" style="margin:14px 0 8px">${title}</div><div class="boxes" style="gap:10px">${arr.map(row).join("")}</div>` : "";
-    $("#main").innerHTML = `<div class="head"><div class="eyebrow">A New Course in Reading Pāḷi, and more</div><h1>Library</h1>
-      <p class="sub">Every text prepared for the course, including ones we haven't read in class yet.</p></div>
-      ${books.map((b) => `<section style="margin-top:22px"><h2>${esc(b.key)}</h2>
-        ${part("Initial readings", b.initial)}${part("Further readings", b.further)}${part("Extra readings", b.extra)}</section>`).join("")}`;
+    let body = "";
+    if (!more) {
+      const books = [];
+      lib.filter((x) => x.id.startsWith("ncrp-")).forEach((x) => {
+        const key = `Lesson ${x.bookLesson}`;
+        let b = books.find((y) => y.key === key);
+        if (!b) books.push(b = { key, initial: [], further: [], extra: [] });
+        b[x.section || "extra"].push(x);
+      });
+      body = books.map((b) => `<section style="margin-top:22px"><h2>${esc(b.key)}</h2>
+        ${part("Initial readings", b.initial)}${part("Further readings", b.further)}</section>`).join("");
+    } else {
+      const groups = [];
+      lib.filter((x) => !x.id.startsWith("ncrp-")).forEach((x) => {
+        const key = x.group || "Other texts";
+        let gr = groups.find((y) => y.key === key);
+        if (!gr) groups.push(gr = { key, sub: x.groupSub || "", items: [] });
+        gr.items.push(x);
+      });
+      body = `<p class="muted" style="margin:6px 0 0">Texts from Mor’s Pāḷi Workshop booklet.</p>` + groups.map((gr) => `<section style="margin-top:22px"><h2 lang="pi">${esc(gr.key)}</h2>${gr.sub ? `<p class="muted" style="margin:0 0 8px">${esc(gr.sub)}</p>` : ""}
+        <div class="boxes" style="gap:10px">${gr.items.map(row).join("")}</div></section>`).join("");
+    }
+    $("#main").innerHTML = `<div class="head"><h1>Library</h1>
+      <p class="sub">Every text prepared for the course, including ones we haven’t read in class yet.</p></div>
+      <div class="seg libtabs" role="tablist">
+        <a role="tab" aria-selected="${!more}" href="#/${g.id}/library">A New Course in Reading Pāḷi</a>
+        <a role="tab" aria-selected="${more}" href="#/${g.id}/library?tab=more">More texts</a></div>
+      ${body}`;
+    $("#main").querySelectorAll(".librow").forEach((a) => a.addEventListener("click", () => {
+      try { sessionStorage.setItem("sd:libscroll", JSON.stringify({ h: location.hash, y: scrollY })); } catch (e) {}
+    }));
   }
 
   /* ---------------- router ---------------- */
@@ -1134,15 +1248,18 @@
       if (!v) await viewGroup();
       else if (v === "lesson") await viewLesson(parts[2]);
       else if (v === "read") await viewReader(parts[2], q.get("lesson"));
-      else if (v === "review") await viewReview(q.get("lesson"));
+      else if (v === "review") { if (q.get("lesson")) await viewReview(q.get("lesson")); else if (q.get("all")) await viewReview(""); else await viewReviewHome(); }
       else if (v === "grammar") await viewGrammar(parts[2]);
-      else if (v === "library") await viewLibrary();
+      else if (v === "library") await viewLibrary(q.get("tab"));
       else if (v === "glossary") await viewGlossary(parts[2], q.get("print") === "1");
       else if (v === "dana-options" && PREVIEW) await viewDanaOptions();
       else await viewGroup();
       if (v !== "review") session = null;
       footer();
       if (!/read|grammar/.test(v || "")) window.scrollTo(0, 0);
+      if (v === "library") {   // back from a text: return to the same place in the list
+        try { const ls = JSON.parse(sessionStorage.getItem("sd:libscroll") || "null"); if (ls && ls.h === location.hash) window.scrollTo(0, ls.y); } catch (e) {}
+      }
       else if (v === "read") window.scrollTo(0, 0);
       $("#main").focus({ preventScroll: true });
     } catch (e) {
@@ -1163,6 +1280,8 @@
   document.addEventListener("click", (e) => {
     const demo = e.target.closest("button.demo");
     if (demo) { e.stopPropagation(); togglePop(demo); return; }
+    const gw = e.target.closest(".gw");   // practice sentences in the grammar guide: the word's meaning
+    if (gw) { e.stopPropagation(); togglePop(gw); return; }
     if (!e.target.closest(".nmark") && !e.target.closest("#pop") && !e.target.closest(".timebtn")) hidePop();
   });
   document.addEventListener("click", (e) => {

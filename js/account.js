@@ -208,6 +208,7 @@ getRedirectResult(auth).catch(() => {});
 onAuthStateChanged(auth, async (u) => {
   const was = user && user.uid;
   user = u;
+  document.documentElement.classList.toggle("signed-in", !!u);   // e.g. "progress is saved to your account"
   refreshButton();
   if (u && u.uid !== was) { try { await sync(); } catch (e) { setStatus("Couldn't reach your account just now."); } }
   if (win && !win.hidden) openWin();
