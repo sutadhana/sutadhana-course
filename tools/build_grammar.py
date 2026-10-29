@@ -364,14 +364,14 @@ def practice_words(sec):
         gloss.setdefault(unicodedata.normalize("NFC", w.strip()), m.strip())
     # meanings Mor gave for words his practice lists don't gloss (Oct 29), plus names
     EXTRA = {
-        "dhamma": "nature; quality; teaching", "dukkha": "suffering; unsatisfactoriness",
+        "dhamma": "dhamma", "dukkha": "suffering; unsatisfactoriness",
         "akkodha": "non-anger", "mettā": "loving-kindness; goodwill", "anicca": "impermanent",
         "brahma-cariya": "the spiritual life", "saṃsāra": "saṃsāra",
         "akusala": "unwholesome", "anuppāda": "non-arising",
         "tvaṃ": "you (one person)", "tumhe": "you (more than one)", "mayaṃ": "we", "eso": "this; he",
         "Buddha": "the Buddha, the Awakened One", "Bhagavant": "the Blessed One",
         "Tathāgata": "the Tathāgata, the one thus gone", "Ānanda": "Ānanda, the Buddha’s attendant",
-        "Sāriputta": "Sāriputta, a chief disciple of the Buddha", "Māra": "Māra, the tempter",
+        "Sāriputta": "Sāriputta, a chief disciple of the Buddha", "Māra": "Māra",
         "Anāthapiṇḍika": "Anāthapiṇḍika, a lay supporter of the Buddha", "Jeta": "Jeta, a prince (Jeta’s grove)",
     }
     FORMS = {"dhamma": "dhamma", "dhammo": "dhamma", "dhammaṃ": "dhamma", "dhammena": "dhamma", "dhammasmiṃ": "dhamma",
