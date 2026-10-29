@@ -362,11 +362,40 @@ def practice_words(sec):
     gloss = {}
     for w, m in re.findall(r"<b>([^<]+)</b>\s*\(([^)]*)\)", html_):
         gloss.setdefault(unicodedata.normalize("NFC", w.strip()), m.strip())
+    # meanings Mor gave for words his practice lists don't gloss (Oct 29), plus names
+    EXTRA = {
+        "dhamma": "nature; quality; teaching", "dukkha": "suffering; unsatisfactoriness",
+        "akkodha": "non-anger", "mettā": "loving-kindness; goodwill", "anicca": "impermanent",
+        "brahma-cariya": "the spiritual life", "saṃsāra": "saṃsāra",
+        "akusala": "unwholesome", "anuppāda": "non-arising",
+        "tvaṃ": "you (one person)", "tumhe": "you (more than one)", "mayaṃ": "we", "eso": "this; he",
+        "Buddha": "the Buddha, the Awakened One", "Bhagavant": "the Blessed One",
+        "Tathāgata": "the Tathāgata, the one thus gone", "Ānanda": "Ānanda, the Buddha’s attendant",
+        "Sāriputta": "Sāriputta, a chief disciple of the Buddha", "Māra": "Māra, the tempter",
+        "Anāthapiṇḍika": "Anāthapiṇḍika, a lay supporter of the Buddha", "Jeta": "Jeta, a prince (Jeta’s grove)",
+    }
+    FORMS = {"dhamma": "dhamma", "dhammo": "dhamma", "dhammaṃ": "dhamma", "dhammena": "dhamma", "dhammasmiṃ": "dhamma",
+             "dhammehi": "dhamma", "dhammesu": "dhamma", "dhammānaṃ": "dhamma",
+             "dukkhaṃ": "dukkha", "dukkhassa": "dukkha", "dukkhe": "dukkha", "dukkhā": "dukkha",
+             "akkodhena": "akkodha", "mettena": "mettā", "anicce": "anicca", "brahma-cariyaṃ": "brahma-cariya",
+             "saṃsāro": "saṃsāra", "akusalānaṃ": "akusala", "anuppādāya": "anuppāda",
+             "tvaṃ": "tvaṃ", "tumhe": "tumhe", "mayaṃ": "mayaṃ", "eso": "eso",
+             "buddho": "Buddha", "buddhaṃ": "Buddha", "buddhena": "Buddha", "buddhāya": "Buddha", "buddhassa": "Buddha",
+             "buddhānaṃ": "Buddha", "bhagavā": "Bhagavant", "tathāgato": "Tathāgata", "tathāgate": "Tathāgata",
+             "ānando": "Ānanda", "ānandaṃ": "Ānanda", "sāriputto": "Sāriputta", "sāriputta": "Sāriputta",
+             "mārassa": "Māra", "anāthapiṇḍikassa": "Anāthapiṇḍika", "jeta": "Jeta"}
+    for k, v in EXTRA.items():
+        gloss[k] = v
     missing = set()
 
     def word(m):
         f = m.group(0)
         key = f.lower()
+        if key not in gloss and key not in FORMS and "-" in f:
+            return "-".join(word(re.match(r".+", part, re.S)) for part in f.split("-"))
+        if key in FORMS:
+            lemma = FORMS[key]
+            return f'<button type="button" class="gw" data-label="{html.escape(lemma)}" data-note="{html.escape(gloss[lemma])}">{f}</button>'
         lemma = key if key in gloss else None
         if not lemma:
             for _id, l1, _g in idx.get(key, []) + idx.get(key.replace("’", ""), []):
@@ -377,7 +406,7 @@ def practice_words(sec):
         return f'<button type="button" class="gw" data-label="{html.escape(lemma)}" data-note="{html.escape(gloss[lemma])}">{f}</button>'
 
     def cell(m):
-        inner = re.sub(r"(?<=>)([^<]+)(?=<)", lambda t: re.sub(r"[^\W\d_][\w’]*", word, t.group(1)), m.group(1))
+        inner = re.sub(r"(?<=>)([^<]+)(?=<)", lambda t: re.sub(r"[^\W\d_][\w’]*(?:-[^\W\d_][\w’]*)*", word, t.group(1)), m.group(1))
         return m.group(0).replace(m.group(1), inner)
     def table(m):
         return re.sub(r"<td>(.*?)</td>", cell, m.group(0))
