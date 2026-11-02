@@ -632,3 +632,24 @@ html:not(.signed-in) .only-acct,html.signed-in .only-dev{display:none}
 .gram-body .gw:hover,.gram-body .gw[data-pinned]{background:rgba(94,110,88,.15)}
 
 .pop .lbl.pl{text-transform:none;letter-spacing:0;font-size:1rem;font-weight:700;opacity:1}
+
+.caseline{margin:6px 0 16px}
+.caseline .tbl{margin:0}
+.t-caseline{width:100%}
+.t-caseline td:nth-child(1){width:2.4em}
+.t-caseline td:nth-child(2){white-space:nowrap}
+.t-caseline td:nth-child(3){min-width:14em}
+.t-caseline td:nth-child(4){min-width:12em}
+.t-caseline td p{text-align:left}
+.t-caseline tr:first-child td p{text-align:center}
+@media (max-width:620px){
+  .t-caseline tr:first-child{display:none}
+  .t-caseline,.t-caseline tbody,.t-caseline tr,.t-caseline td{display:block;width:100%!important;min-width:0!important;box-sizing:border-box}
+  .t-caseline td:nth-child(1){display:none}
+  .caseline{max-width:calc(100vw - 36px)}
+  .caseline .tbl{display:block;width:100%;margin:0!important;padding:0!important}
+  .caseline .t-caseline td{max-width:none!important}
+  .t-caseline td{border-width:0 0 1px!important}
+  .t-caseline td p,.t-caseline td p.ctr{text-align:left}
+  .t-caseline td:nth-child(4)::before{content:"Example (sing.)";display:block;font-size:.8rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+}

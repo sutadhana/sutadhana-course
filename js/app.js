@@ -891,6 +891,22 @@
     }
     return { row: grid[r][0].parentElement, cell: best };
   }
+  // the chart's columns that hold for every noun: #, case, definition, example
+  function chartRows(gr) {
+    const d = document.createElement("div"); d.innerHTML = gr.paradigms.buddha.html;
+    return [...d.querySelectorAll("tr")];
+  }
+  function caseLine(gr, caseName) {
+    const rows = chartRows(gr), row = rows.find((tr) => tr.cells[1] && tr.cells[1].textContent.trim().toLowerCase() === caseName);
+    if (!row) return "";
+    const pick = (tr) => [0, 1, 4, 5].map((i) => tr.cells[i].outerHTML).join("");
+    return `<div class="gram-body caseline"><div class="tbl"><table class="t-caseline"><tr>${pick(rows[0])}</tr><tr>${pick(row)}</tr></table></div></div>`;
+  }
+  function buddhaTable(gr) {
+    const rows = chartRows(gr);
+    const cell = (td) => `<td><p class="ctr">${(td.querySelector("p") ? td.querySelector("p").innerHTML : td.innerHTML).replace(/<\/?u>/g, "")}</p></td>`;
+    return `<div class="tbl"><table>${rows.map((tr) => `<tr>${[1, 2, 3].map((i) => cell(tr.cells[i])).join("")}</tr>`).join("")}</table></div>`;
+  }
   async function openCase(ds) {
     const caseName = ds.case;
     const [gr, t] = await Promise.all([load("grammar/index.json"), load(`library/${ds.t}.json`)]);
@@ -905,7 +921,7 @@
     let title, table, note = "", section = "cases";
     let P = x.para && gr.paradigms ? gr.paradigms[x.para] : null;
     if (P) {
-      title = esc(P.title); table = P.html; section = P.section;
+      title = esc(P.title); table = x.para === "buddha" ? buddhaTable(gr) : P.html; section = x.para === "buddha" ? "nouns" : P.section;
     } else if (x.decl) {
       title = `Declension of <span lang="pi">${esc(x.lemma)}</span>`; table = x.decl;
       note = `<p class="gm-src">Table from the Digital Pāḷi Dictionary.</p>`;
@@ -914,7 +930,7 @@
     $("#gmBody").innerHTML = `<div class="eyebrow">${esc(Case)} ${esc(number)}${gender ? " · " + esc(gender) : ""}</div>
       <h2 id="gmTitle">${title}</h2>
       <p class="gm-like"><b lang="pi">${esc(x.form || w.form)}</b> is from <b lang="pi">${esc(x.lemma)}</b>${P ? ", which follows this pattern" : ""}.</p>
-      ${def ? `<div class="gm-def"><b>${esc(Case)}:</b> ${def}</div>` : ""}
+      ${caseLine(gr, caseName) || (def ? `<div class="gm-def"><b>${esc(Case)}:</b> ${def}</div>` : "")}
       <div class="gram-body" id="gmTable">${table}</div>${note}
       <div class="gm-foot">${section !== "cases" ? `<a href="#" data-gram="cases" data-focus="${esc(Case)}">The case system</a> · ` : ""}<a href="#/${state.gid}/grammar/${section}" data-full="1">Open in the grammar guide →</a></div>`;
     // the guide's ptp table has only nom. and acc.: "the rest is like anicca / gata"
@@ -933,7 +949,8 @@
     $("#gmClose").focus({ preventScroll: true });
     if (hit) setTimeout(() => {
       const el = hit.row, top = el.getBoundingClientRect().top - box.getBoundingClientRect().top + box.scrollTop;
-      if (top > box.clientHeight * 0.7) box.scrollTo({ top: top - box.clientHeight / 3, behavior: "smooth" });
+      const cl = box.querySelector(".caseline"), cap = cl ? cl.getBoundingClientRect().top - box.getBoundingClientRect().top + box.scrollTop - 12 : Infinity;
+      if (top > box.clientHeight * 0.7) box.scrollTo({ top: Math.min(top - box.clientHeight / 3, cap), behavior: "smooth" });
     }, 120);
   }
   function openTour() {
