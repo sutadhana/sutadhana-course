@@ -1223,6 +1223,8 @@
         <a role="tab" aria-selected="${!more}" href="#/${g.id}/library">A New Course in Reading Pāḷi</a>
         <a role="tab" aria-selected="${more}" href="#/${g.id}/library?tab=more">More texts</a></div>
       ${body}`;
+    // switching tabs always starts at the top
+    $("#main").querySelectorAll(".libtabs a").forEach((a) => a.addEventListener("click", () => { try { sessionStorage.removeItem("sd:libscroll"); } catch (e) {} }));
     $("#main").querySelectorAll(".librow").forEach((a) => a.addEventListener("click", () => {
       try { sessionStorage.setItem("sd:libscroll", JSON.stringify({ h: location.hash, y: scrollY })); } catch (e) {}
     }));
@@ -1258,7 +1260,7 @@
       footer();
       if (!/read|grammar/.test(v || "")) window.scrollTo(0, 0);
       if (v === "library") {   // back from a text: return to the same place in the list
-        try { const ls = JSON.parse(sessionStorage.getItem("sd:libscroll") || "null"); if (ls && ls.h === location.hash) window.scrollTo(0, ls.y); } catch (e) {}
+        try { const ls = JSON.parse(sessionStorage.getItem("sd:libscroll") || "null"); sessionStorage.removeItem("sd:libscroll"); if (ls && ls.h === location.hash) window.scrollTo(0, ls.y); } catch (e) {}
       }
       else if (v === "read") window.scrollTo(0, 0);
       $("#main").focus({ preventScroll: true });
