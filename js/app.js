@@ -640,10 +640,11 @@
 
     // previous / next text within the lesson, or within the library collection
     let prevNext = "";
-    const libBack = `#/${g.id}/library${workshop ? "?tab=more" : ""}`;
+    const libBack = `#/${g.id}/library${workshop ? "?tab=workshop" : tid.startsWith("ncrp-") ? "" : "?tab=more"}`;
     if (!lesson) {
       const lib = await load("library/index.json");
-      const ids = lib.filter((x) => x.id.startsWith("ncrp-") === tid.startsWith("ncrp-")).map((x) => x.id), i = ids.indexOf(tid);
+      const shelf = (x) => x.id.startsWith("ncrp-") ? "book" : x.collection === "workshop" ? "workshop" : "more";
+      const ids = lib.filter((x) => shelf(x) === shelf({ id: tid, collection: t.collection })).map((x) => x.id), i = ids.indexOf(tid);
       const nm = (id) => (lib.find((x) => x.id === id) || {}).title || id;
       prevNext = `<div class="nav-next">
         ${i > 0 ? `<a class="btn" href="#/${g.id}/read/${ids[i - 1]}">← <span lang="pi">${esc(nm(ids[i - 1]))}</span></a>` : "<span></span>"}
@@ -1209,11 +1210,11 @@
     const g = state.group;
     const lib = await load("library/index.json");
     await headerWithDue("library");
-    const more = tab === "more";
+    const which = tab === "workshop" || tab === "more" ? tab : "book";
     const row = (x) => `<a class="row librow" href="#/${g.id}/read/${x.id}"><div class="t"><b lang="pi">${esc(x.title)}${x.titleEn ? ` <span class="muted" style="display:inline;font-size:1rem">· ${esc(x.titleEn)}</span>` : ""}</b><span>${esc(x.ref || x.source || "")}${x.audio ? ` · <span class="has-audio">${HP_ICON}Audio</span>` : ""}</span></div><div class="arr" aria-hidden="true">›</div></a>`;
     const part = (title, arr) => arr.length ? `<div class="eyebrow" style="margin:14px 0 8px">${title}</div><div class="boxes" style="gap:10px">${arr.map(row).join("")}</div>` : "";
     let body = "";
-    if (!more) {
+    if (which === "book") {
       const books = [];
       lib.filter((x) => x.id.startsWith("ncrp-")).forEach((x) => {
         const key = `Lesson ${x.bookLesson}`;
@@ -1223,9 +1224,11 @@
       });
       body = books.map((b) => `<section style="margin-top:22px"><h2>${esc(b.key)}</h2>
         ${part("Initial readings", b.initial)}${part("Further readings", b.further)}</section>`).join("");
+    } else if (which === "more") {
+      body = `<div class="lib-empty"><p>More texts will appear here as we add them.</p></div>`;
     } else {
       const groups = [];
-      lib.filter((x) => !x.id.startsWith("ncrp-")).forEach((x) => {
+      lib.filter((x) => x.collection === "workshop").forEach((x) => {
         const key = x.group || "Other texts";
         let gr = groups.find((y) => y.key === key);
         if (!gr) groups.push(gr = { key, sub: x.groupSub || "", items: [] });
@@ -1236,10 +1239,11 @@
     }
     $("#main").innerHTML = `<div class="head"><h1>Library</h1>
       <p class="sub">Every text prepared for the course, including ones we haven’t read in class yet.</p></div>
-      <div class="seg libtabs" role="tablist">
-        <a role="tab" aria-selected="${!more}" href="#/${g.id}/library">A New Course in Reading Pāḷi</a>
-        <a role="tab" aria-selected="${more}" href="#/${g.id}/library?tab=more">More texts</a></div>
-      ${body}`;
+      <div class="libtabs" role="tablist">
+        <a role="tab" aria-selected="${which === "book"}" href="#/${g.id}/library">A New Course in Reading Pāḷi</a>
+        <a role="tab" aria-selected="${which === "workshop"}" href="#/${g.id}/library?tab=workshop">Pāḷi Workshop Texts</a>
+        <a role="tab" aria-selected="${which === "more"}" href="#/${g.id}/library?tab=more">More Texts</a></div>
+      <div class="libpanel">${body}</div>`;
     // switching tabs always starts at the top
     $("#main").querySelectorAll(".libtabs a").forEach((a) => a.addEventListener("click", () => { try { sessionStorage.removeItem("sd:libscroll"); } catch (e) {} }));
     $("#main").querySelectorAll(".librow").forEach((a) => a.addEventListener("click", () => {
