@@ -9,7 +9,10 @@
   const VERSION = "1";
   const PREVIEW = /[?&]preview\b/.test(location.search);
   const DAY = 86400000;
-  const LEARNED_DAYS = 21;
+  const LEARNED_DAYS = 21, STRONGER_DAYS = 7;
+  // well learned: remembered for 3 weeks or more, or last answered Easy (until a later Hard or Again)
+  const isLearned = (c) => !!c && (c.s >= LEARNED_DAYS || c.e === 1);
+  const isStronger = (c) => !!c && !isLearned(c) && c.s >= STRONGER_DAYS;
   const NEW_PER_DAY = 20;
 
   /* ---------------- storage (per device; wrapped because it can be blocked) ---------------- */
@@ -135,7 +138,7 @@
   }
   function learnedSet() {
     const c = loadCards(), out = new Set();
-    for (const id in c) if (id.startsWith("m:") && c[id].s >= LEARNED_DAYS) out.add(id.slice(2));
+    for (const id in c) if (id.startsWith("m:") && isLearned(c[id])) out.add(id.slice(2));
     return out;
   }
   function dueInfo(deck, sc) {
@@ -755,7 +758,7 @@
     const wn = notes.find((n) => n.p === +btn.dataset.p && n.w && n.w.toLowerCase() === btn.dataset.k);
     const cards = loadCards();
     const learned = (w.heads || []).map((h) => cards["m:" + h.lemma]);
-    const deckLine = !w.heads?.length ? "" : learned.every((c) => c && c.s >= LEARNED_DAYS) ? "Well learned" :
+    const deckLine = !w.heads?.length ? "" : learned.every((c) => isLearned(c)) ? "Well learned" :
       learned.some((c) => c) ? `In your review${learned[0]?.due ? " · next review " + relDay(learned[0].due) : ""}` : "Not reviewed yet";
     const parts = w.parts ? `<ul class="parts">${w.parts.map((p, pi) => `<li><b lang="pi">${esc(p.form)}</b><span class="sep" aria-hidden="true">–</span><span class="gram">${linkGrammar(p.label, { lemma: p.lemma, t: t.id, k: btn.dataset.k, pi: pi })}</span><small>${esc(p.meaning)}${p.dpd && p.dpd !== p.meaning ? " · DPD: " + esc(p.dpd) : ""}</small></li>`).join("")}</ul>` : "";
     $("#sheetIn").innerHTML = `
@@ -999,7 +1002,7 @@
   // friendly progress overview (all lessons so far)
   function progressHtml(g, done, deck) {
     const c = loadCards(), now = Date.now(), DAYMS = 864e5;
-    const started = deck.filter((k) => c[k.id]), learned = started.filter((k) => c[k.id].s >= LEARNED_DAYS);
+    const started = deck.filter((k) => c[k.id]), learned = started.filter((k) => isLearned(c[k.id])), stronger = started.filter((k) => isStronger(c[k.id]));
     const fresh = deck.length - started.length;
     const startOfDay = (t) => { const d = new Date(t); d.setHours(0, 0, 0, 0); return d.getTime(); };
     const today0 = startOfDay(now);
@@ -1017,12 +1020,13 @@
     const wd = (i) => i === 0 ? "Today" : i === 1 ? "Tmrw" : new Date(today0 + i * DAYMS).toLocaleDateString("en-GB", { weekday: "short" });
     const perLesson = done.map((l) => {
       const ids = new Set(); deck.filter((k) => k.lesson === l.n && k.kind === "meaning").forEach((k) => ids.add(k.id));
-      const tot = ids.size, ok = [...ids].filter((id) => c[id] && c[id].s >= LEARNED_DAYS).length, st = [...ids].filter((id) => c[id]).length;
-      return tot ? `<div class="pl"><span class="pl-n">Lesson ${l.n}</span><span class="pl-bar"><i class="pl-st" style="width:${100 * st / tot}%"></i><i class="pl-ok" style="width:${100 * ok / tot}%"></i></span><span class="pl-v">${ok} of ${tot} words learned</span></div>` : "";
+      const tot = ids.size, ok = [...ids].filter((id) => isLearned(c[id])).length, gs = [...ids].filter((id) => isStronger(c[id])).length, st = [...ids].filter((id) => c[id]).length;
+      return tot ? `<div class="pl"><span class="pl-n">Lesson ${l.n}</span><span class="pl-bar"><i class="pl-st" style="width:${100 * st / tot}%"></i><i class="pl-gs" style="width:${100 * (ok + gs) / tot}%"></i><i class="pl-ok" style="width:${100 * ok / tot}%"></i></span><span class="pl-v">${ok} of ${tot} words learned</span></div>` : "";
     }).join("");
     return `<div class="stats">
         <div><b>${learned.length}</b><span>well learned</span></div>
-        <div><b>${started.length - learned.length}</b><span>still learning</span></div>
+        <div><b>${stronger.length}</b><span>getting stronger</span></div>
+        <div><b>${started.length - learned.length - stronger.length}</b><span>still learning</span></div>
         <div><b>${fresh}</b><span>not started yet</span></div>
         <div><b>${remembered == null ? "–" : remembered + "%"}</b><span>remembered<br><small>last 30 days</small></span></div>
       </div>
@@ -1030,9 +1034,9 @@
         <div class="fc">${days.map((n, i) => `<div class="fc-d"><span class="fc-b" style="height:${Math.round(70 * n / maxD) + 4}px" title="${n}"></span><b>${n}</b><small>${wd(i)}</small></div>`).join("")}</div>
         <p class="muted" style="margin:6px 0 0;font-size:.9rem">Cards due each day this week, for the cards you’ve started.</p></div>
       <div class="pcard"><div class="pc-h">Your practice</div>
-        <p style="margin:4px 0">${todayN} cards reviewed today · ${weekN} this week · on ${activeDays} of the last 7 days</p></div>
+        <p style="margin:4px 0">${todayN} card${todayN === 1 ? "" : "s"} reviewed today · ${weekN} this week · on ${activeDays} of the last 7 days</p></div>
       ${perLesson ? `<div class="pcard"><div class="pc-h">Words by lesson</div>${perLesson}
-        <p class="muted" style="margin:8px 0 0;font-size:.85rem"><span class="lg st"></span> started <span class="lg ok"></span> well learned (remembered for 3 weeks or more)</p></div>` : ""}`;
+        <p class="muted" style="margin:8px 0 0;font-size:.85rem"><span class="lg st"></span> still learning <span class="lg gs"></span> getting stronger (remembered for a week or more) <span class="lg ok"></span> well learned (three weeks or more)</p></div>` : ""}`;
   }
   async function viewReview(sc) {
     const g = state.group;
@@ -1066,7 +1070,7 @@
     const title = up ? `Lesson ${sc} · new words before class` : sc ? `Lesson ${sc} · words review` : "Word review";
     if (!s.queue.length) {
       const all = deck.length, seen = deck.filter((k) => c[k.id]).length;
-      const learned = deck.filter((k) => c[k.id] && c[k.id].s >= LEARNED_DAYS).length;
+      const learned = deck.filter((k) => isLearned(c[k.id])).length;
       const nextDue = deck.map((k) => c[k.id]?.due).filter((x) => x > Date.now()).sort((a, b) => a - b)[0];
       $("#main").innerHTML = `<div class="rv">
         ${sc ? `<a class="back" href="${backHref}"><span aria-hidden="true" style="color:var(--accent)">←</span> Back to ${backTxt}</a>` : ""}
@@ -1127,6 +1131,7 @@
     log.push([Date.now(), gr, wasNew ? 1 : 0]);
     store.set(`sd:${state.gid}:log`, log.slice(-3000));
     c[k.id] = FSRS.review(c[k.id] || {}, gr);
+    c[k.id].e = gr === 4 ? 1 : gr <= 2 ? 0 : (c[k.id].e || 0);
     saveCards(c, sc);
     if (wasNew) {
       const today = new Date().toDateString(), key = scopeKey(sc) + ":newday";
