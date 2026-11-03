@@ -957,7 +957,7 @@
   function openTour() {
     closeSheet(); stopAudio();
     $("#gmBody").innerHTML = `<div class="eyebrow">Take a tour</div><h2 id="gmTitle">How the course learning platform works</h2>
-      <video class="tourvid" controls autoplay playsinline preload="metadata" poster="assets/tour-poster.jpg?v=4" src="assets/tour.mp4?v=4"></video>
+      <video class="tourvid" controls autoplay playsinline preload="metadata" poster="assets/tour-poster.jpg?v=4" src="assets/tour.mp4?v=5"></video>
       <p class="gm-src">About 5 minutes.</p>`;
     const m = $("#gmodal");
     m.hidden = false; document.body.classList.add("modal-open");
