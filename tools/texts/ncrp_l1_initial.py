@@ -230,7 +230,7 @@ TEXTS.append(dict(
         "bhiyyo-bhāvāya": dict(l="bhiyyobhāva", g="masc dat sg", ctx="for the increase",
                               parts=[("bhiyyo", None, "ind", "more"), ("bhāva", None, "masc", "becoming; state")]),
         "vepullāya": dict(l="vepulla 1", g="nt dat sg", ctx="for the expansion"),
-        "bhāvanāya": dict(l="bhāvanā 1", g="fem dat sg", ctx="for the development"),
+        "bhāvanāya": dict(l="bhāvanā 1", g="fem instr sg", ctx="by development"),
         "pāripūriyā": dict(l="pāripūri 1", g="fem dat sg", ctx="for the fulfilment"),
         "chandaṃ": dict(l="chanda 1", g="masc acc sg", ctx="desire; will (as object)"),
         "janeti": dict(l="janeti 1", g="pr 3rd sg", ctx="generates; produces", role="verb"),
