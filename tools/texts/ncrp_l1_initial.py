@@ -23,11 +23,11 @@ TEXTS.append(dict(
     source="NCRP Lesson 1 · Initial reading 1",
     credit="English: course exercise book, with the second and third rounds written out in full.",
     paras=[
-        ("Buddhaṃ saraṇaṃ gacchāmi\ndhammaṃ saraṇaṃ gacchāmi\nsaṅghaṃ saraṇaṃ gacchāmi",
+        ("Buddhaṃ saraṇaṃ gacchāmi,\ndhammaṃ saraṇaṃ gacchāmi,\nsaṅghaṃ saraṇaṃ gacchāmi.",
          "I go for refuge to the Buddha,\nI go for refuge to the Dhamma,\nI go for refuge to the Sangha."),
-        ("Dutiyaṃ pi buddhaṃ saraṇaṃ gacchāmi\ndutiyaṃ pi dhammaṃ saraṇaṃ gacchāmi\ndutiyaṃ pi saṅghaṃ saraṇaṃ gacchāmi",
+        ("Dutiyaṃ pi buddhaṃ saraṇaṃ gacchāmi,\ndutiyaṃ pi dhammaṃ saraṇaṃ gacchāmi,\ndutiyaṃ pi saṅghaṃ saraṇaṃ gacchāmi.",
          "For the second time I go for refuge to the Buddha,\nfor the second time I go for refuge to the Dhamma,\nfor the second time I go for refuge to the Sangha."),
-        ("Tatiyaṃ pi buddhaṃ saraṇaṃ gacchāmi\ntatiyaṃ pi dhammaṃ saraṇaṃ gacchāmi\ntatiyaṃ pi saṅghaṃ saraṇaṃ gacchāmi",
+        ("Tatiyaṃ pi buddhaṃ saraṇaṃ gacchāmi,\ntatiyaṃ pi dhammaṃ saraṇaṃ gacchāmi,\ntatiyaṃ pi saṅghaṃ saraṇaṃ gacchāmi.",
          "For the third time I go for refuge to the Buddha,\nfor the third time I go for refuge to the Dhamma,\nfor the third time I go for refuge to the Sangha."),
     ],
     words={

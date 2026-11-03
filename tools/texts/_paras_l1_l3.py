@@ -47,11 +47,11 @@ for who, other, gen_who, en_who, en_other in [("purisassa", "itthi", "purisassa"
 
 # ---------------------------------------------------------------- 2.1.1
 P211 = [
-    ("Kiccho manussa-paṭilābho\nkicchaṃ maccānaṃ jīvitaṃ\nkicchaṃ saddhamma-savanaṃ\nkiccho buddhānaṃ uppādo.",
+    ("Kiccho manussa-paṭilābho,\nkicchaṃ maccānaṃ jīvitaṃ,\nkicchaṃ saddhamma-savanaṃ,\nkiccho buddhānaṃ uppādo.",
      "Hard is it to be born a man,\nhard is the life of mortals,\nhard is it to gain the opportunity of hearing the Sublime Truth,\nhard to encounter is the arising of the Buddhas.\n(Dhp 182)"),
-    ("Sabba-pāpassa akaraṇaṃ\nkusalassa upasampadā\nsacitta-pariyodapanaṃ\netaṃ buddhāna(ṃ) sāsanaṃ.",
+    ("Sabba-pāpassa akaraṇaṃ,\nkusalassa upasampadā,\nsacitta-pariyodapanaṃ,\netaṃ buddhāna(ṃ) sāsanaṃ.",
      "To avoid all evil,\nto cultivate good,\nand to cleanse one’s mind:\nthis is the teaching of the Buddhas.\n(Dhp 183)"),
-    ("Na hi verena verāni\nsammant’īdha kudācanaṃ\naverena ca sammanti\nesa dhammo sanantano.",
+    ("Na hi verena verāni,\nsammant’īdha kudācanaṃ,\naverena ca sammanti,\nesa dhammo sanantano.",
      "Hatred is never appeased\nby hatred in this world.\nBy non-hatred alone is hatred appeased.\nThis is a law eternal.\n(Dhp 5)"),
 ]
 
