@@ -239,12 +239,48 @@ def pali_case(s):
 TOKEN = re.compile(r"[^\s,.;:!?“”\"‘()…*—–]+(?:\([^\s()]+\))?|[\s,.;:!?“”\"‘()…*—–]+")
 
 
+# Mor's spelling rules, applied to every text (Nov 2026):
+#  - always a comma before yathayidaṃ: "… saṃvattati, yathayidaṃ, bhikkhave …"
+#  - ṃ becomes m before pi, written as one word: "eka-rūpaṃ pi" -> "eka-rūpampi"
+def mor_spelling(pali):
+    pali = re.sub(r"([^\s,]) yathayidaṃ", r"\1, yathayidaṃ", pali)
+    pali = re.sub(r"ṃ pi(?=[\s,.;:!?”’…—–]|$)", "mpi", pali)
+    return pali
+
+
+PI_DEFAULT = dict(l="pi 1.1", g="ind", ctx="even")
+
+
+def mpi_spec(key, t):
+    """word + pi written together (…mpi): built from the analyses of the two words"""
+    base = key[:-3] + "ṃ"
+    b = t["words"].get(base) or t["words"].get(base[:1].upper() + base[1:])
+    if not b:
+        return None
+    pi = t["words"].get("pi") or PI_DEFAULT
+    bctx = re.sub(r"\s*\(as object\)", "", b["ctx"])
+    ctx = f"even {bctx}" if pi["ctx"].startswith("even") else f"{bctx} {pi['ctx'].split(';')[0]}"
+    spec = dict(lemma=f"{base} + pi", g="sandhi", ctx=ctx,
+                parts=[(base, b.get("l"), b["g"], b["ctx"]), ("pi", pi.get("l"), "ind", pi["ctx"])],
+                note="The ṃ becomes m before pi, and the two words are written as one.")
+    if b.get("role"):
+        spec["role"] = b["role"]
+    return spec
+
+
 def build_text(t):
     words = {}
     for form, spec in t["words"].items():
         words[form] = build_word(form, spec)
     paras = []
     for pali, en in t["paras"]:
+        pali = mor_spelling(pali)
+        for m in re.finditer(r"[^\s,.;:!?“”\"‘()…*—–]+mpi(?=[\s,.;:!?”’…—–]|$)", pali):
+            k = m.group(0).lower()
+            if k not in words:
+                sp = mpi_spec(k, t)
+                if sp:
+                    words[k] = build_word(k, sp)
         toks = []
         for m in TOKEN.finditer(pali):
             s = m.group(0)
