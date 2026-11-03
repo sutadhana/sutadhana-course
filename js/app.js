@@ -966,6 +966,15 @@
     m.hidden = false; document.body.classList.add("modal-open");
     requestAnimationFrame(() => m.classList.add("show"));
   }
+  function openReviewVideo() {
+    closeSheet(); stopAudio();
+    $("#gmBody").innerHTML = `<div class="eyebrow">Review</div><h2 id="gmTitle">How the review works</h2>
+      <video class="tourvid" controls autoplay playsinline preload="metadata" poster="assets/review-poster.jpg?v=1" src="assets/review.mp4?v=1"></video>
+      <p class="gm-src">About 3 minutes.</p>`;
+    const m = $("#gmodal");
+    m.hidden = false; document.body.classList.add("modal-open");
+    requestAnimationFrame(() => m.classList.add("show"));
+  }
   function closeGrammar() {
     const m = $("#gmodal");
     if (m.hidden) return false;
@@ -991,6 +1000,7 @@
         <span class="rc-n${n ? "" : " zero"}">${n}<small>${n === 1 ? "card" : "cards"}</small></span></a>`;
     $("#main").innerHTML = `<div class="rv">
       <div class="head"><h1>Review</h1><p class="sub">A few minutes a day. Choose what to practise.</p></div>
+      <button class="rvvid" id="rvVidBtn" type="button"><span class="rvvid-ic" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></span><span><b>How the review works</b><small>A short video: why it works, and what the buttons do · 3 min</small></span></button>
       <div class="rchoices">
         ${last ? choice(`#/${g.id}/review?lesson=${last.n}`, "Last lesson", `Lesson ${last.n} · ${esc(last.title || "")}`, lastD.total) : ""}
         ${nx ? choice(`#/${g.id}/review?lesson=${nx.n}`, "Next lesson", `Lesson ${nx.n} · new words to prepare`, nxD.total, "next") : ""}
@@ -1314,6 +1324,7 @@
   });
   document.addEventListener("click", (e) => {
     if (e.target.closest("#tourBtn")) openTour();
+    if (e.target.closest("#rvVidBtn")) openReviewVideo();
     const bg = e.target.closest("[data-bookg]"); if (bg) openBookGrammar(bg.dataset.bookg);
   });
 
