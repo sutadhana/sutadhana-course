@@ -102,17 +102,32 @@
     }
    ],
    "next": ""
+  },
+  {
+   "n": 10,
+   "date": "2026-11-03",
+   "title": "Obsession of the Mind and the first verse",
+   "published": true,
+   "recording": "https://1drv.ms/v/c/6c1280ffd770ad5b/IQDAdmOEBTRXQLBd5HO7neDhASF-dW1eSt2H7K1n7aaprr8?e=Bp4tkb",
+   "items": [
+    {
+     "text": "ncrp-1-2-2"
+    },
+    {
+     "text": "ncrp-2-1-1",
+     "to": 1
+    }
+   ],
+   "next": ""
   }
  ],
  "notes": {},
  "next": {
-  "n": 10,
+  "n": 11,
   "items": [
    {
-    "text": "ncrp-1-2-2"
-   },
-   {
-    "text": "ncrp-2-1-1"
+    "text": "ncrp-2-1-1",
+    "from": 2
    },
    {
     "text": "ncrp-2-1-2"
