@@ -960,7 +960,7 @@
   function openTour() {
     closeSheet(); stopAudio();
     $("#gmBody").innerHTML = `<div class="eyebrow">Take a tour</div><h2 id="gmTitle">How the course learning platform works</h2>
-      <video class="tourvid" controls autoplay playsinline preload="metadata" poster="assets/tour-poster.jpg?v=4" src="assets/tour.mp4?v=6"></video>
+      <video class="tourvid" controls autoplay playsinline preload="metadata" poster="assets/tour-poster.jpg?v=4" src="assets/tour.mp4?v=7"></video>
       <p class="gm-src">About 5 minutes.</p>`;
     const m = $("#gmodal");
     m.hidden = false; document.body.classList.add("modal-open");
@@ -969,7 +969,7 @@
   function openReviewVideo() {
     closeSheet(); stopAudio();
     $("#gmBody").innerHTML = `<div class="eyebrow">Review</div><h2 id="gmTitle">How the review works</h2>
-      <video class="tourvid" controls autoplay playsinline preload="metadata" poster="assets/review-poster.jpg?v=1" src="assets/review.mp4?v=1"></video>
+      <video class="tourvid" controls autoplay playsinline preload="metadata" poster="assets/review-poster.jpg?v=1" src="assets/review.mp4?v=2"></video>
       <p class="gm-src">About 3 minutes.</p>`;
     const m = $("#gmodal");
     m.hidden = false; document.body.classList.add("modal-open");
