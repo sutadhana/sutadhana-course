@@ -580,6 +580,7 @@
     toks.forEach((tok, i) => {
       if (tok.length > 1) counts[counts.length - 1]++;
       else if (/[.?!][”’"')\]]*\s/.test(tok[0]) && i < toks.length - 1) { ends.push(i); counts.push(0); }
+      else if (/^ +$/.test(tok[0]) && i > 0 && toks[i - 1].length < 2 && /[.?!][”’"')\]]*$/.test(toks[i - 1][0]) && i < toks.length - 1) { ends.push(i); counts.push(0); }
     });
     const out = new Set();
     ends.forEach((i, k) => { if (counts[k] > 2 && counts[k + 1] > 2) out.add(i); });
@@ -606,20 +607,48 @@
     const isNew = (w) => !metBefore(w, seen);
 
     const workshop = t.collection === "workshop";
-    const boxes = t.paras.map((p, pi) => {
+    // booklet line breaks: verses and chants keep them; in prose a break inside a sentence becomes a space,
+    // so lines follow the screen width and new sentences start on a new line
+    const CHANT = /tiratana-vandana|morning-chanting|panca-sila/.test(tid);
+    const flow = (p) => {
+      if (!p.lines) return p.t;
+      const lines = p.t.map((x) => x[0]).join("").split("\n");
+      if (CHANT || Math.max(...lines.map((l) => l.length)) <= 35) return p.t;
+      return p.t.map((tok, ti) => {
+        if (tok.length > 1 || !tok[0].includes("\n")) return tok;
+        const nextQuote = (p.t[ti + 1] && /^[“‘]/.test(p.t[ti + 1][0])) || /\n\s*[“‘—]/.test(tok[0]);
+        const out = tok[0].replace(/([.?!;:—–…”’]*)\s*\n\s*/g, (m, punc) => /[.?!;:—–…]/.test(punc) || nextQuote ? m : punc + " ");
+        return [out];
+      });
+    };
+    const boxes = t.paras.map((p0, pi) => {
+      const p = { ...p0, t: flow(p0) };
       const pnote = notes.find((n) => n.p === pi && !n.w);
       const brk = sentenceBreaks(p.t);
+      // keep the last two words of each sentence or line together, so no word is left alone on a line
+      const nb = new Set();
+      { let lastSp = -1, pend = -1, words = 0;
+        const close = () => { if (lastSp >= 0 && words >= 3) nb.add(lastSp); lastSp = pend = -1; words = 0; };
+        p.t.forEach((tok, ti) => {
+          if (tok.length > 1) { words++; if (pend >= 0) lastSp = pend; pend = -1; return; }
+          if (brk.has(ti) || tok[0].includes("\n")) { close(); return; }
+          if (/ /.test(tok[0]) && words) pend = ti;
+        });
+        close(); }
       const toks = p.t.map((tok, ti) => {
         if (tok.length < 2) {
           let s = tok[0];
+          if (nb.has(ti)) s = s.replace(/ (?=[^ ]*$)/, "\u00a0");
           if (ti > 0 && /^[ \u00a0]+[?!.;:,]/.test(s)) s = s.replace(/^[ \u00a0]+/, "");   // no punctuation alone at a line start
+          if (ti > 0) s = s.replace(/^ +(?=[—–…]|\.\.\.)/, "\u00a0");   // a dash or ellipsis stays with the word before it
+          if (brk.has(ti) && /^ +$/.test(s)) return "<br>";
           if (brk.has(ti)) { const m = s.match(/^(.*?[.?!…][”’"')\]]*)\s+(.*)$/s); if (m) return `<span class="punct">${esc(m[1])}</span><br><span class="punct">${esc(m[2])}</span>`; }
           return `<span class="punct">${esc(s)}</span>`;
         }
         const w = t.words[tok[1]];
         const cls = ["w", w.role || "", isNew(w) ? "new" : ""].join(" ").trim();
         const wn = notes.find((n) => n.p === pi && n.w && n.w.toLowerCase() === tok[1]);
-        return `<button class="${cls}" data-k="${esc(tok[1])}" data-p="${pi}" data-t="${ti}" lang="pi">${esc(tok[0])}</button>${wn ? `<button class="nmark" data-note="${esc(wn.text)}" aria-label="Teacher's note">i</button>` : ""}`;
+        return `<span class="${cls}" role="button" tabindex="0" data-k="${esc(tok[1])}" data-p="${pi}" data-t="${ti}" lang="pi">${esc(tok[0])}</span>${wn ? `<button class="nmark" data-note="${esc(wn.text)}" aria-label="Teacher's note">i</button>` : ""}`;
       }).join("");
       const out = item && !inRange(item, pi);
       const mark = item && item.to && pi === item.to ? `<div class="stopmark"><span>We stopped here in Lesson ${lesson.n}</span></div>`
@@ -688,11 +717,23 @@
     if (t.audio) wireListen(t);
     const pk = $("#pickup"); if (pk) setTimeout(() => pk.scrollIntoView({ block: "center", behavior: "smooth" }), 250);
     const box = $("#text");
+    // words never break across lines, unless a single word is wider than the line
+    const fitWords = () => box.querySelectorAll(".pali").forEach((pl) => {
+      const max = pl.clientWidth;
+      pl.querySelectorAll(".w").forEach((w) => { w.classList.remove("long"); if (w.scrollWidth > max - 4) w.classList.add("long"); });
+    });
+    fitWords();
+    if (state.fitWords) removeEventListener("resize", state.fitWords);
+    state.fitWords = fitWords; addEventListener("resize", fitWords);
     box.addEventListener("click", (e) => {
       const b = e.target.closest(".w");
       if (b) { openWord(t, b, notes); return; }
       const n = e.target.closest(".nmark");
       if (n) { togglePop(n); }
+    });
+    box.addEventListener("keydown", (e) => {   // words are inline spans (so lines wrap naturally): Enter / Space open them
+      const b = e.target.closest(".w");
+      if (b && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openWord(t, b, notes); }
     });
     box.addEventListener("mouseover", (e) => { const n = e.target.closest(".nmark"); if (n) showPop(n); });
     box.addEventListener("mouseout", (e) => { const n = e.target.closest(".nmark"); if (n && !n.dataset.pinned) hidePop(); });
@@ -723,6 +764,7 @@
       i = Math.max(0, Math.min(steps.length - 1, i + Number(b.dataset.size)));
       store.set("sd:textscale", steps[i]);
       box.style.setProperty("--ps", steps[i]);
+      fitWords();
     });
     $("#main").querySelectorAll("[data-hint]").forEach((b) => b.onclick = () => {
       const cur = hints(); cur[b.dataset.hint] = !cur[b.dataset.hint]; store.set("sd:hints", cur);

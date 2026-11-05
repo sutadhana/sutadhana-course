@@ -122,9 +122,12 @@ details.earlier summary{cursor:pointer;color:var(--accent);padding:10px 2px;min-
 .boxes{display:grid;gap:14px}
 .box{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 20px 8px;box-shadow:var(--card-shadow);position:relative}
 .box-no{font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
-.pali{font:400 24px/1.85 var(--pali);overflow-wrap:anywhere;white-space:pre-wrap}
+.pali{font:400 24px/1.85 var(--pali);overflow-wrap:break-word;white-space:pre-wrap}
 .w{font:inherit;color:inherit;background:none;border:0;padding:0 .06em;margin:0 -.06em;border-radius:5px;cursor:pointer;text-decoration:underline;text-decoration-color:transparent;text-underline-offset:7px;text-decoration-thickness:2px;transition:background .15s}
 .w:hover{text-decoration-color:var(--line)}
+.pali .w{display:inline;white-space:nowrap;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.pali .w.long{white-space:normal}
+.pali .w:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .marknew .w.new{text-decoration-line:underline;text-decoration-style:dotted;text-decoration-color:var(--accent)}
 .hint-subj .w.subj{background:var(--subj-bg);color:var(--subj)}
 .hint-verb .w.verb{background:var(--verb-bg);color:var(--verb)}
