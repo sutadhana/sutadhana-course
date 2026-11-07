@@ -86,6 +86,10 @@
     I: { pages: "20–27", lesson: 1, sections: [["Nouns", "nouns"], ["Verbs", "present"], ["Postposed particles (clitics)", null],
       ["Relative pronoun", "relative-pronouns"], ["Sandhi", "sandhi"], ["Negatives", null], ["Agreement of adjectives", "adjectives"],
       ["Accusative of destination", null], ["Conjoining in series", null], ["Compounds", "compounds"]] },
+    II: { pages: "33–41", lesson: 2, sections: [["Noun forms", "nouns"], ["Pronouns", "pronouns"], ["The interrogative katama", "interrogative-pronouns"],
+      ["The infinitive in -tuṃ", "infinitive"], ["Equational sentences", null], ["The correlative construction", "relative-pronouns"],
+      ["Prepositions and postpositions", null], ["The discourse substitute pe", null], ["The reflexive prefix sa-", null],
+      ["The accusative of time", null], ["Compounds", "compounds"], ["Sandhi", "sandhi"]] },
   };
   // a small heading for each group of items: "Lesson 1 · Initial readings", "Lesson 1 · Further readings", "Lesson 1 · Grammar"
   function itemGroup(it, meta) {

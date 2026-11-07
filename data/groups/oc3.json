@@ -119,18 +119,37 @@
     }
    ],
    "next": ""
+  },
+  {
+   "n": 11,
+   "date": "2026-11-07",
+   "title": "The Dhammapada verses and The Shopkeeper",
+   "published": true,
+   "recording": "https://1drv.ms/v/c/6c1280ffd770ad5b/IQCHiCtgAxhTRqGD9ORM8wZVASvR3RbvlyRvzy4ZIilsBhM?e=VUOMAN",
+   "items": [
+    {
+     "text": "ncrp-2-1-1",
+     "from": 2
+    },
+    {
+     "text": "ncrp-2-1-2"
+    }
+   ],
+   "next": ""
   }
  ],
  "notes": {},
  "next": {
-  "n": 11,
+  "n": 12,
   "items": [
    {
-    "text": "ncrp-2-1-1",
-    "from": 2
+    "text": "ncrp-2-2-2"
    },
    {
-    "text": "ncrp-2-1-2"
+    "bookGrammar": "II"
+   },
+   {
+    "text": "ncrp-3-1-1"
    }
   ]
  }
