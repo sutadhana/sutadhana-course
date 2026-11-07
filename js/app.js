@@ -99,7 +99,8 @@
     if (!m.bookLesson) return "Other texts";
     return `Lesson ${m.bookLesson} · ${m.section === "initial" ? "Initial readings" : m.section === "further" ? "Further readings" : "Extra readings"}`;
   }
-  const partLabel = (it) => it.from && it.to ? `passages ${it.from}–${it.to}` : it.from ? `from passage ${it.from}` : it.to ? `passages 1–${it.to}` : "";
+  const partLabel = (it, unit = "passage") => it.from && it.to ? (it.from === it.to ? `${unit} ${it.from}` : `${unit}s ${it.from}–${it.to}`) : it.from ? `from ${unit} ${it.from}` : it.to ? (it.to === 1 ? `${unit} 1` : `${unit}s 1–${it.to}`) : "";
+  const unitOf = (title) => /verse/i.test(title || "") ? "verse" : "passage";
 
   /* ---------------- review deck ---------------- */
   // sc: undefined = the main review of all lessons; a lesson number = that lesson's own review
@@ -311,7 +312,7 @@
           <span class="t"><b>Grammar ${esc(it.bookGrammar)}</b><small>In the book, pages ${esc(b.pages || "")} · with links to Mor’s grammar guide</small></span><span class="arr" aria-hidden="true">›</span></button>`;
       }
       if (!it.text) return `${head}<div class="${cls}"><span class="dot">${k}</span><span class="t"><b>${esc(it.label || "")}</b>${it.detail ? `<small>${esc(it.detail)}</small>` : ""}</span></div>`;
-      const m = meta(it.text), part = partLabel(it);
+      const m = meta(it.text), part = partLabel(it, unitOf(m.titleEn));
       return `${head}<a class="${cls}" href="${href(m)}"><span class="dot">${k}</span><span class="t"><b lang="pi">${esc(m.title)}${part ? ` <span class="part">${part}</span>` : ""}</b>
         <small>${esc(m.titleEn || "")} · ${esc(m.ref || "")}${m.audio ? ` · <span class="has-audio">${HP_ICON}Audio</span>` : ""}</small></span><span class="arr" aria-hidden="true">›</span></a>`;
     }).join("");
@@ -342,7 +343,7 @@
       <div class="lcard${l.published ? "" : " draft"}">
         <a class="lmain" href="#/${g.id}/lesson/${l.n}">
           <div class="num"><small>LESSON</small><b>${l.n}</b></div>
-          <div class="t"><b>${esc(l.title || "Lesson " + l.n)}</b><span class="dt-m">${fmtShort(l.date)}</span><span>${esc(l.items.map((i) => i.text ? titleOf(i.text) : i.label || "").filter(Boolean).join(" · "))}</span></div>
+          <div class="t"><b>${esc(l.title || "Lesson " + l.n)}</b><span class="dt-m">${fmtShort(l.date)}</span><span>${esc(l.items.map((i) => i.text ? titleOf(i.text) + (partLabel(i) ? ` (${partLabel(i, unitOf(titleOf(i.text)))})` : "") : i.label || "").filter(Boolean).join(" · "))}</span></div>
           <div class="meta">${fmtShort(l.date)}${l.published ? "" : "<br>Draft (preview)"}</div>
           <div class="arr" aria-hidden="true">›</div></a>
         ${l.recording === "demo" ? `<button class="recbtn demo" data-note="${DEMO_REC}" data-label="Recording" aria-label="Recording of lesson ${l.n} (example)">${play}<span>Recording</span></button>`

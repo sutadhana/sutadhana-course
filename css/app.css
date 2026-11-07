@@ -108,7 +108,7 @@ details.earlier summary{cursor:pointer;color:var(--accent);padding:10px 2px;min-
 .seg button{border:0;background:none;padding:5px 14px;border-radius:999px;cursor:pointer;min-height:36px}
 .seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
 .wl{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:6px 14px;margin:12px 0 4px}
-.wl .p{font:1.1rem var(--pali)} .wl .m{color:var(--muted);font-size:.95rem}
+.wl .p{font:1.1rem var(--pali);overflow-wrap:anywhere} .wl .m{color:var(--muted);font-size:.95rem}
 .wl .p button{background:none;border:0;padding:0;cursor:pointer;text-align:left;font:inherit;color:inherit}
 .wl .p button:hover{color:var(--accent)}
 
