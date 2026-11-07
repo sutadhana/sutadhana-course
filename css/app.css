@@ -667,3 +667,5 @@ html:not(.signed-in) .only-acct,html.signed-in .only-dev{display:none}
 .rvvid-ic{flex:none;width:36px;height:36px;border-radius:50%;background:var(--copper);color:#FDFCF7;display:flex;align-items:center;justify-content:center;padding-left:2px}
 .rvvid b{display:block;font-size:1.08rem}
 .rvvid small{display:block;color:var(--muted);font-size:.9rem;margin-top:1px}
+
+.bookg-btns{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 0}

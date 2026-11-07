@@ -323,7 +323,7 @@
     $("#gmBody").innerHTML = `<div class="eyebrow">A New Course in Reading Pāḷi</div><h2 id="gmTitle">Grammar ${esc(id)}</h2>
       <p style="margin:0 0 12px">In the book, <b>pages ${esc(b.pages)}</b>. Its sections, with the matching topic in Mor’s grammar guide:</p>
       <ol class="bookg-list">${b.sections.map(([t, gid]) => `<li><span>${esc(t)}</span>${gid ? `<a href="#" data-gram="${gid}">Grammar guide ›</a>` : ""}</li>`).join("")}</ol>
-      ${g.materials ? `<p style="margin:14px 0 0"><a class="btn" href="${esc(g.materials)}" target="_blank" rel="noopener">Open the course materials folder</a></p>` : ""}`;
+      <p class="bookg-btns">${g.book ? `<a class="btn primary" href="${esc(g.book)}" target="_blank" rel="noopener">Open the book · pages ${esc(b.pages)}</a>` : ""}${g.materials ? `<a class="btn" href="${esc(g.materials)}" target="_blank" rel="noopener">Course materials folder</a>` : ""}</p>`;
     const m = $("#gmodal");
     m.hidden = false; document.body.classList.add("modal-open");
     requestAnimationFrame(() => m.classList.add("show"));
