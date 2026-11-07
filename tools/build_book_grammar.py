@@ -188,19 +188,10 @@ G1.append(("agreement", "Adjectives agree with their nouns", f"""
     ("<b>akusalānaṃ</b> dhammānaṃ", "of unwholesome qualities (masculine, genitive, plural)", "Finger Snap"),
     ("cittaṃ … <b>adantaṃ</b>", "the mind … untamed (neuter, nominative, singular)", "Untamed"))}
 <p>Adjectives in -a take the same endings as the nouns: like <span lang="pi">dhammo</span> with a masculine noun, like <span lang="pi">rūpaṃ</span> with a neuter noun.</p>
-<p>The adjective often comes before the noun, but it may also come after it. Then it often has the sense “when it is …”: <span lang="pi">cittaṃ adantaṃ</span> – “the mind, <b>when</b> untamed”.</p>
+<p>The adjective usually comes before the noun, but it may also come after it: <span lang="pi">cittaṃ adantaṃ</span>.</p>
 """))
 
-G1.append(("acc-destination", "The accusative of destination", f"""
-<p>With a verb of going, the place or person one goes to is in the <b>accusative</b>:</p>
-{ex(("<b>buddhaṃ saraṇaṃ</b> gacchāmi", "I go <b>to the Buddha as refuge</b> (both words are accusative)", "Going for Refuge"))}
-"""))
 
-G1.append(("series", "Listing without “and”", f"""
-<p>Pāḷi can list words, or even whole sentences, one after another without any word for “and”. In English we add “and” before the last item:</p>
-{ex(("ṭhitiyā asammosāya bhiyyo-bhāvāya vepullāya", "for the maintenance, non-decline, increase <b>and</b> expansion", "Finger Snap"),
-    ("chandaṃ janeti; vāyamati; viriyaṃ ārabhati", "he generates desire, makes an effort <b>and</b> arouses energy", "Finger Snap"))}
-"""))
 
 G1.append(("compounds", "Compounds", f"""
 <p>As in English (<i>bookshop, sunlight</i>), two nouns can join to make one word. In our texts the parts are linked with a hyphen.</p>
@@ -326,37 +317,19 @@ a part with a <b>ya-</b> word, then a part with a matching <b>ta-</b> word. It i
 {ex(("appakā <b>te</b> sattā <b>ye</b> manussesu paccājāyanti", "few are <b>those</b> beings <b>who</b> are reborn among human beings", "Few and Many"))}
 """))
 
-G2.append(("annatra", "Words that go before or after: aññatra", f"""
-<p>English has prepositions, which come <b>before</b> a noun (“<i>outside</i> the house”). Pāḷi also has words that come <b>after</b> the noun, with the same job, and some can go either way.</p>
-<p>One of them is <b>aññatra</b> – “apart from, other than, elsewhere than”. The noun with it is usually in the instrumental or ablative:</p>
-{ex(("ye <b>aññatra</b> manussehi paccājāyanti", "who are reborn <b>elsewhere than</b> among human beings", "Few and Many"))}
-"""))
 
-G2.append(("pe", "pe – “and so on”", f"""
-<p><b>pe</b> (short for <b>peyyāla</b>) is a sign used in written texts. It means: a passage that was already given is repeated here, but it is not written out again. When the text is chanted or read aloud, the full passage is said.</p>
-{ex(("pubbaṇha-samayaṃ sakkaccaṃ kammantaṃ adhiṭṭhāti, majjhaṇhika-samayaṃ … <b>pe</b> … sāyaṇha-samayaṃ …", "in the morning he diligently applies himself to his work, in the middle of the day … <b>(the same)</b> … in the evening …", "The Shopkeeper"))}
-"""))
 
-G2.append(("sa", "The prefix sa- (“one’s own”)", f"""
-<p><b>sa-</b> before a noun can add the meaning “<b>one’s own</b>”:</p>
-{ex(("<b>sa</b>citta-pariyodapanaṃ", "purifying <b>one’s own</b> mind (sa + citta)", "Dhammapada"))}
-{tip("Do not confuse it with <span lang='pi'>sad-</span> “good, true” in <span lang='pi'>saddhamma</span> (the good Dhamma).")}
-"""))
 
-G2.append(("acc-time", "The accusative of time", f"""
-<p>A word for a time, put in the <b>accusative</b>, can tell us <b>when</b> or <b>for how long</b> something happens:</p>
+G2.append(("acc-time", "Time words in the accusative", f"""
+<p>A noun for a time, put in the <b>accusative</b>, works as an <b>adverb</b>: it tells us <b>when</b> or <b>for how long</b> something happens. (The traditional Pāḷi grammars list this as one of the uses of the accusative.)</p>
 {ex(("<b>pubbaṇha-samayaṃ</b> … <b>majjhaṇhika-samayaṃ</b> … <b>sāyaṇha-samayaṃ</b>", "<b>in the morning</b> … <b>in the middle of the day</b> … <b>in the evening</b>", "The Shopkeeper"),
     ("yaṃ’sa hoti <b>dīgha-rattaṃ</b> ahitāya dukkhāya", "which will be for his harm and suffering <b>for a long time</b>", "Sāḷha (1)"))}
 """))
 
-G2.append(("compounds", "Compounds: “and” compounds, and -gata", f"""
-{h("“And” compounds (dvanda)")}
+G2.append(("compounds", "“And” compounds (dvanda)", f"""
 <p>Two or more things can be joined in one compound to mean “X <b>and</b> Y”. Such a compound often takes the <b>neuter singular</b> ending:</p>
 {ex(("<b>dhamma-vinayaṃ</b>", "the <b>Dhamma and</b> the <b>Discipline</b>", "Few and Many"),
     ("<b>subhāsita-dubbhāsitassa</b>", "of what is <b>well spoken and</b> what is <b>badly spoken</b>", "Few and Many"))}
-{h("Compounds ending in -gata")}
-<p><b>gata</b> means “gone”. At the end of a compound it can mean “<b>gone into, being in, having</b>”:</p>
-{ex(("ye <b>avijjā-gatā</b> sammūḷhā", "who are confused and <b>immersed in ignorance</b>", "Few and Many"))}
 """))
 
 G2.append(("sandhi", "Sandhi: doubled consonants", f"""
@@ -388,7 +361,7 @@ G3.append(("ka", "ko / kā / kiṃ – who? what?", f"""
     ("<b>kiṃ</b>-lakkhaṇaṃ viññāṇaṃ?", "<b>what</b> is the characteristic mark of consciousness?", "The Mark of Consciousness"))}
 """))
 
-G3.append(("be", "“To be”: atthi, hoti, bhavati", f"""
+G3.append(("be", "“To be”: atthi, hoti, bhavati, natthi", f"""
 {h("atthi – there is, exists")}
 {table(["Singular", "Plural"], [("1st person", ["asmi / amhi", "asma / amha"]), ("2nd person", ["asi", "attha"]), ("3rd person", ["atthi", "santi"])], first="Person")}
 <p>As a main verb, <b>atthi</b> says that something <b>exists</b>: “there is”.</p>
@@ -396,17 +369,16 @@ G3.append(("be", "“To be”: atthi, hoti, bhavati", f"""
     ("taṃ kiṃ maññatha, Sāḷhā, <b>atthi</b> lobho?", "what do you think, Sāḷha, <b>is there</b> greed?", "Sāḷha (1)"))}
 {h("hoti – is, becomes")}
 {table(["Singular", "Plural"], [("1st person", ["homi", "homa"]), ("2nd person", ["hosi", "hotha"]), ("3rd person", ["hoti", "honti"])], first="Person")}
-<p><b>hoti</b> can also say that something exists, but it can mean “<b>becomes</b>”, and it is the verb for “X <b>is</b> Y”:</p>
+<p><b>hoti</b> can also say that something exists, but it can also mean “<b>becomes</b>”, and it is the usual verb when “X <b>is</b> Y” is said with a verb:</p>
 {ex(("cittaṃ, bhikkhave, abhāvitaṃ akammaniyaṃ <b>hoti</b>", "an undeveloped mind <b>is</b> unwieldy", "Unwieldy"))}
 {h("bhavati – becomes, is")}
 <p><b>bhavati</b> has the regular endings (<span lang="pi">bhavāmi, bhavasi, bhavati</span> …). In the present tense it usually means “becomes”.
-In other tenses and moods it takes the place of hoti: the future <span lang="pi">bhavissati</span>, the optative <span lang="pi">bhaveyya</span>.</p>
-"""))
-
-G3.append(("natthi", "natthi – there is not", f"""
+In other tenses and moods it is often used where we would expect hoti: the future <span lang="pi">bhavissati</span> (will be), the optative <span lang="pi">bhaveyya</span> (would be).</p>
+{h("natthi – there is not")}
 <p><b>natthi</b> (also written <span lang="pi">n’atthi</span>) is <span lang="pi">na + atthi</span>: “there is not, does not exist”.</p>
 {ex(("yadi … imamhā kāyā aññaṃ kāyaṃ saṅkamanto <b>natthi</b> …", "if … <b>there is no</b> one who transmigrates from this body to another …", "Not Transmigrating"))}
 """))
+
 
 G3.append(("optative", "The optative (“would, should, might”)", f"""
 {h("How it is made")}
@@ -467,12 +439,6 @@ G3.append(("e-o-verbs", "Verbs with stems in -e and -o", f"""
     ("sakkā, bhikkhave, kusalaṃ <b>bhāvetuṃ</b>", "it is possible, monks, <b>to develop</b> the wholesome", "Abandon the Unwholesome"))}
 """))
 
-G3.append(("acc-manner", "taṃ, kiṃ, evaṃ as adverbs", f"""
-<p>Some pronouns in the accusative work as adverbs, telling us <b>how</b>: <b>taṃ</b> – so, then; <b>kiṃ</b> – what, how.</p>
-{ex(("<b>taṃ kiṃ</b> maññatha?", "<b>so, what</b> do you think?", "Sāḷha (1)"))}
-<p><b>evaṃ</b> means “thus, so”. It is also a polite <b>“yes”</b> – “it is so”:</p>
-{ex(("<b>evaṃ</b>, bhante", "<b>yes</b>, venerable sir", "Sāḷha (1)"))}
-"""))
 
 G3.append(("yadi", "yadi – if", f"""
 <p><b>yadi</b> means “if”.</p>
@@ -514,10 +480,6 @@ G3.append(("yasma", "yasmā … tasmā – since … therefore", f"""
     ("<b>yasmā</b> ca kho, mahārāja, paṭisandahati, <b>tasmā</b> na parimutto pāpakehi kammehi", "<b>but since</b> one is reborn, <b>therefore</b> one is not freed from evil deeds", "Not Transmigrating"))}
 """))
 
-G3.append(("etamattham", "X’ti … etamatthaṃ vadāmi", f"""
-<p><b>etamatthaṃ</b> is <span lang="pi">etaṃ + atthaṃ</span> – “this meaning”, in the accusative. The phrase <b>X’ti etamatthaṃ vadāmi</b> means “I call this X”, or “X is what I mean by this”.</p>
-{ex(("<b>abhijjhā’ti</b> kho ahaṃ, Sāḷhā, <b>etamatthaṃ vadāmi</b>", "Sāḷha, <b>I call this longing</b>", "Sāḷha (1)"))}
-"""))
 
 G3.append(("compounds", "Compounds with hidden case meanings", f"""
 <p>The first part of a compound has no ending, but it still has a relation to the second part, <b>as if</b> it were in a case. To translate, ask which case fits:</p>
@@ -533,10 +495,6 @@ G3.append(("abl-to", "The ablative in -to (“from”)", f"""
     ("<b>puratthima-disato</b> purisaṃ āgacchantaṃ", "a man coming <b>from the eastern direction</b>", "The Mark of Consciousness"))}
 """))
 
-G3.append(("future", "A first look at the future: bhavissati", f"""
-<p>Pāḷi has a future tense. One form appears in this lesson: <b>bhavissati</b> – “will be, will become”. How the future is made comes in a later lesson.</p>
-{ex(("mutto <b>bhavissati</b> pāpakehi kammehi", "one <b>will be</b> freed from evil deeds", "Not Transmigrating"))}
-"""))
 
 G3.append(("sandhi", "Sandhi: ṃ before consonants and vowels", f"""
 <ul class="rules">
@@ -566,14 +524,6 @@ G4.append(("ima", "ayaṃ / idaṃ – this: all the forms", f"""
     ("cattāro’<b>me</b> = cattāro + <b>ime</b>", "<b>these</b> four", "Lesson 4"))}
 """))
 
-G4.append(("go", "go – cow, cattle", f"""
-<p><b>go</b> is a masculine noun, meaning a cow or bull – one head of cattle. It is irregular, but most forms are easy to recognise. Keep this table for reference:</p>
-{paradigm({
- "nom": ["go", "gāvo / gavo"], "acc": ["gāvaṃ / gavaṃ / gāvuṃ", "gāvo / gavo"], "ins": ["gāvena / gavena", "gohi / gobhi"],
- "dat": ["gāvassa / gavassa", "gavaṃ / gunnaṃ / gonaṃ"], "abl": ["gāvā / gavā / gāvamhā / gāvasmā", "gohi / gobhi"],
- "gen": ["gāvassa / gavassa", "gavaṃ / gunnaṃ / gonaṃ"], "loc": ["gāve / gave / gāvamhi / gāvasmiṃ", "gāvesu / gavesu / gosu"], "voc": ["go", "gāvo / gavo"]})}
-{ex(("gopo’va <b>gāvo</b> gaṇayaṃ paresaṃ", "like a cowherd counting the <b>cattle</b> of others (accusative plural)", "Dhammapada 19"))}
-"""))
 
 G4.append(("absolutive", "The absolutive in -tvā and -ya (“having done”)", f"""
 <p>This form means “<b>having done</b>” something. It has <b>no endings</b> – it never changes. The book calls it the “gerund”; it is also called the absolutive.</p>
@@ -657,10 +607,6 @@ G4.append(("sabba-para", "sabba (all) and para (other)", f"""
     ("gopo’va gāvo gaṇayaṃ <b>paresaṃ</b>", "like a cowherd counting the cattle <b>of others</b>", "Dhammapada 19"))}
 """))
 
-G4.append(("gen-fear", "Fearing takes the genitive", f"""
-<p>With verbs of fearing, such as <b>tasati</b> (trembles) and <b>bhāyati</b> (fears), the thing one is afraid of is in the <b>genitive</b>:</p>
-{ex(("sabbe tasanti <b>daṇḍassa</b>, sabbe bhāyanti <b>maccuno</b>", "all tremble at <b>the rod</b>, all fear <b>death</b> (maccuno: genitive of maccu, like bhikkhuno)", "Dhammapada 129"))}
-"""))
 
 G4.append(("iva", "iva / ’va – like, as", f"""
 <p><b>iva</b> means “<b>like, as</b>”. It is used in comparisons, and it comes <b>after</b> the word it compares. It usually appears in its short form <b>’va</b>:</p>

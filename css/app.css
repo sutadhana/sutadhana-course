@@ -691,3 +691,7 @@ html:not(.signed-in) .only-acct,html.signed-in .only-dev{display:none}
 .gram-body ol.bg-ex li{margin:.45em 0}
 .gram-body .src{color:var(--muted);font-size:.88em;white-space:nowrap}
 @media (min-width:861px){.bg-toc{display:none}}
+.gram-nav a.bg-ch{display:flex;align-items:baseline;gap:6px}
+.gram-nav a.bg-ch .muted{margin-left:2px}
+.bg-chev{display:inline-block;width:.9em;color:var(--accent);font-size:.85em;transition:transform .15s}
+.gram-nav a.bg-ch.open .bg-chev{transform:rotate(90deg)}

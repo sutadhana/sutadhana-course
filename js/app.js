@@ -102,6 +102,7 @@
   // a small heading for each group of items: "Lesson 1 · Initial readings", "Lesson 1 · Further readings", "Lesson 1 · Grammar"
   function itemGroup(it, meta) {
     if (it.bookGrammar) { const b = BOOK_GRAMMAR[it.bookGrammar]; return b ? `Lesson ${b.lesson} · Grammar` : "Grammar"; }
+    if (it.guide) return `Lesson ${it.guide} · Grammar`;
     if (!it.text) return "";
     const m = meta(it.text);
     if (!m.bookLesson) return "Other texts";
@@ -318,6 +319,11 @@
         const b = BOOK_GRAMMAR[it.bookGrammar] || {};
         return `${head}<button type="button" class="${cls} bookg" data-bookg="${esc(it.bookGrammar)}"><span class="dot">${k}</span>
           <span class="t"><b>Grammar ${esc(it.bookGrammar)}</b><small>In the book, pages ${esc(b.pages || "")} · with links to Mor’s grammar guide</small></span><span class="arr" aria-hidden="true">›</span></button>`;
+      }
+      if (it.guide) {
+        const roman = Object.keys(ROMAN).find((r) => ROMAN[r] === +it.guide) || it.guide;
+        return `${head}<a class="${cls}" href="#/${state.group.id}/bookgrammar/${esc(it.guide)}"><span class="dot">${k}</span>
+          <span class="t"><b>Grammar Guide for the book · Grammar ${esc(roman)}</b><small>The grammar of Lesson ${esc(it.guide)}, in simple words</small></span><span class="arr" aria-hidden="true">›</span></a>`;
       }
       if (!it.text) return `${head}<div class="${cls}"><span class="dot">${k}</span><span class="t"><b>${esc(it.label || "")}</b>${it.detail ? `<small>${esc(it.detail)}</small>` : ""}</span></div>`;
       const m = meta(it.text), part = partLabel(it, unitOf(m.titleEn));
@@ -1282,8 +1288,9 @@
     const i = Math.max(0, chs.findIndex((c) => String(c.n) === String(cn)));
     const ch = chs[i];
     const base = `#/${g.id}/bookgrammar`;
-    const nav = chs.map((c) => `<a class="gn-top" href="${base}/${c.n}"${c === ch ? ' aria-current="page"' : ""}>${esc(c.title)} <span class="muted">· Lesson ${c.lesson}</span></a>`
-      + (c === ch ? c.topics.map((t, k) => `<a class="gn-sub" href="${base}/${c.n}/${t.id}" data-bgt="${t.id}">${k + 1}. ${esc(t.title)}</a>`).join("") : "")).join("");
+    if (state.bgChap !== ch.n) { state.bgChap = ch.n; state.bgShut = false; }
+    const nav = chs.map((c) => `<a class="gn-top bg-ch${c === ch && !state.bgShut ? " open" : ""}" href="${base}/${c.n}"${c === ch ? ' aria-current="page" data-bgtoggle="1" aria-expanded="' + !state.bgShut + '"' : ""}><span class="bg-chev" aria-hidden="true">▸</span>${esc(c.title)} <span class="muted">· Lesson ${c.lesson}</span></a>`
+      + (c === ch ? `<div class="bg-subs"${state.bgShut ? " hidden" : ""}>${c.topics.map((t, k) => `<a class="gn-sub" href="${base}/${c.n}/${t.id}" data-bgt="${t.id}">${k + 1}. ${esc(t.title)}</a>`).join("")}</div>` : "")).join("");
     const prev = chs[i - 1], next = chs[i + 1];
     const backTo = state.lastReader ? `<a class="back" href="${esc(state.lastReader)}"><span aria-hidden="true" style="color:var(--accent)">←</span> Back to the text</a>` : "";
     $("#main").innerHTML = `${backTo}
@@ -1317,6 +1324,13 @@
       const el = document.getElementById("bg-" + id); if (!el) return;
       const y = el.getBoundingClientRect().top + scrollY - ((getComputedStyle($("#top")).position === "sticky" ? $("#top").offsetHeight : 0) || 0) - 12;
       window.scrollTo({ top: Math.max(0, y), behavior: smooth ? "smooth" : "auto" });
+    };
+    const tg = $("#main").querySelector("[data-bgtoggle]");
+    if (tg) tg.onclick = (e) => {
+      e.preventDefault();
+      state.bgShut = !state.bgShut;
+      tg.classList.toggle("open", !state.bgShut); tg.setAttribute("aria-expanded", String(!state.bgShut));
+      $("#main").querySelector(".bg-subs").hidden = state.bgShut;
     };
     $("#main").querySelectorAll("[data-bgt]").forEach((a) => a.onclick = (e) => {
       e.preventDefault();
