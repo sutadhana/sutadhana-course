@@ -90,7 +90,15 @@
       ["The infinitive in -tuṃ", "infinitive"], ["Equational sentences", null], ["The correlative construction", "relative-pronouns"],
       ["Prepositions and postpositions", null], ["The discourse substitute pe", null], ["The reflexive prefix sa-", null],
       ["The accusative of time", null], ["Compounds", "compounds"], ["Sandhi", "sandhi"]] },
+    III: { pages: "48–56", lesson: 3, sections: [["The interrogative pronoun ka", "interrogative-pronouns"], ["The verbs ‘to be’ and ‘become’", null], ["natthi", null],
+      ["The optative", "optative"], ["The imperative", "imperative"], ["The present participle", "present-participle"], ["Verbs with stems in -e- and -o-", null],
+      ["The accusative of manner", null], ["yadi ‘if’", null], ["Particles", null], ["sakkā", null], ["yasmā", null], ["etamatthaṃ (vadāmi)", null],
+      ["Compounds", "compounds"], ["The ablative in -to", null], ["The future tense", "future"], ["Sandhi", "sandhi"]] },
+    IV: { pages: "65–72", lesson: 4, sections: [["Forms of ima", "demonstrative-pronouns"], ["The noun go", null], ["The gerund (absolutive)", "absolutive"],
+      ["The present participle in -māna", "present-participle"], ["Feminine present participles", null], ["More optatives", "optative"], ["Numerals", null],
+      ["sabba and para", null], ["The genitive of fear", null], ["iva ‘like, as’", null], ["ce ‘if’", null]] },
   };
+  const ROMAN = { I: 1, II: 2, III: 3, IV: 4, V: 5, VI: 6, VII: 7, VIII: 8, IX: 9, X: 10, XI: 11, XII: 12 };
   // a small heading for each group of items: "Lesson 1 · Initial readings", "Lesson 1 · Further readings", "Lesson 1 · Grammar"
   function itemGroup(it, meta) {
     if (it.bookGrammar) { const b = BOOK_GRAMMAR[it.bookGrammar]; return b ? `Lesson ${b.lesson} · Grammar` : "Grammar"; }
@@ -323,7 +331,7 @@
     $("#gmBody").innerHTML = `<div class="eyebrow">A New Course in Reading Pāḷi</div><h2 id="gmTitle">Grammar ${esc(id)}</h2>
       <p style="margin:0 0 12px">In the book, <b>pages ${esc(b.pages)}</b>. Its sections, with the matching topic in Mor’s grammar guide:</p>
       <ol class="bookg-list">${b.sections.map(([t, gid]) => `<li><span>${esc(t)}</span>${gid ? `<a href="#" data-gram="${gid}">Grammar guide ›</a>` : ""}</li>`).join("")}</ol>
-      <p class="bookg-btns">${g.book ? `<a class="btn primary" href="${esc(g.book)}" target="_blank" rel="noopener">Open the book · pages ${esc(b.pages)}</a>` : ""}${g.materials ? `<a class="btn" href="${esc(g.materials)}" target="_blank" rel="noopener">Course materials folder</a>` : ""}</p>`;
+      <p class="bookg-btns"><a class="btn primary" href="#/${g.id}/bookgrammar/${ROMAN[id]}">Grammar Guide for the book</a>${g.book ? `<a class="btn" href="${esc(g.book)}" target="_blank" rel="noopener">Open the book · pages ${esc(b.pages)}</a>` : ""}${g.materials ? `<a class="btn" href="${esc(g.materials)}" target="_blank" rel="noopener">Course materials folder</a>` : ""}</p>`;
     const m = $("#gmodal");
     m.hidden = false; document.body.classList.add("modal-open");
     requestAnimationFrame(() => m.classList.add("show"));
@@ -1224,6 +1232,7 @@
     const backTo = state.lastReader ? `<a class="back" href="${esc(state.lastReader)}"><span aria-hidden="true" style="color:var(--accent)">←</span> Back to the text</a>` : "";
     const chap = sec.chapter && sec.chapter !== sec.title ? sec.chapter : gr.title;
     $("#main").innerHTML = `${backTo}
+      <a class="bg-link" href="#/${g.id}/bookgrammar/1"><span><b>Grammar Guide for the book</b><span class="muted">The grammar sections of the course book, in simple words</span></span><span class="arr" aria-hidden="true">›</span></a>
       <div class="gram-layout">
         <details class="gram-nav" id="gnav"${innerWidth > 860 || !sid ? " open" : ""}><summary>All topics</summary><nav aria-label="Grammar topics">${nav}</nav></details>
         <article class="gram-main" id="gmain" style="--gs:${gramScale()}">
@@ -1264,6 +1273,58 @@
       $("#main").querySelector(".gram-body").insertAdjacentHTML("afterbegin", `<p class="gp-note">Write your translation next to each sentence. It’s saved <span class="only-dev">on this device</span><span class="only-acct">to your account</span>.</p>`);
     }
     if (sid) window.scrollTo(0, 0);
+  }
+  async function viewBookGrammar(cn, topic) {
+    const g = state.group;
+    const bg = await load("grammar/book.json");
+    await headerWithDue("grammar");
+    const chs = bg.chapters;
+    const i = Math.max(0, chs.findIndex((c) => String(c.n) === String(cn)));
+    const ch = chs[i];
+    const base = `#/${g.id}/bookgrammar`;
+    const nav = chs.map((c) => `<a class="gn-top" href="${base}/${c.n}"${c === ch ? ' aria-current="page"' : ""}>${esc(c.title)} <span class="muted">· Lesson ${c.lesson}</span></a>`
+      + (c === ch ? c.topics.map((t, k) => `<a class="gn-sub" href="${base}/${c.n}/${t.id}" data-bgt="${t.id}">${k + 1}. ${esc(t.title)}</a>`).join("") : "")).join("");
+    const prev = chs[i - 1], next = chs[i + 1];
+    const backTo = state.lastReader ? `<a class="back" href="${esc(state.lastReader)}"><span aria-hidden="true" style="color:var(--accent)">←</span> Back to the text</a>` : "";
+    $("#main").innerHTML = `${backTo}
+      <a class="bg-link bg-back" href="#/${g.id}/grammar"><span><b>Mor’s Grammar Guide</b><span class="muted">Back to the main grammar guide</span></span><span class="arr" aria-hidden="true">›</span></a>
+      <div class="gram-layout">
+        <details class="gram-nav" id="gnav"${innerWidth > 860 ? " open" : ""}><summary>All topics</summary><nav aria-label="Book grammar topics">${nav}</nav></details>
+        <article class="gram-main bookgram" id="gmain" style="--gs:${gramScale()}">
+          <div class="head"><div class="eyebrow">${esc(bg.title)} · ${esc(bg.subtitle)}</div><h1>${esc(ch.title)}</h1>
+            <p class="muted" style="margin:4px 0 0">Lesson ${ch.lesson} · book pages ${esc(ch.pages)}</p></div>
+          <div class="toolbar"><span class="sizer" role="group" aria-label="Text size"><span class="muted">Text size:</span>
+            <button class="chip" data-gsize="-1" aria-label="Smaller text">A−</button>
+            <button class="chip" data-gsize="1" aria-label="Larger text">A+</button></span></div>
+          ${i === 0 ? `<p class="bg-intro">${esc(bg.intro)}</p>` : ""}
+          <ol class="bg-toc">${ch.topics.map((t) => `<li><a href="${base}/${ch.n}/${t.id}" data-bgt="${t.id}">${esc(t.title)}</a></li>`).join("")}</ol>
+          <div class="gram-body">${ch.topics.map((t, k) => `<section class="bg-sec" id="bg-${t.id}"><h2><span class="bg-n">${k + 1}</span>${esc(t.title)}</h2>${t.html}</section>`).join("")}</div>
+          <div class="nav-next">
+            ${prev ? `<a class="btn" href="${base}/${prev.n}">← ${esc(prev.title)}</a>` : "<span></span>"}
+            ${next ? `<a class="btn primary" href="${base}/${next.n}">${esc(next.title)} →</a>` : "<span></span>"}
+          </div>
+          <p class="textcredit">${esc(bg.credit)}</p>
+        </article>
+      </div>`;
+    closeSheet();
+    $("#main").querySelectorAll("[data-gsize]").forEach((b) => b.onclick = () => {
+      const steps = [0.9, 1, 1.1, 1.2, 1.35], cur = gramScale();
+      const i2 = Math.max(0, Math.min(steps.length - 1, steps.indexOf(cur) + +b.dataset.gsize));
+      try { localStorage.setItem("sd:gscale", steps[i2]); } catch (e) {}
+      $("#gmain").style.setProperty("--gs", steps[i2]);
+    });
+    const go = (id, smooth) => {
+      const el = document.getElementById("bg-" + id); if (!el) return;
+      const y = el.getBoundingClientRect().top + scrollY - ((getComputedStyle($("#top")).position === "sticky" ? $("#top").offsetHeight : 0) || 0) - 12;
+      window.scrollTo({ top: Math.max(0, y), behavior: smooth ? "smooth" : "auto" });
+    };
+    $("#main").querySelectorAll("[data-bgt]").forEach((a) => a.onclick = (e) => {
+      e.preventDefault();
+      history.replaceState(null, "", `${base}/${ch.n}/${a.dataset.bgt}`);
+      if (innerWidth <= 860) $("#gnav").open = false;
+      go(a.dataset.bgt, true);
+    });
+    if (topic) requestAnimationFrame(() => go(topic, false)); else window.scrollTo(0, 0);
   }
   function gramScale() { try { const v = parseFloat(localStorage.getItem("sd:gscale")); return [0.9, 1, 1.1, 1.2, 1.35].includes(v) ? v : 1; } catch (e) { return 1; } }
 
@@ -1316,7 +1377,7 @@
   /* ---------------- router ---------------- */
   async function route() {
     closeSheet(); hidePop(); closeGrammar(); stopAudio();
-    document.body.classList.toggle("wide", /\/grammar(\/|$)/.test(location.hash));
+    document.body.classList.toggle("wide", /\/(book)?grammar(\/|$)/.test(location.hash));
     const [path, query] = location.hash.replace(/^#\/?/, "").split("?");
     const parts = path.split("/").filter(Boolean);
     const q = new URLSearchParams(query || "");
@@ -1335,6 +1396,7 @@
       else if (v === "read") await viewReader(parts[2], q.get("lesson"));
       else if (v === "review") { if (q.get("lesson")) await viewReview(q.get("lesson")); else if (q.get("all")) await viewReview(""); else await viewReviewHome(); }
       else if (v === "grammar") await viewGrammar(parts[2]);
+      else if (v === "bookgrammar") await viewBookGrammar(parts[2], parts[3]);
       else if (v === "library") await viewLibrary(q.get("tab"));
       else if (v === "glossary") await viewGlossary(parts[2], q.get("print") === "1");
       else if (v === "dana-options" && PREVIEW) await viewDanaOptions();

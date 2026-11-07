@@ -669,3 +669,25 @@ html:not(.signed-in) .only-acct,html.signed-in .only-dev{display:none}
 .rvvid small{display:block;color:var(--muted);font-size:.9rem;margin-top:1px}
 
 .bookg-btns{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 0}
+/* grammar guide for the book */
+.bg-link{display:flex;align-items:center;gap:14px;justify-content:space-between;text-decoration:none;color:var(--ink);background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:12px 18px;margin:0 0 18px;min-height:60px;box-shadow:var(--card-shadow)}
+.bg-link > span:first-child{display:flex;flex-direction:column;gap:2px}
+.bg-link b{color:var(--accent);font-size:1.1rem}
+.bg-link .muted{font-size:.95rem}
+.bg-link .arr{font-size:1.6rem;color:var(--accent);flex:none}
+.bg-link.bg-back{background:var(--surface)}
+.bg-intro{margin:0 0 14px;line-height:1.6}
+.bg-toc{margin:0 0 22px;padding:12px 16px 12px 2.2em;background:var(--surface);border:1px solid var(--line);border-radius:14px;columns:2 260px;column-gap:28px}
+.bg-toc li{margin:3px 0;break-inside:avoid}
+.bg-toc a{color:var(--ink);text-decoration:none}
+.bg-toc a:hover{color:var(--accent);text-decoration:underline}
+.bg-sec{border-top:1px solid var(--line);padding-top:14px;margin-top:22px;scroll-margin-top:16px}
+.bg-sec:first-child{border-top:0;margin-top:0;padding-top:0}
+.bg-sec h2{display:flex;align-items:baseline;gap:10px;font-size:1.3em;margin:0 0 8px;color:var(--ink)}
+.bg-n{flex:none;display:inline-flex;align-items:center;justify-content:center;min-width:1.7em;height:1.7em;border-radius:999px;background:var(--accent);color:var(--accent-ink);font-size:.72em}
+.gram-body .bg-h{margin:1.1em 0 .4em}
+.gram-body .bg-tip{background:var(--soft2);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:8px 12px;margin:10px 0}
+.gram-body ol.bg-ex{margin:.4em 0 .9em}
+.gram-body ol.bg-ex li{margin:.45em 0}
+.gram-body .src{color:var(--muted);font-size:.88em;white-space:nowrap}
+@media (min-width:861px){.bg-toc{display:none}}
