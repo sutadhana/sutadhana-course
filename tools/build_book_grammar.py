@@ -38,9 +38,50 @@ def paradigm(d, head=("Singular", "Plural")):
     return table(list(head), [(k, d[k]) for k in ORDER if k in d])
 
 
+def glue(t):
+    """join the last two words with a no-break space, so no word is left alone on a line"""
+    parts = re.split(r"(<[^>]+>)", t)
+    seen = False  # has real text been seen after this point?
+    for i in range(len(parts) - 1, -1, -1):
+        x = parts[i]
+        if x.startswith("<"):
+            continue
+        for k in range(len(x) - 1, -1, -1):
+            if x[k] == "\u00a0" and (seen or x[k + 1:].strip()):
+                return t  # already glued
+            if x[k] == " " and (seen or x[k + 1:].strip()):
+                plain = re.sub(r"<[^>]+>", "", "".join(parts)).rstrip()
+                if len(" ".join(plain.split()[-2:])) > 27:
+                    return t  # two long words: gluing them would leave a lone word before them
+                if k == 0 and not "".join(p for p in parts[:i] if not p.startswith("<")).strip():
+                    return t
+                parts[i] = x[:k] + "\u00a0" + x[k + 1:]
+                return "".join(parts)
+            if not x[k].isspace():
+                seen = True
+    return t
+
+
+def tidy(html):
+    """no lone last word in paragraphs, list items and example lines (tables are left alone)"""
+    def fix(m):
+        inner = "<br>".join(glue(x) for x in m.group(3).split("<br>"))
+        return m.group(1) + inner + m.group(4)
+    for tag in ("div", "p", "li"):
+        html = re.sub(r"(<(%s)( [^>]*)?>)((?:(?!<table|<div|</?\2[ >]).)*?)(</\2>)" % tag,
+                      lambda m: m.group(1) + "<br>".join(glue(x) for x in m.group(4).split("<br>")) + m.group(5), html)
+    return html
+
+
+def nobreak(t):
+    """keep hyphenated Pāḷi compounds on one line"""
+    parts = re.split(r"(<[^>]+>)", t)
+    return "".join(x if x.startswith("<") else re.sub(r"([^\s<>…]+-[^\s<>…]+)", r'<span class="nw">\1</span>', x) for x in parts)
+
+
 def ex(*items):
     """items: (pali, english, source)"""
-    out = "".join(f'<li><span lang="pi">{p}</span><br>{e}{f" <span class=\"src\">({s})</span>" if s else ""}</li>'
+    out = "".join(f'<li><span lang="pi">{nobreak(glue(p))}</span><br>{e}{f"&nbsp;<span class=\"src\">({s})</span>" if s else ""}</li>'
                   for p, e, s in items)
     return f'<ol class="bg-ex">{out}</ol>'
 
@@ -394,7 +435,7 @@ More endings come in Grammar IV.</p>
 <p><b>1. Something imagined</b>, or “if” (even without a word for “if”):</p>
 {ex(("kusalaṃ ca h’idaṃ, bhikkhave, bhāvitaṃ ahitāya dukkhāya <b>saṃvatteyya</b>, n’āhaṃ evaṃ <b>vadeyyaṃ</b>", "if this developing of the wholesome <b>led</b> to harm and suffering, I <b>would</b> not <b>say</b> so", "Abandon the Unwholesome"),
     ("kocideva puriso padīpato padīpaṃ <b>padīpeyya</b>", "(suppose) a man <b>were to light</b> a lamp from a lamp", "Not Transmigrating"))}
-<p>In the first example the first optative is the “if” part, and the second one says what would follow. The Buddha is describing something that is not the case.</p>
+<p>In the first example the first optative is the “if” part, and the second one says what would follow.</p>
 <p><b>2. A gentle instruction</b> (“you should …”):</p>
 {ex(("atha tumhe, Sāḷhā, upasampajja <b>vihareyyātha</b>", "then, Sāḷha, you <b>should</b> enter and <b>dwell</b> in them", "Sāḷha (2)"))}
 """))
@@ -639,7 +680,7 @@ def main():
     for ch in CHAPTERS:
         out["chapters"].append({
             "n": ch["n"], "title": ch["title"], "lesson": ch["lesson"], "pages": ch["pages"],
-            "topics": [{"id": i, "title": t, "html": re.sub(r"\s*\n\s*", " ", html).strip()} for i, t, html in ch["topics"]],
+            "topics": [{"id": i, "title": glue(t), "html": tidy(re.sub(r"\s*\n\s*", " ", html).strip())} for i, t, html in ch["topics"]],
         })
     p = os.path.join(ROOT, "data", "grammar", "book.json")
     with open(p, "w", encoding="utf-8") as f:
