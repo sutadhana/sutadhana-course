@@ -695,3 +695,7 @@ html:not(.signed-in) .only-acct,html.signed-in .only-dev{display:none}
 .gram-nav a.bg-ch .muted{margin-left:2px}
 .bg-chev{display:inline-block;width:.9em;color:var(--accent);font-size:.85em;transition:transform .15s}
 .gram-nav a.bg-ch.open .bg-chev{transform:rotate(90deg)}
+/* more space between grammar-guide points, with a soft fading divider */
+.bg-sec{border-top:0;margin-top:0;padding-top:0}
+.bg-sec + .bg-sec{position:relative;margin-top:44px;padding-top:44px}
+.bg-sec + .bg-sec::before{content:"";position:absolute;top:0;left:8%;right:8%;height:1px;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--muted) 40%,transparent) 20%,color-mix(in srgb,var(--muted) 40%,transparent) 80%,transparent)}
