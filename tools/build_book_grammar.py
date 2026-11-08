@@ -51,7 +51,7 @@ def glue(t):
                 return t  # already glued
             if x[k] == " " and (seen or x[k + 1:].strip()):
                 plain = re.sub(r"<[^>]+>", "", "".join(parts)).rstrip()
-                if len(" ".join(plain.split()[-2:])) > 27:
+                if len(" ".join(plain.split()[-2:])) > 30:
                     return t  # two long words: gluing them would leave a lone word before them
                 if k == 0 and not "".join(p for p in parts[:i] if not p.startswith("<")).strip():
                     return t
@@ -331,8 +331,7 @@ G2.append(("infinitive", "The infinitive in -tuṃ (“to do”)", f"""
 {h("How it is used")}
 <p><b>1. Purpose</b> – after another verb, “in order to”: <span lang="pi">dhammaṃ <b>sotuṃ</b> gacchāmi</span> – I go <b>to hear</b> the Dhamma.</p>
 <p><b>2. After words like bhabba (able) and abhabba (unable):</b></p>
-{ex(("pāpaṇiko abhabbo anadhigataṃ vā bhogaṃ <b>adhigantuṃ</b>, adhigataṃ vā bhogaṃ phātiṃ <b>kātuṃ</b>", "a shopkeeper is unable <b>to acquire</b> wealth not yet acquired, or <b>to increase</b> wealth already acquired", "The Shopkeeper"),
-    ("paṭibalā subhāsita-dubbhāsitassa attham<b>aññātuṃ</b>", "able <b>to understand</b> the meaning of what is well spoken and badly spoken", "Few and Many"))}
+{ex(("pāpaṇiko abhabbo anadhigataṃ vā bhogaṃ <b>adhigantuṃ</b>, adhigataṃ vā bhogaṃ phātiṃ <b>kātuṃ</b>", "a shopkeeper is unable <b>to acquire</b> wealth not yet acquired, or <b>to increase</b> wealth already acquired", "The Shopkeeper"))}
 {tip("The infinitive keeps its object in the usual case (<span lang='pi'>bhogaṃ</span> is accusative). Its subject is the same as the subject of the main word, so it is not repeated.")}
 """))
 
@@ -363,14 +362,14 @@ a part with a <b>ya-</b> word, then a part with a matching <b>ta-</b> word. It i
 
 G2.append(("acc-time", "Time words in the accusative", f"""
 <p>A noun for a time, put in the <b>accusative</b>, works as an <b>adverb</b>: it tells us <b>when</b> or <b>for how long</b> something happens. (The traditional Pāḷi grammars list this as one of the uses of the accusative.)</p>
-{ex(("<b>pubbaṇha-samayaṃ</b> … <b>majjhaṇhika-samayaṃ</b> … <b>sāyaṇha-samayaṃ</b>", "<b>in the morning</b> … <b>in the middle of the day</b> … <b>in the evening</b>", "The Shopkeeper"),
+{ex(("pāpaṇiko <b>pubbaṇha-samayaṃ</b> sakkaccaṃ kammantaṃ adhiṭṭhāti", "a shopkeeper diligently applies himself to his work <b>in the morning</b>", "The Shopkeeper"),
     ("yaṃ’sa hoti <b>dīgha-rattaṃ</b> ahitāya dukkhāya", "which will be for his harm and suffering <b>for a long time</b>", "Sāḷha (1)"))}
 """))
 
 G2.append(("compounds", "“And” compounds (dvanda)", f"""
 <p>Two or more things can be joined in one compound to mean “X <b>and</b> Y”. Such a compound often takes the <b>neuter singular</b> ending:</p>
-{ex(("<b>dhamma-vinayaṃ</b>", "the <b>Dhamma and</b> the <b>Discipline</b>", "Few and Many"),
-    ("<b>subhāsita-dubbhāsitassa</b>", "of what is <b>well spoken and</b> what is <b>badly spoken</b>", "Few and Many"))}
+{ex(("ye labhanti tathāgata-ppaveditaṃ <b>dhamma-vinayaṃ</b> savanāya", "who get to hear the <b>Dhamma and Discipline</b> made known by the Tathāgata", "Few and Many"))}
+<p>In the same text: <span lang="pi"><b>subhāsita-dubbhāsitassa</b></span> – of what is <b>well spoken and</b> what is <b>badly spoken</b>.</p>
 """))
 
 G2.append(("sandhi", "Sandhi: doubled consonants", f"""
@@ -593,7 +592,7 @@ G4.append(("mana", "The present participle in -māna and -āna", f"""
 <p>A few verbs have <b>-āna</b> instead: <span lang="pi">anupādiyāno</span> – not clinging; <span lang="pi">sampajāno</span> – fully aware.</p>
 <p>These participles take the endings of adjectives in -a, and can be used as nouns (“one who …”) or as adjectives:</p>
 {ex(("bahumpi ce sahitaṃ <b>bhāsamāno</b>", "even if <b>reciting</b> many of the texts", "Dhammapada 19"),
-    ("sammappajāno suvimutta-citto <b>anupādiyāno</b>", "fully understanding, with mind well freed, <b>not clinging</b>", "Dhammapada 20"))}
+    ("sammappajāno suvimutta-citto,<br><b>anupādiyāno</b> idha vā huraṃ vā", "fully understanding, with mind well freed, <b>not clinging</b> here or hereafter", "Dhammapada 20"))}
 """))
 
 G4.append(("fem-participle", "Feminine participles in -ī and -ā", f"""
