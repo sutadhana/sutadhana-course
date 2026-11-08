@@ -135,7 +135,7 @@ G1.append(("clitics", "Little words that follow: pi, (i)ti, eva, ca, vā", f"""
  ("eva", ["just, only, indeed"]), ("ca", ["and"]), ("vā", ["or"])], first="Word")}
 {h("ca and vā")}
 <p><b>ca</b> (and) and <b>vā</b> (or) usually come <b>after</b> each of the things they join, and after the first word of each group:</p>
-{ex(("na <b>ca</b> saṅkamati, paṭisandahati <b>ca</b>", "it does not transmigrate, <b>and</b> it is reborn", "Not Transmigrating"),
+{ex(("na <b>ca</b> saṅkamati, paṭisandahati <b>ca</b>", "it does not transmigrate, <b>and</b> (yet) it is reborn", "Not Transmigrating"),
     ("anuppannā <b>vā</b> kusalā dhammā n’uppajjanti, uppannā <b>vā</b> kusalā dhammā parihāyanti", "<b>either</b> unarisen wholesome qualities do not arise, <b>or</b> arisen wholesome qualities decline", "One Thing"))}
 {h("pi and eva")}
 {ex(("jāti <b>pi</b> dukkhā, jarā <b>pi</b> dukkhā", "birth <b>too</b> is suffering, ageing <b>too</b> is suffering", "The Noble Truth of Suffering"),
@@ -393,7 +393,7 @@ More endings come in Grammar IV.</p>
 <p>The optative speaks about something <b>not real yet</b>: what might happen, would happen, or should happen. In English we use <i>would, could, might, may, should</i>.</p>
 <p><b>1. Something imagined</b>, or “if” (even without a word for “if”):</p>
 {ex(("kusalaṃ ca h’idaṃ, bhikkhave, bhāvitaṃ ahitāya dukkhāya <b>saṃvatteyya</b>, n’āhaṃ evaṃ <b>vadeyyaṃ</b>", "if this developing of the wholesome <b>led</b> to harm and suffering, I <b>would</b> not <b>say</b> so", "Abandon the Unwholesome"),
-    ("kocideva puriso padīpato padīpaṃ <b>padīpeyya</b>", "a man <b>were to light</b> a lamp from a lamp", "Not Transmigrating"))}
+    ("kocideva puriso padīpato padīpaṃ <b>padīpeyya</b>", "(suppose) a man <b>were to light</b> a lamp from a lamp", "Not Transmigrating"))}
 <p>In the first example the first optative is the “if” part, and the second one says what would follow. The Buddha is describing something that is not the case.</p>
 <p><b>2. A gentle instruction</b> (“you should …”):</p>
 {ex(("atha tumhe, Sāḷhā, upasampajja <b>vihareyyātha</b>", "then, Sāḷha, you <b>should</b> enter and <b>dwell</b> in them", "Sāḷha (2)"))}
@@ -422,7 +422,7 @@ Then add endings like those of a masculine noun in -a:</p>
 {ex(("imamhā kāyā aññaṃ kāyaṃ <b>saṅkamanto</b> natthi", "there is no <b>one who transmigrates</b> from this body to another", "Not Transmigrating"))}
 <p><b>2. As an adjective</b> – describing a noun, like English “a man <i>coming</i>”. It agrees with the noun:</p>
 {ex(("passeyya puratthima-disato purisaṃ <b>āgacchantaṃ</b>", "he would see a man <b>coming</b> from the eastern direction (accusative, like purisaṃ)", "The Mark of Consciousness"),
-    ("kinnu kho so … padīpo padīpamhā <b>saṅkamanto</b>?", "is that lamp <b>passing over</b> from the lamp?", "Not Transmigrating"))}
+    ("kinnu kho so … padīpo padīpamhā <b>saṅkamanto</b>?", "is that lamp <b>passing over</b> from the (other) lamp?", "Not Transmigrating"))}
 {tip("A participle can have its own object, like a verb: <span lang='pi'>aññaṃ kāyaṃ saṅkamanto</span> – passing over <b>to another body</b>.")}
 """))
 
@@ -540,7 +540,7 @@ G4.append(("absolutive", "The absolutive in -tvā and -ya (“having done”)", 
 <p>It shows an action that happens <b>before</b> the main verb, done by the same person. Translate “having done X, he …” or “he does X and …”:</p>
 {ex(("āyuṃ kho pana <b>datvā</b> āyussa bhāginī hoti", "<b>having given</b> long life, she has a share in long life", "Lesson 4"),
     ("attānaṃ upamaṃ <b>katvā</b>, na haneyya na ghātaye", "<b>having made</b> oneself the example, one should not kill nor cause to kill", "Dhammapada 129"),
-    ("purisassa cittaṃ <b>pariyādāya</b> tiṭṭhati", "<b>having overpowered</b> the mind of a man, it remains", "Obsession of the Mind"))}
+    ("purisassa cittaṃ <b>pariyādāya</b> tiṭṭhati", "<b>having overpowered</b> the mind of a man, it remains (= it obsesses his mind)", "Obsession of the Mind"))}
 {tip("Like a verb, the absolutive can have its own object: <span lang='pi'>attānaṃ upamaṃ katvā</span>.")}
 """))
 
