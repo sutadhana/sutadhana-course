@@ -67,6 +67,10 @@ def tidy(html):
     def fix(m):
         inner = "<br>".join(glue(x) for x in m.group(3).split("<br>"))
         return m.group(1) + inner + m.group(4)
+    # endings like -tuṃ, -:mi, -nt- must not break after their hyphen
+    html = re.sub(r"<b>(-[^<\s]{1,12})</b>", r'<b class="nw">\1</b>', html)
+    parts = re.split(r"(<[^>]+>)", html)
+    html = "".join(x if x.startswith("<") else re.sub(r"(^|[\s(“])(-[^\s<>),.:;”]{1,12})", r'\1<span class="nw">\2</span>', x) for x in parts)
     for tag in ("div", "p", "li"):
         html = re.sub(r"(<(%s)( [^>]*)?>)((?:(?!<table|<div|</?\2[ >]).)*?)(</\2>)" % tag,
                       lambda m: m.group(1) + "<br>".join(glue(x) for x in m.group(4).split("<br>")) + m.group(5), html)
@@ -79,9 +83,34 @@ def nobreak(t):
     return "".join(x if x.startswith("<") else re.sub(r"([^\s<>…]+-[^\s<>…]+)", r'<span class="nw">\1</span>', x) for x in parts)
 
 
+def _texts():
+    """English title of each course text -> its id in the library, for links to the text"""
+    try:
+        lib = json.load(open(os.path.join(ROOT, "data", "library", "index.json"), encoding="utf-8"))
+    except Exception:
+        return {}
+    m = {}
+    for x in lib:
+        if x.get("titleEn"):
+            m[x["titleEn"].lower()] = x["id"]
+            m[x["titleEn"].split(",")[0].lower()] = x["id"]  # "Not Transmigrating, yet Reborn" -> "Not Transmigrating"
+    return m
+
+TEXTS = _texts()
+
+
+def src(s):
+    """the source after an example; a link to the text when it is in the library"""
+    tid = TEXTS.get(s.lower())
+    lab = glue(s)
+    if tid:
+        return f'&nbsp;<a class="src" href="#/oc3/read/{tid}">({lab})</a>'
+    return f'&nbsp;<span class="src">({lab})</span>'
+
+
 def ex(*items):
     """items: (pali, english, source)"""
-    out = "".join(f'<li><span lang="pi">{nobreak(glue(p))}</span><br>{e}{f"&nbsp;<span class=\"src\">({s})</span>" if s else ""}</li>'
+    out = "".join(f'<li><span lang="pi">{nobreak(glue(p))}</span><br>{e}{src(s) if s else ""}</li>'
                   for p, e, s in items)
     return f'<ol class="bg-ex">{out}</ol>'
 
@@ -256,7 +285,7 @@ G2.append(("nouns", "More nouns: -ā, and -u", f"""
 <ul><li>These endings look much like the feminine -i / -ī nouns, but with <b>-āya</b> instead of <b>-iyā</b>.</li>
 <li>The accusative singular has a short a: <span lang="pi">sāl<b>aṃ</b></span>.</li>
 <li>The vocative singular ends in <b>-e</b>: <span lang="pi">sāl<b>e</b></span>!</li></ul>
-{ex(("kusalassa <b>upasampadā</b>", "the <b>undertaking</b> of the wholesome (nominative singular)", "Dhammapada"),
+{ex(("kusalassa <b>upasampadā</b>", "the <b>undertaking</b> of the wholesome (nominative singular)", "Three Verses"),
     ("ṭhitiyā asammosāya … <b>bhāvanāya</b> pāripūriyā", "for maintenance, non-decline … for fulfilment <b>by development</b> (instrumental singular)", "Finger Snap"))}
 {h("Masculine nouns in -u: bhikkhu (monk)")}
 {paradigm({
@@ -288,7 +317,7 @@ G2.append(("pronouns", "Pronouns: so / sā / taṃ, eso, ya, ayaṃ", f"""
 {h("eso / esā / etaṃ – this, that (more pointed)")}
 <p>The meaning is close to <span lang="pi">so / sā / taṃ</span>, but more definite: “<b>this</b> very one”. The forms are the same with <b>e-</b> in front:
 <span lang="pi">eso, esā, etaṃ, etassa, etena, ete, etāni, etesaṃ</span> …</p>
-{ex(("<b>etaṃ</b> buddhāna(ṃ) sāsanaṃ", "<b>this</b> is the teaching of the Buddhas", "Dhammapada"),
+{ex(("<b>etaṃ</b> buddhāna(ṃ) sāsanaṃ", "<b>this</b> is the teaching of the Buddhas", "Three Verses"),
     ("atha kho <b>ete</b>’va sattā bahutarā", "but <b>those very</b> beings are more numerous (’va = eva)", "Few and Many"))}
 {h("yo / yā / yaṃ – who, which (the relative pronoun)")}
 <p>It has the same endings as <span lang="pi">so / sā / taṃ</span>, with <b>y-</b> in place of t- (and <span lang="pi">yo</span> in place of <span lang="pi">so</span>):
@@ -332,19 +361,19 @@ G2.append(("infinitive", "The infinitive in -tuṃ (“to do”)", f"""
 <p><b>1. Purpose</b> – after another verb, “in order to”: <span lang="pi">dhammaṃ <b>sotuṃ</b> gacchāmi</span> – I go <b>to hear</b> the Dhamma.</p>
 <p><b>2. After words like bhabba (able) and abhabba (unable):</b></p>
 {ex(("pāpaṇiko abhabbo anadhigataṃ vā bhogaṃ <b>adhigantuṃ</b>, adhigataṃ vā bhogaṃ phātiṃ <b>kātuṃ</b>", "a shopkeeper is unable <b>to acquire</b> wealth not yet acquired, or <b>to increase</b> wealth already acquired", "The Shopkeeper"))}
-{tip("The infinitive keeps its object in the usual case (<span lang='pi'>bhogaṃ</span> is accusative). Its subject is the same as the subject of the main word, so it is not repeated.")}
+{tip("The infinitive keeps its object in the usual case (<span lang='pi'>bhogaṃ</span> is accusative). It never has a subject of its own: the one who does it is the one already named in the sentence. Above, it is the shopkeeper who is unable, and the shopkeeper who would acquire the wealth.")}
 """))
 
 G2.append(("equational", "“X is Y” without “is”", f"""
 <p>In English we say “life <b>is</b> hard”. Pāḷi often leaves out the word “is”. The two parts simply stand side by side.</p>
 {h("With an adjective")}
 <p>The adjective agrees with its noun in gender, number and case:</p>
-{ex(("<b>kicchaṃ</b> maccānaṃ jīvitaṃ", "<b>hard</b> (is) the life of mortals (kicchaṃ and jīvitaṃ are both neuter)", "Dhammapada"),
-    ("<b>kiccho</b> manussa-paṭilābho", "<b>hard</b> (is) gaining a human birth (both masculine)", "Dhammapada"),
+{ex(("<b>kicchaṃ</b> maccānaṃ jīvitaṃ", "<b>hard</b> (is) the life of mortals (kicchaṃ and jīvitaṃ are both neuter)", "Three Verses"),
+    ("<b>kiccho</b> manussa-paṭilābho", "<b>hard</b> (is) gaining a human birth (both masculine)", "Three Verses"),
     ("<b>appakā</b> te sattā", "<b>few</b> (are) those beings (both masculine plural)", "Few and Many"))}
 <p>As these examples show, the describing word often comes <b>first</b>, for emphasis.</p>
 {h("With a noun")}
-{ex(("etaṃ buddhāna(ṃ) <b>sāsanaṃ</b>", "this (is) the <b>teaching</b> of the Buddhas", "Dhammapada"))}
+{ex(("etaṃ buddhāna(ṃ) <b>sāsanaṃ</b>", "this (is) the <b>teaching</b> of the Buddhas", "Three Verses"))}
 """))
 
 G2.append(("correlative", "The ya … ta construction", f"""

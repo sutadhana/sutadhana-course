@@ -605,10 +605,10 @@
     ends.forEach((i, k) => { if (counts[k] > 2 && counts[k + 1] > 2) out.add(i); });
     return out;
   }
-  async function viewReader(tid, lessonN) {
+  async function viewReader(tid, lessonN, gfrom) {
     const g = state.group;
     const t = await load(`library/${tid}.json`);
-    await headerWithDue(lessonN ? "lessons" : "library");
+    await headerWithDue(gfrom ? "grammar" : lessonN ? "lessons" : "library");
     state.lastReader = location.hash;
     const notes = (g.notes || {})[tid] || [];
     const learned = learnedSet();
@@ -713,7 +713,7 @@
     }
 
     $("#main").innerHTML = `
-      <a class="back" href="${upcoming ? `#/${g.id}` : lesson ? `#/${g.id}/lesson/${lesson.n}` : libBack}"><span aria-hidden="true" style="color:var(--accent)">←</span> ${upcoming ? "Back to all lessons" : lesson ? "Back to Lesson " + lesson.n : "Back to the library"}</a>
+      ${gfrom ? `<a class="back" href="#/${g.id}/bookgrammar/${esc(gfrom)}"><span aria-hidden="true" style="color:var(--accent)">←</span> Back to the Grammar Guide</a>` : `<a class="back" href="${upcoming ? `#/${g.id}` : lesson ? `#/${g.id}/lesson/${lesson.n}` : libBack}"><span aria-hidden="true" style="color:var(--accent)">←</span> ${upcoming ? "Back to all lessons" : lesson ? "Back to Lesson " + lesson.n : "Back to the library"}</a>`}
       ${upcoming ? `<div class="upnote">Preparing for <b>Lesson ${lesson.n}</b></div>` : ""}
       <div class="head"><div class="eyebrow">${esc(t.source)} · ${esc(t.ref)}</div>
         <h1 lang="pi">${esc(t.title)}</h1><p class="sub">${esc(t.titleEn || "")}</p></div>
@@ -1320,6 +1320,10 @@
       try { localStorage.setItem("sd:gscale", steps[i2]); } catch (e) {}
       $("#gmain").style.setProperty("--gs", steps[i2]);
     });
+    $("#main").querySelectorAll(".bg-sec a.src").forEach((a) => {
+      const sec = a.closest(".bg-sec").id.slice(3);
+      a.href = a.getAttribute("href").replace("#/oc3/", `#/${g.id}/`) + `?g=${ch.n}/${sec}`;
+    });
     const go = (id, smooth) => {
       const el = document.getElementById("bg-" + id); if (!el) return;
       const y = el.getBoundingClientRect().top + scrollY - ((getComputedStyle($("#top")).position === "sticky" ? $("#top").offsetHeight : 0) || 0) - 12;
@@ -1407,7 +1411,7 @@
       const v = parts[1];
       if (!v) await viewGroup();
       else if (v === "lesson") await viewLesson(parts[2]);
-      else if (v === "read") await viewReader(parts[2], q.get("lesson"));
+      else if (v === "read") await viewReader(parts[2], q.get("lesson"), q.get("g"));
       else if (v === "review") { if (q.get("lesson")) await viewReview(q.get("lesson")); else if (q.get("all")) await viewReview(""); else await viewReviewHome(); }
       else if (v === "grammar") await viewGrammar(parts[2]);
       else if (v === "bookgrammar") await viewBookGrammar(parts[2], parts[3]);

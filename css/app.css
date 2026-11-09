@@ -700,3 +700,5 @@ html:not(.signed-in) .only-acct,html.signed-in .only-dev{display:none}
 .bg-sec + .bg-sec{position:relative;margin-top:44px;padding-top:44px}
 .bg-sec + .bg-sec::before{content:"";position:absolute;top:0;left:8%;right:8%;height:1px;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--muted) 40%,transparent) 20%,color-mix(in srgb,var(--muted) 40%,transparent) 80%,transparent)}
 .gram-body .nw{white-space:nowrap}
+.gram-body a.src{color:var(--accent);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:color-mix(in srgb,var(--accent) 45%,transparent)}
+.gram-body a.src:hover{text-decoration-color:var(--accent)}
