@@ -268,6 +268,17 @@ def mpi_spec(key, t):
     return spec
 
 
+def add_audio(out):
+    """Mor's reading of the text, if there is one: audio/<id>.m4a"""
+    if os.path.exists(os.path.join(ROOT, "audio", out["id"] + ".m4a")):
+        out["audio"] = "audio/" + out["id"] + ".m4a"
+        import subprocess
+        dur = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0",
+                              os.path.join(ROOT, out["audio"])], capture_output=True, text=True).stdout.strip()
+        if dur:
+            out["audioDur"] = round(float(dur))
+
+
 def build_text(t):
     words = {}
     for form, spec in t["words"].items():
@@ -305,14 +316,7 @@ def build_text(t):
         out["section"] = "extra"
     if t.get("intro"):
         out["intro"] = t["intro"]
-    # Mor's reading of the text, if there is one: audio/<id>.m4a
-    if os.path.exists(os.path.join(ROOT, "audio", t["id"] + ".m4a")):
-        out["audio"] = "audio/" + t["id"] + ".m4a"
-        import subprocess
-        dur = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0",
-                              os.path.join(ROOT, out["audio"])], capture_output=True, text=True).stdout.strip()
-        if dur:
-            out["audioDur"] = round(float(dur))
+    add_audio(out)
     out["paras"] = paras
     out["words"] = words
     return out
@@ -348,9 +352,10 @@ def main():
         spec.loader.exec_module(m)
         for data in getattr(m, "build_prebuilt", lambda api: [])(API):
             # texts that come with their own word analyses (e.g. from the workshop reader)
+            add_audio(data)
             with open(os.path.join(OUT, data["id"] + ".json"), "w", encoding="utf-8") as fh:
                 json.dump(data, fh, ensure_ascii=False, separators=(",", ":"))
-            catalogue.append({k: data[k] for k in ("id", "ref", "title", "titleEn", "source", "section", "collection", "group", "groupSub") if k in data})
+            catalogue.append({k: data[k] for k in ("id", "ref", "title", "titleEn", "source", "section", "collection", "group", "groupSub", "audio") if k in data})
             print("built", data["id"], len(data["words"]), "words (prebuilt)")
         for t in getattr(m, "TEXTS", []):
             data = build_text(t)

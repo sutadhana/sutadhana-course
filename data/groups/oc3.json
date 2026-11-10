@@ -137,20 +137,41 @@
     }
    ],
    "next": ""
+  },
+  {
+   "n": 12,
+   "date": "2026-11-10",
+   "title": "Falling Away and the Milindapañha",
+   "published": true,
+   "recording": "https://1drv.ms/v/c/6c1280ffd770ad5b/IQCSzW5k43vnTodWqQSE-YlQAdb5Ju8hS30dMgxc9qGUcb0?e=lemfGU",
+   "items": [
+    {
+     "text": "ncrp-2-2-2"
+    },
+    {
+     "guide": "2"
+    },
+    {
+     "text": "ncrp-3-1-1",
+     "to": 1
+    }
+   ],
+   "next": ""
   }
  ],
  "notes": {},
  "next": {
-  "n": 12,
+  "n": 13,
   "items": [
    {
-    "text": "ncrp-2-2-2"
+    "text": "ncrp-3-1-1",
+    "from": 2
    },
    {
-    "guide": "2"
+    "text": "ws1-panca-sila"
    },
    {
-    "text": "ncrp-3-1-1"
+    "text": "ncrp-3-1-3"
    }
   ]
  },

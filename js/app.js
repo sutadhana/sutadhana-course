@@ -105,7 +105,7 @@
     if (it.guide) return `Lesson ${it.guide} · Grammar`;
     if (!it.text) return "";
     const m = meta(it.text);
-    if (!m.bookLesson) return "Other texts";
+    if (!m.bookLesson) return /^ws\d/.test(it.text) ? "Pāḷi Workshop Texts" : "Other texts";
     return `Lesson ${m.bookLesson} · ${m.section === "initial" ? "Initial readings" : m.section === "further" ? "Further readings" : "Extra readings"}`;
   }
   const partLabel = (it, unit = "passage") => it.from && it.to ? (it.from === it.to ? `${unit} ${it.from}` : `${unit}s ${it.from}–${it.to}`) : it.from ? `from ${unit} ${it.from}` : it.to ? (it.to === 1 ? `${unit} 1` : `${unit}s 1–${it.to}`) : "";
@@ -328,7 +328,7 @@
       if (!it.text) return `${head}<div class="${cls}"><span class="dot">${k}</span><span class="t"><b>${esc(it.label || "")}</b>${it.detail ? `<small>${esc(it.detail)}</small>` : ""}</span></div>`;
       const m = meta(it.text), part = partLabel(it, unitOf(m.titleEn));
       return `${head}<a class="${cls}" href="${href(m)}"><span class="dot">${k}</span><span class="t"><b lang="pi">${esc(m.title)}${part ? ` <span class="part">${part}</span>` : ""}</b>
-        <small>${esc(m.titleEn || "")} · ${esc(m.ref || "")}${m.audio ? ` · <span class="has-audio">${HP_ICON}Audio</span>` : ""}</small></span><span class="arr" aria-hidden="true">›</span></a>`;
+        <small>${[m.titleEn, m.ref].filter(Boolean).map(esc).join(" · ")}${m.audio ? ` · <span class="has-audio">${HP_ICON}Audio</span>` : ""}</small></span><span class="arr" aria-hidden="true">›</span></a>`;
     }).join("");
   }
   function openBookGrammar(id) {
@@ -429,7 +429,7 @@
       if (i.text) {
         const m = meta(i.text);
         return `<a class="row" href="#/${g.id}/read/${m.id}?lesson=${l.n}"><div class="dot">${k}</div>
-          <div class="t"><b>${esc(m.title)}${m.titleEn ? ` <span class="muted" style="display:inline;font-size:1rem">· ${esc(m.titleEn)}</span>` : ""}</b><span>${esc(m.source)} · ${esc(m.ref)}${m.audio ? ` · <span class="has-audio">${HP_ICON}Audio</span>` : ""}</span></div><div class="arr" aria-hidden="true">›</div></a>`;
+          <div class="t"><b>${esc(m.title)}${m.titleEn ? ` <span class="muted" style="display:inline;font-size:1rem">· ${esc(m.titleEn)}</span>` : ""}</b><span>${[m.source, m.ref].filter(Boolean).map(esc).join(" · ")}${m.audio ? ` · <span class="has-audio">${HP_ICON}Audio</span>` : ""}</span></div><div class="arr" aria-hidden="true">›</div></a>`;
       }
       if (i.grammar) return `<a class="row" href="#/${g.id}/grammar/${esc(i.grammar)}"><div class="dot">${k}</div><div class="t"><b>${esc(i.label || i.grammar)}</b><span>Grammar guide</span></div><div class="arr" aria-hidden="true">›</div></a>`;
       return `<div class="row"><div class="dot">${k}</div><div class="t"><b>${esc(i.label)}</b>${i.detail ? `<span>${esc(i.detail)}</span>` : ""}</div></div>`;
@@ -501,7 +501,7 @@
         rows.push(`<tr><td lang="pi">${esc(tok[0].toLowerCase())}</td><td>${esc(gram)}</td><td>${esc(meaning)}</td></tr>`);
       }));
       sections.push(`<section class="gl-sec"><h2><span lang="pi">${esc(t.title)}</span> · ${esc(t.titleEn || "")}</h2>
-        <p class="muted">${esc(t.source)} · ${esc(t.ref)}</p>
+        <p class="muted">${[t.source, t.ref].filter(Boolean).map(esc).join(" · ")}</p>
         <table class="gl"><thead><tr><th>Pāḷi</th><th>Grammar</th><th>Meaning</th></tr></thead><tbody>${rows.join("")}</tbody></table></section>`);
     }
     $("#main").innerHTML = `<div class="noprint"><a class="back" href="#/${g.id}/lesson/${l.n}"><span aria-hidden="true" style="color:var(--accent)">←</span> Back to Lesson ${l.n}</a>
@@ -715,7 +715,7 @@
     $("#main").innerHTML = `
       ${gfrom ? `<a class="back" href="#/${g.id}/bookgrammar/${esc(gfrom)}"><span aria-hidden="true" style="color:var(--accent)">←</span> Back to the Grammar Guide</a>` : `<a class="back" href="${upcoming ? `#/${g.id}` : lesson ? `#/${g.id}/lesson/${lesson.n}` : libBack}"><span aria-hidden="true" style="color:var(--accent)">←</span> ${upcoming ? "Back to all lessons" : lesson ? "Back to Lesson " + lesson.n : "Back to the library"}</a>`}
       ${upcoming ? `<div class="upnote">Preparing for <b>Lesson ${lesson.n}</b></div>` : ""}
-      <div class="head"><div class="eyebrow">${esc(t.source)} · ${esc(t.ref)}</div>
+      <div class="head"><div class="eyebrow">${[t.source, t.ref].filter(Boolean).map(esc).join(" · ")}</div>
         <h1 lang="pi">${esc(t.title)}</h1><p class="sub">${esc(t.titleEn || "")}</p></div>
       ${t.audio ? listenBar(t) : ""}
       <div class="toolbar">
