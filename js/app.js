@@ -328,7 +328,7 @@
       if (!it.text) return `${head}<div class="${cls}"><span class="dot">${k}</span><span class="t"><b>${esc(it.label || "")}</b>${it.detail ? `<small>${esc(it.detail)}</small>` : ""}</span></div>`;
       const m = meta(it.text), part = partLabel(it, unitOf(m.titleEn));
       return `${head}<a class="${cls}" href="${href(m)}"><span class="dot">${k}</span><span class="t"><b lang="pi">${esc(m.title)}${part ? ` <span class="part">${part}</span>` : ""}</b>
-        <small>${[m.titleEn, m.ref].filter(Boolean).map(esc).join(" · ")}${m.audio ? ` · <span class="has-audio">${HP_ICON}Audio</span>` : ""}</small></span><span class="arr" aria-hidden="true">›</span></a>`;
+        <small>${[m.titleEn, m.ref && m.ref.replace(/ /g, "\u00a0")].filter(Boolean).map(esc).join(" · ")}${m.audio ? ` · <span class="has-audio">${HP_ICON}Audio</span>` : ""}</small></span><span class="arr" aria-hidden="true">›</span></a>`;
     }).join("");
   }
   function openBookGrammar(id) {
@@ -372,7 +372,7 @@
       const when = nx.date ? new Date(nx.date + "T12:00:00").toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" }) : "";
       prep = `<section class="prep" aria-labelledby="prepH">
         <div class="prep-h"><div><h2 id="prepH" class="prep-title">Prepare for next lesson</h2>
-          <div class="prep-sub">Lesson ${nx.n}${when ? " · " + esc(when) : ""}</div></div>
+          <div class="prep-sub">Lesson\u00a0${nx.n}${when ? " · " + esc(when).replace(/ (\d+) (\S+)$/, " $1\u00a0$2") : ""}</div></div>
           <span class="prep-tag">Coming up</span></div>
         <div class="prep-list">${itemRows(nx.items, meta, (m) => `#/${g.id}/read/${m.id}?lesson=${nx.n}`, "prep-row")}</div>
         <a class="rvbtn" href="#/${g.id}/review?lesson=${nx.n}"><span class="rv-ic" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="6" width="13" height="15" rx="2"/><path d="M8 3h11a2 2 0 0 1 2 2v12"/></svg></span>
