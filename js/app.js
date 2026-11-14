@@ -1539,5 +1539,50 @@
       } catch (e) { /* offline or blocked: fine */ }
     }).catch(() => {});
   }
+  // Pull down to refresh, for the installed app (it has no browser reload button)
+  (function pullToRefresh() {
+    const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone || /[?&]ptr=1/.test(location.search);
+    if (!standalone || !("ontouchstart" in window)) return;
+    document.documentElement.classList.add("ptr-on");
+    const ind = document.createElement("div");
+    ind.className = "ptr"; ind.setAttribute("aria-hidden", "true");
+    ind.innerHTML = '<span class="ptr-ring"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v5h-5"/></svg></span><span class="ptr-txt">Pull to refresh</span>';
+    document.body.appendChild(ind);
+    const LIMIT = 80;
+    let y0 = null, dy = 0, busy = false;
+    const blocked = (el) => {
+      for (; el && el !== document.body; el = el.parentElement) {
+        if (el.scrollTop > 0) return true;
+        if (el.matches && el.matches(".sheet, .gmodal, dialog, input, textarea, [contenteditable]")) return true;
+      }
+      return false;
+    };
+    addEventListener("touchstart", (e) => {
+      if (busy || e.touches.length !== 1 || scrollY > 0 || blocked(e.target)) { y0 = null; return; }
+      y0 = e.touches[0].clientY; dy = 0;
+    }, { passive: true });
+    addEventListener("touchmove", (e) => {
+      if (y0 === null) return;
+      dy = e.touches[0].clientY - y0;
+      if (dy <= 0 || scrollY > 0) { ind.style.transform = ""; ind.classList.remove("show", "ready"); return; }
+      const d = Math.min(dy * 0.5, LIMIT + 20);
+      ind.classList.add("show");
+      ind.classList.toggle("ready", dy * 0.5 >= LIMIT);
+      ind.querySelector(".ptr-txt").textContent = dy * 0.5 >= LIMIT ? "Release to refresh" : "Pull to refresh";
+      ind.style.transform = `translate(-50%, ${d}px)`;
+      ind.querySelector("svg").style.transform = `rotate(${d * 3}deg)`;
+    }, { passive: true });
+    addEventListener("touchend", () => {
+      if (y0 === null) return;
+      y0 = null;
+      if (dy * 0.5 >= LIMIT) {
+        busy = true;
+        ind.classList.add("busy");
+        ind.querySelector(".ptr-txt").textContent = "Refreshing…";
+        ind.style.transform = `translate(-50%, ${LIMIT}px)`;
+        setTimeout(() => location.reload(), 150);
+      } else { ind.style.transform = ""; ind.classList.remove("show", "ready"); }
+    }, { passive: true });
+  })();
   route();
 })();
