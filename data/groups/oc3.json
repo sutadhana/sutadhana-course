@@ -157,21 +157,35 @@
     }
    ],
    "next": ""
+  },
+  {
+   "n": 13,
+   "date": "2026-11-14",
+   "title": "Milindapañha and the Five Precepts",
+   "published": true,
+   "recording": "https://us06web.zoom.us/rec/share/0p_RRezXoSlri2BaVEX-b5P8BjYXY2es9MalF3LkEFVm016CABIhLwZiwlXf7ra4.Ms1rILGY6DIK7Zo4",
+   "items": [
+    {
+     "text": "ncrp-3-1-1",
+     "from": 2,
+     "to": 2
+    },
+    {
+     "text": "ws1-panca-sila"
+    }
+   ],
+   "next": ""
   }
  ],
  "notes": {},
  "next": {
-  "n": 13,
+  "n": 14,
   "items": [
    {
-    "text": "ncrp-3-1-1",
-    "from": 2
+    "text": "ws1-an2-19"
    },
    {
-    "text": "ws1-panca-sila"
-   },
-   {
-    "text": "ncrp-3-1-3"
+    "text": "ncrp-3-2-3"
    }
   ]
  },
