@@ -97,6 +97,9 @@
     IV: { pages: "65–72", lesson: 4, sections: [["Forms of ima", "demonstrative-pronouns"], ["The noun go", null], ["The gerund (absolutive)", "absolutive"],
       ["The present participle in -māna", "present-participle"], ["Feminine present participles", null], ["More optatives", "optative"], ["Numerals", null],
       ["sabba and para", null], ["The genitive of fear", null], ["iva ‘like, as’", null], ["ce ‘if’", null]] },
+    V: { pages: "83–89", lesson: 5, sections: [["First and second person pronouns", "personal-pronouns"], ["Nouns and adjectives in -vant and -mant", "adjectives"],
+      ["Present participle case and number endings", "present-participle"], ["arahant", null], ["The past participle", "past-participle"],
+      ["yo hi koci", null], ["ṭhānaṃ and aṭṭhānaṃ", null], ["The prefix sa- ‘with’", null], ["‘This, not that’", null], ["‘Live by’", null]] },
   };
   const ROMAN = { I: 1, II: 2, III: 3, IV: 4, V: 5, VI: 6, VII: 7, VIII: 8, IX: 9, X: 10, XI: 11, XII: 12 };
   // a small heading for each group of items: "Lesson 1 · Initial readings", "Lesson 1 · Further readings", "Lesson 1 · Grammar"

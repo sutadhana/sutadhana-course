@@ -229,7 +229,8 @@ def build_word(form, spec):
 
 
 # Mor's rule: Pāḷi is written in small letters everywhere, except proper names
-NAME_STARTS = ("Buddh", "Nāgasen", "Sāḷh", "Milind", "Ānand", "Sāriputt", "Moggallān")
+NAME_STARTS = ("Buddh", "Nāgasen", "Sāḷh", "Milind", "Ānand", "Sāriputt", "Moggallān",
+               "Suppavās", "Vāseṭṭh", "Gotam", "Sīvak", "Maghav", "Vassakār")
 
 
 def pali_case(s):
