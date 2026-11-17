@@ -175,17 +175,36 @@
     }
    ],
    "next": ""
+  },
+  {
+   "n": 14,
+   "date": "2026-11-17",
+   "title": "Possible and the Noble Truth of Suffering",
+   "published": true,
+   "recording": "https://us06web.zoom.us/rec/share/KIPRsrIWneRpQenXJlX_VKOUhURHeZR8Dy_wc67Y3Bn5GUhFAzZHZ3j23UuRZaNt.TFNmevsY5PFbw8Vj",
+   "items": [
+    {
+     "text": "ws1-an2-19"
+    },
+    {
+     "text": "ncrp-3-2-3"
+    }
+   ],
+   "next": ""
   }
  ],
  "notes": {},
  "next": {
-  "n": 14,
+  "n": 15,
   "items": [
    {
-    "text": "ws1-an2-19"
+    "text": "ws1-an5-202"
    },
    {
-    "text": "ncrp-3-2-3"
+    "guide": "3"
+   },
+   {
+    "text": "ws1-sn11-3"
    }
   ]
  },
