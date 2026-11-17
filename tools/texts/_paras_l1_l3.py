@@ -186,8 +186,8 @@ P322 = [(f"“N’āhaṃ, bhikkhave, aññaṃ eka-dhammaṃ pi samanupassāmi 
 
 # ---------------------------------------------------------------- 3.2.3
 P323 = [
-    ("“Idaṃ kho pana, bhikkhave, dukkhaṃ ariya-saccaṃ: jāti pi dukkhā, jarā pi dukkhā, vyādhi pi dukkhā, maraṇaṃ pi dukkhaṃ, appiyehi sampayogo dukkho, piyehi vippayogo dukkho, yaṃ p’icchaṃ na labhati taṃ pi dukkhaṃ, saṅkhittena pañc’upādāna-kkhandhā pi dukkhā.”",
-     "“Now this, monks, is the noble truth of suffering: birth is suffering, aging is suffering, illness is suffering, death is suffering; union with what is displeasing is suffering; separation from what is pleasing is suffering; not to get what one wants is suffering; in brief, the five aggregates subject to clinging are suffering.”"),
+    ("“Idaṃ kho pana, bhikkhave, dukkhaṃ ariya-saccaṃ: jāti pi dukkhā, jarā pi dukkhā, maraṇaṃ pi dukkhaṃ, soka-parideva-dukkha-domanass’upāyāsā pi dukkhā, appiyehi sampayogo dukkho, piyehi vippayogo dukkho, yaṃ p’icchaṃ na labhati taṃ pi dukkhaṃ, saṅkhittena pañc’upādāna-kkhandhā pi dukkhā.”",
+     "“Now this, monks, is the noble truth of suffering: birth is suffering, aging is suffering, death is suffering; sorrow, lamentation, pain, displeasure, and despair are suffering; union with what is displeasing is suffering; separation from what is pleasing is suffering; not to get what one wants is suffering; in brief, the five aggregates subject to clinging are suffering.”"),
 ]
 
 # ---------------------------------------------------------------- 3.2.4
@@ -213,6 +213,6 @@ META = [
     ("ncrp-3-1-3", "AN 2.19", "Adhikaraṇavagga", "Abandon the Unwholesome", "NCRP Lesson 3 · Initial reading 3", OTHER, P313),
     ("ncrp-3-2-1", "AN 3.66", "Sāḷhasutta", "Sāḷha (2)", "NCRP Lesson 3 · Further reading 1", AN, P321),
     ("ncrp-3-2-2", "AN 1.21–30", "Akammaniyavagga", "Unwieldy", "NCRP Lesson 3 · Further reading 2", AN, P322),
-    ("ncrp-3-2-3", "DN 22", "Mahāsatipaṭṭhānasutta", "The Noble Truth of Suffering", "NCRP Lesson 3 · Further reading 3", OTHER + " “Illness is suffering” added to match the book.", P323),
+    ("ncrp-3-2-3", "DN 22", "Mahāsatipaṭṭhānasutta", "The Noble Truth of Suffering", "NCRP Lesson 3 · Further reading 3", OTHER + " The line on sorrow, lamentation, pain, displeasure and despair is added from DN 22.", P323),
     ("ncrp-3-2-4", "Mil 2.3.12", "Milindapañha", "The Mark of Consciousness", "NCRP Lesson 3 · Further reading 4", OTHER, P324),
 ]
