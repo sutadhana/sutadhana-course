@@ -100,6 +100,14 @@
     V: { pages: "83–89", lesson: 5, sections: [["First and second person pronouns", "personal-pronouns"], ["Nouns and adjectives in -vant and -mant", "adjectives"],
       ["Present participle case and number endings", "present-participle"], ["arahant", null], ["The past participle", "past-participle"],
       ["yo hi koci", null], ["ṭhānaṃ and aṭṭhānaṃ", null], ["The prefix sa- ‘with’", null], ["‘This, not that’", null], ["‘Live by’", null]] },
+    VI: { pages: "99–106", lesson: 6, sections: [["Masculine -an stems", "nouns"], ["-in stem nouns", "nouns"], ["mahant and santo", "adjectives"],
+      ["The address form bhavant", null], ["-as stem nouns: manas", "nouns"], ["Feminine -u stems", "nouns"], ["The past tense (aorist)", "aorist"],
+      ["The past of vac- ‘say’", "aorist"], ["Past participle sentences with instrumental subjects", "past-participle"], ["yena … tena", null],
+      ["āha, āhu", null], ["‘Hundreds’", null], ["para and añña", "pronouns"], ["saddhiṃ and parivuta", null],
+      ["-ṭhānaṃ and -dhamma compounds", "compounds"], ["Locative ‘among’ or ‘in’", "cases"], ["Sandhi", "sandhi"]] },
+    VII: { pages: "116–120", lesson: 7, sections: [["The optative", "optative"], ["The future passive participle", "future-passive-participle"],
+      ["attan as a reflexive", null], ["Negatives no and mā", null], ["eti ‘comes’", null], ["sace and -ce ‘if’", null],
+      ["The locative case with deti", "cases"], ["The root hā", null]] },
   };
   const ROMAN = { I: 1, II: 2, III: 3, IV: 4, V: 5, VI: 6, VII: 7, VIII: 8, IX: 9, X: 10, XI: 11, XII: 12 };
   // a small heading for each group of items: "Lesson 1 · Initial readings", "Lesson 1 · Further readings", "Lesson 1 · Grammar"

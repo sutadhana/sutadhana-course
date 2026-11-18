@@ -801,12 +801,174 @@ G5.append(("sa", "The prefix sa- “with”", f"""
     ("evaṃ subhāsitā vācā, <b>saphalā</b> hoti sakubbato", "so well-spoken words are <b>fruitful</b> for one who practises them", "Heedfulness, Flowers and Fools"))}
 """))
 
+G6 = []
+
+G6.append(("an-stems", "Nouns in -an: attā and rājā", f"""
+<p>Some masculine nouns have a stem in <b>-an</b>. Their nominative singular ends in <b>-ā</b>, so they look like feminine nouns, but they are masculine. Glossaries list them with -an (<span lang="pi">attan, rājan, brahman</span>) to tell them apart.</p>
+{h("attan – self")}
+{table(["Singular", "Plural"], [
+ ("nom", ["att|ā", "att|āno"]), ("acc", ["att|ānaṃ / att|aṃ", "att|āno"]), ("ins", ["att|anā / att|ena", "att|anehi"]),
+ ("dat", ["att|ano", "att|ānaṃ"]), ("abl", ["att|anā", "att|anehi"]), ("gen", ["att|ano", "att|ānaṃ"]),
+ ("loc", ["att|ani", "att|anesu"]), ("voc", ["att|a / att|ā", "att|āno"])], first="Case")}
+{h("rājan – king")}
+{table(["Singular", "Plural"], [
+ ("nom", ["rāj|ā", "rāj|āno"]), ("acc", ["rāj|ānaṃ / rāj|aṃ", "rāj|āno"]), ("ins", ["raññ|ā / rāj|inā", "rāj|ūhi / rāj|ehi"]),
+ ("dat", ["raññ|o / rāj|ino", "raññ|aṃ / rāj|ūnaṃ"]), ("abl", ["raññ|ā", "rāj|ūhi / rāj|ehi"]), ("gen", ["raññ|o / rāj|ino", "raññ|aṃ / rāj|ūnaṃ"]),
+ ("loc", ["rāj|ini / raññ|e", "rāj|ūsu"]), ("voc", ["rāj|a / rāj|ā", "rāj|āno"])], first="Case")}
+{ex(("<b>rājā</b> vā Māgadho Seniyo Bimbisāro nimantito", "or has <b>King</b> Seniya Bimbisāra of Magadha been invited? (nominative)", "Sela"),
+    ("Tathāgatassa ca arahato sammā-sambuddhassa, <b>rañño</b> ca cakka-vattissa", "of the Tathāgata …, and of <b>the king</b> who is a wheel-turner (genitive)", "Two People"),
+    ("yāy’<b>attānaṃ</b> na tāpaye", "(speech) by which one does not torment <b>oneself</b> (accusative)", "Well Spoken"))}
+"""))
+
+G6.append(("in-stems", "Nouns in -in: maccharī", f"""
+<p>Nouns and adjectives with a stem in <b>-in</b> have a nominative singular in <b>-ī</b>. Glossaries list them with -in (<span lang="pi">maccharin, cakkavattin, bhovādin</span>), to tell them apart from feminine nouns in -ī.</p>
+{h("maccharin – miser")}
+{table(["Singular", "Plural"], [
+ ("nom", ["macchar|ī", "macchar|ino / macchar|ī"]), ("acc", ["macchar|inaṃ / macchar|iṃ", "macchar|ino / macchar|ī"]),
+ ("ins", ["macchar|inā", "macchar|īhi"]), ("dat", ["macchar|ino / macchar|issa", "macchar|īnaṃ"]),
+ ("abl", ["macchar|inā / macchar|imhā", "macchar|īhi"]), ("gen", ["macchar|ino / macchar|issa", "macchar|īnaṃ"]),
+ ("loc", ["macchar|ini / macchar|imhi", "macchar|īsu"]), ("voc", ["macchar|i", "macchar|ino / macchar|ī"])], first="Case")}
+{ex(("sabbe <b>maccharino</b> loke cāgena atirocati", "by generosity he outshines all <b>the misers</b> in the world (accusative plural)", "Sumanā"),
+    ("<b>macchariṃ</b> adhigaṇhāti", "he surpasses <b>the miser</b> (accusative singular)", "Sumanā"),
+    ("rājā ca <b>cakka-vattī</b> … rañño ca <b>cakka-vattissa</b>", "the <b>wheel-turning</b> king … of the <b>wheel-turning</b> king (nominative, genitive)", "Two People"),
+    ("manujassa <b>pamatta-cārino</b>", "of a human <b>living heedlessly</b> (genitive singular)", "Craving"))}
+"""))
+
+G6.append(("mahant", "mahant, santo and bhavant", f"""
+<p><b>1. mahant – great</b> is declined like <span lang="pi">sīlavant</span> (Grammar V), but its nominative is <span lang="pi"><b>mahā</b></span>, singular and plural: <span lang="pi"><b>mahatā</b> bhikkhu-saṅghena</span> – with a <b>large</b> Saṅgha of bhikkhus (Sela). In compounds it is <span lang="pi">mahā-</span>: <span lang="pi">mahā-yañño</span> – a great sacrifice.</p>
+<p><b>2. santo – the good.</b> <span lang="pi">sant</span> is the present participle of <span lang="pi">atthi</span>. It means “<b>existing</b>”, and also, as a noun, “<b>a good person</b>”. The nominative is <span lang="pi">santo</span> in the singular and in the plural. The context shows which meaning is meant:</p>
+{ex(("āhu <b>santo</b>", "<b>the good</b> say (nominative plural)", "Well Spoken"),
+    ("<b>santaṃ</b> vā ajjhattaṃ rāgaṃ", "when there <b>is</b> lust within (“existing”, accusative)", "Directly Visible (2)"))}
+<p><b>3. bhavant – master, sir</b> is a polite form of address, from the participle of <span lang="pi">bhavati</span>. <span lang="pi">bhante</span> and <span lang="pi">bho</span> are forms of the same word. The forms we meet:</p>
+{table(["Singular", "Plural"], [
+ ("nom", ["bhavaṃ", "bhavanto / bhonto"]), ("acc", ["bhavantaṃ", "bhavante"]), ("ins", ["bhotā", "bhavantehi"]),
+ ("dat", ["bhoto", "bhavataṃ / bhavantānaṃ"]), ("gen", ["bhoto", "bhavataṃ / bhavantānaṃ"]), ("voc", ["bhavaṃ / bho", "bhonto"])], first="Case")}
+{ex(("kiṃ nu kho <b>bhoto</b> Keṇiyassa āvāho vā bhavissati", "is <b>Master</b> Keṇiya having a marriage? (genitive: “of Master Keṇiya”)", "Sela"),
+    ("upāsakaṃ maṃ <b>bhavaṃ</b> Gotamo dhāretu", "let <b>Master</b> Gotama consider me a lay follower (nominative)", "Directly Visible (2)"))}
+"""))
+
+G6.append(("manas-dhatu", "mano (mind) and dhātu (element)", f"""
+<p><b>1. Neuter nouns in -as</b>, such as <span lang="pi">manas</span> (mind) and <span lang="pi">cetas</span> (mind, thought), have some forms of their own in the singular. Their other forms, and the whole plural, are like <span lang="pi">rūpa</span>.</p>
+{table(["Singular"], [
+ ("nom", ["man|o / man|aṃ"]), ("acc", ["man|o / man|aṃ"]), ("ins", ["man|asā / man|ena"]), ("dat", ["man|aso / man|assa"]),
+ ("abl", ["man|asā / man|amhā"]), ("gen", ["man|aso / man|assa"]), ("loc", ["man|asi / man|e"])], first="Case")}
+{ex(("evaṃ <b>cetaso</b> parivitakko udapādi", "this course of thought arose in <b>(your) mind</b> (genitive)", "Soṇa"))}
+<p><b>2. Feminine nouns in -u</b>, such as <span lang="pi">dhātu</span> (element), are rare. Most of their singular forms end in <b>-uyā</b>:</p>
+{table(["Singular", "Plural"], [
+ ("nom", ["dhāt|u", "dhāt|u / dhāt|uyo"]), ("acc", ["dhāt|uṃ", "dhāt|u / dhāt|uyo"]), ("ins", ["dhāt|uyā", "dhāt|ūhi"]),
+ ("dat", ["dhāt|uyā", "dhāt|ūnaṃ"]), ("abl", ["dhāt|uyā", "dhāt|ūhi"]), ("gen", ["dhāt|uyā", "dhāt|ūnaṃ"]),
+ ("loc", ["dhāt|uyā / dhāt|uyaṃ", "dhāt|ūsu"])], first="Case")}
+{ex(("gacchaṃ <b>ākāsa-dhātuyā</b>", "moving <b>through the space element</b> (locative)", "Sumanā"))}
+"""))
+
+G6.append(("aorist", "The past tense (aorist)", f"""
+<p>The past tense (“aorist”) has two main types. Many verbs also add <b>a-</b> before the root (the “augment”).</p>
+{h("1. The addasā type")}
+{table(["Singular", "Plural"], [
+ ("1st", ["addas|aṃ", "addas|āma"]), ("2nd", ["addas|ā", "addas|atha"]), ("3rd", ["addas|ā", "addas|uṃ"])], first="Person")}
+<p>From <span lang="pi">passati</span> (√dis, sees). <span lang="pi">gacchati</span> has <span lang="pi">agamā</span> (he went) in the same way.</p>
+{h("2. The upasaṅkami type (the most common)")}
+{table(["Singular", "Plural"], [
+ ("1st", ["upasaṅkam|iṃ", "upasaṅkam|imha"]), ("2nd", ["upasaṅkam|i", "upasaṅkam|ittha"]), ("3rd", ["upasaṅkam|i", "upasaṅkam|iṃsu"])], first="Person")}
+<p>With a prefix, the augment comes between the prefix and the root: <span lang="pi">pa + a + visi → pāvisi</span> (he entered). <span lang="pi">atthi</span> (is) has <span lang="pi">āsi</span> (he was), and <span lang="pi">hoti</span> has <span lang="pi">ahosi</span>. The root vac (say) has <span lang="pi">avoca</span> (he said).</p>
+{ex(("<b>addasā</b> kho Selo brāhmaṇo …", "the brahmin Sela <b>saw</b> …", "Sela"),
+    ("evaṃ cetaso parivitakko <b>udapādi</b>", "this course of thought <b>arose</b> in your mind", "Soṇa"),
+    ("bhagavatā saddhiṃ <b>sammodi</b> … ekamantaṃ <b>nisīdi</b>", "he <b>exchanged greetings</b> with the Blessed One … and <b>sat down</b> to one side", "Directly Visible (2)"),
+    ("Keṇiyaṃ jaṭilaṃ etad-<b>avoca</b> … Selassa brāhmaṇassa etad-<b>ahosi</b>", "he <b>said</b> this to Keṇiya … this <b>occurred</b> to the brahmin Sela", "Sela"))}
+"""))
+
+G6.append(("pp-instr", "“Done by me”: the past participle with the instrumental", f"""
+<p>A very common sentence: the past participle (Grammar V) agrees with the <b>thing done</b> (in the nominative), and the <b>doer</b> is in the instrumental (or the short form <span lang="pi">me</span>). It is like English “X has been done by Y”, and usually means “Y has done X”:</p>
+{ex(("so <b>me nimantito</b> svātanāya", "he <b>has been invited by me</b> for tomorrow, I have invited him", "Sela"),
+    ("api ca kho <b>me</b> mahā-yañño <b>paccupaṭṭhito</b> atthi", "but <b>I have prepared</b> a great sacrifice", "Sela"))}
+<p>If nothing is named as the thing done, the participle is neuter singular: <span lang="pi">evaṃ <b>me sutaṃ</b></span> – thus <b>have I heard</b>.</p>
+"""))
+
+G6.append(("yena-tena", "yena … tena, saddhiṃ and parivuta", f"""
+<p><b>1. yena X tena …</b> with a verb of motion means “<b>went to X</b>”. X is in the nominative:</p>
+{ex(("<b>yena</b> Keṇiyassa jaṭilassa assamo <b>ten’</b>upasaṅkami", "he <b>went to</b> the matted-hair ascetic Keṇiya’s hermitage", "Sela"),
+    ("<b>yena</b> bhagavā <b>ten’</b>upasaṅkami", "he <b>approached</b> the Blessed One", "Directly Visible (2)"))}
+<p><b>2. saddhiṃ</b> and <b>parivuta</b> both mean “<b>with</b>” and take the <b>instrumental</b>. <span lang="pi">parivuta</span> is a past participle (“accompanied”), so it agrees with the one accompanied:</p>
+{ex(("<b>saddhiṃ</b> bhikkhu-saṅghena", "<b>with</b> the Saṅgha of bhikkhus", "Sela"),
+    ("Selo brāhmaṇo tīhi māṇavaka-satehi <b>parivuto</b>", "the brahmin Sela, <b>attended by</b> three hundred brahmin students", "Sela"))}
+"""))
+
+G6.append(("small", "āha and āhu, hundreds, “among”", f"""
+<p><b>1. āha</b> – he said, and <b>āhu</b> – they say (or he said). These are old forms with no other forms beside them. <span lang="pi">āhu</span> often has no subject: “it is said”.</p>
+{ex(("<b>āhu</b> santo patiṭṭhitā", "the good <b>say</b> (they) are established", "Well Spoken"))}
+<p><b>2. Hundreds:</b> the thing counted is compounded with <span lang="pi">sata</span> (hundred), and a number before it says how many hundreds. The compound is neuter: <span lang="pi"><b>tīhi māṇavaka-satehi</b></span> – (with) three hundred brahmin students (Sela).</p>
+<p><b>3. The locative plural</b> of a people means “<b>among</b>” or “in the land of”: <span lang="pi"><b>Aṅguttarāpesu</b> cārikaṃ caramāno</span> – wandering on tour <b>among the Aṅguttarāpans</b> (Sela).</p>
+<p><b>4. -ṭṭhāna</b> at the end of a compound means “state, basis”. Its ṭ is doubled after a vowel: <span lang="pi">pamāda + ṭhāna → pamāda-ṭṭhāna</span> (Five Training Rules).</p>
+{tip("Sandhi: <span lang='pi'>api + ekacce → app’ekacce</span> (some): the i drops and the p is doubled (Sela).")}
+"""))
+
+G7 = []
+
+G7.append(("optative", "dajjā and siyā: more optatives", f"""
+<p><b>1.</b> A few verbs have an optative in <b>-yā</b>: <span lang="pi">deti</span> (gives) → <span lang="pi"><b>dajjā</b></span>, <span lang="pi">jānāti</span> → <span lang="pi">jaññā</span>, <span lang="pi">karoti</span> → <span lang="pi">kayirā</span>, beside the usual <span lang="pi">dadeyya, jāneyya, kareyya</span>.</p>
+<p><b>2. The optative of atthi</b> (is):</p>
+{table(["Singular", "Plural"], [
+ ("1st", ["assaṃ / siyaṃ", "assāma"]), ("2nd", ["assa", "assatha"]), ("3rd", ["assa / siyā", "assu / siyuṃ"])], first="Person")}
+<p><span lang="pi"><b>siyā</b></span> also means “suppose that …”.</p>
+{ex(("kāyena saṃvuto <b>siyā</b>", "one <b>should be</b> restrained by body", "Anger and Impurity"),
+    ("<b>dajjā</b>’ppasmimpi yācito", "when asked, one <b>should give</b>, even (from) a little", "Anger and Impurity"))}
+{tip("With <span lang='pi'>deti</span> (gives), the locative means “from, out of”: <span lang='pi'>appasmiṃ</span> – from the little (one has).")}
+"""))
+
+G7.append(("fpp", "The future passive participle (“should be done”)", f"""
+<p>This participle means “<b>should be done</b>, worthy to be done”. It is made with <b>-(i)tabba</b> or <b>-anīya</b> (sometimes <b>-eyya</b> or <b>-ya</b>), and it takes the endings of <span lang="pi">dhamma</span>, <span lang="pi">rūpa</span> and <span lang="pi">sālā</span>, agreeing with its noun.</p>
+{table(["Future passive participle"], [
+ ("gacchati (goes)", ["gantabba"]), ("karoti (does)", ["kattabba / karaṇīya / kicca"]), ("bhavati (is)", ["bhavitabba / bhabba"]),
+ ("jānāti (knows)", ["jānitabba / ñeyya"]), ("passati (sees)", ["daṭṭhabba / dassanīya"]), ("deti (gives)", ["dātabba / deyya"]),
+ ("pajahati (abandons)", ["pahātabba"]), ("bhāsati (speaks)", ["bhāsitabba"])], first="Verb")}
+<p>The one who should do it is in the <b>instrumental</b>:</p>
+{ex(("tayo’me, brāhmaṇa, aggī <b>pahātabbā parivajjetabbā</b>, na <b>sevitabbā</b>", "there are these three fires that <b>should be abandoned and avoided</b>, and <b>should not be cultivated</b>", "Three Fires"),
+    ("paccattaṃ <b>veditabbo</b> viññūhi", "(the Dhamma) <b>is to be understood</b> personally by the wise", "Directly Visible (2)"),
+    ("sabbaṃ diṭṭhaṃ <b>bhāsitabban</b>’ti", "everything seen <b>should be spoken about</b>", "Heard"))}
+"""))
+
+G7.append(("attan", "attā as “oneself”", f"""
+<p><span lang="pi">attan</span> (Grammar VI) is also used as a <b>reflexive pronoun</b>: “oneself, yourself, himself”. It usually stays singular, even when it refers to many:</p>
+{ex(("yadā tumhe, Kālāmā, <b>attanā</b>’va jāneyyātha", "when you, Kālāmas, know <b>for yourselves</b> (instrumental)", "The Kālāmas"),
+    ("mūlaṃ khaṇati <b>attano</b>", "he digs up <b>his own</b> root (genitive)", "Anger and Impurity"),
+    ("duggā uddharath’<b>attānaṃ</b>", "draw <b>yourselves</b> out of the swamp (accusative)", "The Elephant"))}
+"""))
+
+G7.append(("ma-no", "mā (“don’t”) and no", f"""
+<p><b>1. mā</b> forbids: “<b>do not</b>”. It goes with the imperative, the optative or the past tense: <span lang="pi"><b>mā</b> gaccha</span> – don’t go. With an instrumental it means “don’t go by …”:</p>
+{ex(("<b>mā</b> anussavena, <b>mā</b> paramparāya", "<b>do not</b> go by oral tradition, <b>nor</b> by lineage", "The Kālāmas"))}
+<p><b>2. no</b> is an emphatic “not”. <span lang="pi"><b>no vā</b></span> means “<b>or not?</b>”:</p>
+{ex(("samattā samādinnā ahitāya dukkhāya saṃvattanti, <b>no vā</b>?", "accepted and undertaken, do they lead to harm and suffering, <b>or not</b>?", "The Kālāmas"))}
+{tip("Don’t confuse it with <span lang='pi'>no</span> “our, us” (Grammar V): <span lang='pi'>samaṇo <b>no</b> garū’ti</span> – “the ascetic is <b>our</b> teacher” (The Kālāmas).")}
+"""))
+
+G7.append(("eti-sace", "etha (come!), sace and ce (if)", f"""
+<p><b>1. eti</b> (comes) adds the endings straight to <b>e-</b>: <span lang="pi">emi</span> – I come. Imperative <span lang="pi"><b>ehi</b></span> – come! (to one), <span lang="pi"><b>etha</b></span> – come! (to many): <span lang="pi"><b>etha</b> tumhe, Kālāmā</span> – <b>come</b>, Kālāmas (The Kālāmas).</p>
+<p><b>2. sace</b> and <b>ce</b> both mean “<b>if</b>”. <span lang="pi">sace</span> stands first, like English “if”. <span lang="pi">ce</span> is a clitic, so it follows the first word (Grammar IV). The verb is often in the optative:</p>
+{ex(("<b>sace</b> labhetha nipakaṃ sahāyaṃ", "<b>if</b> you can find a prudent friend", "The Wise Companion"),
+    ("no <b>ce</b> labhetha nipakaṃ sahāyaṃ", "<b>if</b> you cannot find a prudent friend", "The Wise Companion"))}
+"""))
+
+G7.append(("ha", "The root hā: pajahati, pahāya, hitvā", f"""
+<p>Several important verbs come from the root <b>hā</b> (“leave, decrease”). Their forms change a lot, so it helps to see them together:</p>
+{table(["pajahati – abandons", "jahāti – leaves"], [
+ ("Present", ["pajahati", "jahāti"]), ("Past", ["pajahi", "jahi"]), ("Past participle", ["pahīna", "jahita"]),
+ ("Absolutive", ["pahāya / pajahitvā", "hitvā / jahitvā"]), ("Future passive participle", ["pahātabba", "jahitabba"])], first="Form")}
+<p><span lang="pi">hāyati</span> (decreases), <span lang="pi">parihāyati</span> (declines) and <span lang="pi">hīna</span> (low, inferior) come from the same root.</p>
+{ex(("atha tumhe, Kālāmā, <b>pajaheyyātha</b>", "then, Kālāmas, you <b>should abandon</b> them", "The Kālāmas"),
+    ("kāya-duccaritaṃ <b>hitvā</b>", "<b>having abandoned</b> bodily misconduct", "Anger and Impurity"),
+    ("rājā’va raṭṭhaṃ vijitaṃ <b>pahāya</b>", "like a king who <b>has abandoned</b> a conquered kingdom", "The Wise Companion"),
+    ("kusalā dhammā <b>parihāyanti</b>", "wholesome qualities <b>decline</b>", "Heard"))}
+"""))
+
 CHAPTERS = [
     {"n": 1, "title": "Grammar I", "lesson": 1, "pages": "20–27", "topics": G1},
     {"n": 2, "title": "Grammar II", "lesson": 2, "pages": "33–41", "topics": G2},
     {"n": 3, "title": "Grammar III", "lesson": 3, "pages": "48–56", "topics": G3},
     {"n": 4, "title": "Grammar IV", "lesson": 4, "pages": "65–72", "topics": G4},
     {"n": 5, "title": "Grammar V", "lesson": 5, "pages": "83–89", "topics": G5},
+    {"n": 6, "title": "Grammar VI", "lesson": 6, "pages": "99–106", "topics": G6},
+    {"n": 7, "title": "Grammar VII", "lesson": 7, "pages": "116–120", "topics": G7},
 ]
 
 def main():

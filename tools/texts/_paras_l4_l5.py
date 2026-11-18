@@ -118,7 +118,7 @@ P422 = [
      "Clearly understanding this as a distinction,\nthe wise [remain] in heedfulness;\nthey exult in heedfulness,\ndelighted in the resort of the Noble Ones.\n(Dhp 22)"),
     (verse("Yathā pi rahado gambhīro", "vippasanno anāvilo", "evaṃ dhammāni sutvāna", "vippasīdanti paṇḍitā"),
      "Like a lake deep,\nclear and still,\nso, having heard the teachings,\nthe wise become clarified (purified).\n(Dhp 82)"),
-    (verse("Selo yathā eka-ghano", "vātena na samīrati", "evaṃ nindā-pasaṃsāsu", "na samiñjanti paṇḍitā"),
+    (verse("selo yathā eka-ghano", "vātena na samīrati", "evaṃ nindā-pasaṃsāsu", "na samiñjanti paṇḍitā"),
      "Just as a mountain, one mass [of stone],\nis not shaken by the wind,\neven so amid blame and praises,\nthe wise are not agitated.\n(Dhp 81)"),
     (verse("Andha-bhūto ayaṃ loko", "tanuk’ettha vipassati", "sakunto jāla-mutto’va", "appo saggāya gacchati"),
      "Blind is this world;\nfew here see clearly.\nLike birds freed from the net,\nfew go to heaven.\n(Dhp 174)"),
