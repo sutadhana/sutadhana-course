@@ -119,7 +119,7 @@ details.earlier summary{cursor:pointer;color:var(--accent);padding:10px 2px;min-
 .chip.verb[aria-pressed="true"]{border-color:var(--verb);background:var(--verb-bg);color:var(--verb)}
 .legend{margin-left:auto;color:var(--muted);display:flex;align-items:center;gap:6px}
 .legend .nw{border-bottom:2px dotted var(--accent);color:var(--ink)}
-.boxes{display:grid;gap:14px}
+.boxes{display:grid;gap:14px;grid-template-columns:minmax(0,1fr)}
 .box{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 20px 8px;box-shadow:var(--card-shadow);position:relative}
 .box-no{font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
 .pali{font:400 24px/1.85 var(--pali);overflow-wrap:break-word;white-space:pre-wrap}

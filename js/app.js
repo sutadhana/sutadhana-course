@@ -512,7 +512,7 @@
         rows.push(`<tr><td lang="pi">${esc(tok[0].toLowerCase())}</td><td>${esc(gram)}</td><td>${esc(meaning)}</td></tr>`);
       }));
       sections.push(`<section class="gl-sec"><h2><span lang="pi">${esc(t.title)}</span> · ${esc(t.titleEn || "")}</h2>
-        <p class="muted">${[t.source, t.ref].filter(Boolean).map(esc).join(" · ")}</p>
+        <p class="muted">${[t.source, t.ref && t.ref.replace(/ /g, "\u00a0")].filter(Boolean).map(esc).join(" · ")}</p>
         <table class="gl"><thead><tr><th>Pāḷi</th><th>Grammar</th><th>Meaning</th></tr></thead><tbody>${rows.join("")}</tbody></table></section>`);
     }
     $("#main").innerHTML = `<div class="noprint"><a class="back" href="#/${g.id}/lesson/${l.n}"><span aria-hidden="true" style="color:var(--accent)">←</span> Back to Lesson ${l.n}</a>
@@ -726,7 +726,7 @@
     $("#main").innerHTML = `
       ${gfrom ? `<a class="back" href="#/${g.id}/bookgrammar/${esc(gfrom)}"><span aria-hidden="true" style="color:var(--accent)">←</span> Back to the Grammar Guide</a>` : `<a class="back" href="${upcoming ? `#/${g.id}` : lesson ? `#/${g.id}/lesson/${lesson.n}` : libBack}"><span aria-hidden="true" style="color:var(--accent)">←</span> ${upcoming ? "Back to all lessons" : lesson ? "Back to Lesson " + lesson.n : "Back to the library"}</a>`}
       ${upcoming ? `<div class="upnote">Preparing for <b>Lesson ${lesson.n}</b></div>` : ""}
-      <div class="head"><div class="eyebrow">${[t.source, t.ref].filter(Boolean).map(esc).join(" · ")}</div>
+      <div class="head"><div class="eyebrow">${[t.source, t.ref && t.ref.replace(/ /g, "\u00a0")].filter(Boolean).map(esc).join(" · ")}</div>
         <h1 lang="pi">${esc(t.title)}</h1><p class="sub">${esc(t.titleEn || "")}</p></div>
       ${t.audio ? listenBar(t) : ""}
       <div class="toolbar">
@@ -742,17 +742,20 @@
       <div id="text" style="--ps:${textScale()}" class="boxes${markNew ? " marknew" : ""}${h.subj ? " hint-subj" : ""}${h.verb ? " hint-verb" : ""}">${boxes}</div>
       <p class="muted" style="font-size:.9rem;margin:12px 0 0">Tap any word for its meaning and grammar.</p>
       ${prevNext}
-      <p class="textcredit">${esc(t.credit || "")}</p>`;
+      <p class="textcredit">${esc(t.credit || "").replace(/ (\S+)$/, "\u00a0$1")}</p>`;
 
     if (t.audio) wireListen(t);
     const pk = $("#pickup"); if (pk) setTimeout(() => pk.scrollIntoView({ block: "center", behavior: "smooth" }), 250);
     const box = $("#text");
     // words never break across lines, unless a single word is wider than the line
     const fitWords = () => box.querySelectorAll(".pali").forEach((pl) => {
-      const max = pl.clientWidth;
-      pl.querySelectorAll(".w").forEach((w) => { w.classList.remove("long"); if (w.scrollWidth > max - 4) w.classList.add("long"); });
+      const max = Math.min(pl.clientWidth, document.documentElement.clientWidth - 2 * pl.getBoundingClientRect().left);   // the card may already be widened by the long word
+      pl.querySelectorAll(".w").forEach((w) => { w.classList.remove("long"); if (w.getBoundingClientRect().width > max - 4) w.classList.add("long"); });
     });
-    fitWords();
+    // a long one-word title is made a little smaller on a phone, so it fits the line
+    const fitTitle = () => { const h = document.querySelector("#main .head h1"); if (!h) return; h.style.fontSize = "";
+      for (let i = 0; i < 12 && h.scrollWidth > h.clientWidth + 1; i++) h.style.fontSize = (parseFloat(getComputedStyle(h).fontSize) * 0.95) + "px"; };
+    fitWords(); fitTitle(); if (document.fonts) document.fonts.ready.then(() => { fitWords(); fitTitle(); });
     if (state.fitWords) removeEventListener("resize", state.fitWords);
     state.fitWords = fitWords; addEventListener("resize", fitWords);
     box.addEventListener("click", (e) => {
