@@ -712,3 +712,8 @@ html.ptr-on, html.ptr-on body{overscroll-behavior-y:contain}
 .ptr.ready .ptr-txt,.ptr.busy .ptr-txt{color:var(--ink)}
 .ptr.busy svg{animation:ptr-spin .8s linear infinite}
 @keyframes ptr-spin{to{transform:rotate(360deg)}}
+/* home page (no group) */
+.home{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.home-card h1{margin:0 0 8px}
+.home-card p{margin:0 0 12px}
+.home-btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}

@@ -1,0 +1,26 @@
+{
+ "id": "dec3",
+ "name": "DEC3 2026",
+ "title": "Online Pāḷi course",
+ "start": "2026-12-03",
+ "schedule": {
+  "days": "Mondays and Thursdays",
+  "utc": "02:00",
+  "weekdays": [
+   1,
+   4
+  ]
+ },
+ "materials": "https://1drv.ms/f/c/6c1280ffd770ad5b/IgD9q7N5k1i7Q5cMuIc4i2XhAcBWe00qR2Gsu02M2i5pe5M?e=kkKdDo",
+ "dana": "https://www.sutadhana.com/d%C4%81na",
+ "settings": {
+  "markNewWords": true,
+  "colourHints": true,
+  "danaStyle": "d"
+ },
+ "earlier": [],
+ "lessons": [],
+ "notes": {},
+ "next": null,
+ "book": "https://1drv.ms/b/c/6c1280ffd770ad5b/IQBPqUEKXjacSaEhb96TOsn3AW19iZpyK5p0nVp0aTZe-B8?e=KaqS9O"
+}

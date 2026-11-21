@@ -249,7 +249,8 @@
     try {
       const [h, m] = g.schedule.utc.split(":").map(Number);
       const wd = g.schedule.weekdays || [];          // 0 = Sunday … 6 = Saturday, in UTC
-      const now = new Date();
+      const st = g.start ? new Date(g.start + "T00:00:00Z") : null;
+      const now = st && st > new Date() ? st : new Date();
       let next = null;
       for (let i = 0; i < 8 && !next; i++) {
         const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + i, h, m));
@@ -294,7 +295,8 @@
   // the next class day after a given day (from the Saturday / Tuesday schedule)
   function nextClassDate(g, after) {
     const wd = g.schedule?.weekdays || [];
-    const base = after ? new Date(after + "T12:00:00Z") : new Date();
+    let base = after ? new Date(after + "T12:00:00Z") : new Date();
+    if (!after && g.start) { const s = new Date(g.start + "T12:00:00Z"); s.setUTCDate(s.getUTCDate() - 1); if (s > base) base = s; }
     const today = new Date(); today.setUTCHours(0, 0, 0, 0);
     for (let i = 1; i < 15; i++) {
       const d = new Date(Date.UTC(base.getUTCFullYear(), base.getUTCMonth(), base.getUTCDate() + i, 12));
@@ -303,6 +305,7 @@
     return "";
   }
   async function nextLesson(g) {
+    if (g.next === null) return null;
     const done = visibleLessons(g);
     const last = done[done.length - 1];
     const n = g.next?.n || (last ? last.n + 1 : 1);
@@ -406,7 +409,7 @@
       <div class="head"><h1>Lessons</h1>
         <p class="sub">Each lesson holds the texts we read together, the recording and the new words.</p></div>
       <div class="cols">
-        <div class="main">${band || `<div class="notice">The first lesson in the app will appear here after class.</div>`}${below}</div>
+        <div class="main">${band || (g.start && !visibleLessons(g).length ? `<div class="notice">Welcome!<br>The course starts on ${esc(new Date(g.start + "T12:00:00").toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" })).replace(/ (\d+) (\S+)$/, " $1\u00a0$2")}.<br>Each lesson will appear here after class.</div>` : `<div class="notice">The first lesson in the app will appear here after class.</div>`)}${below}</div>
         <aside class="side">
           <div class="card"><div class="eyebrow">Word review</div>
             <div class="big">${d.total}</div><div class="muted">${d.total === 1 ? "card" : "cards"} to review today</div>
@@ -1406,6 +1409,34 @@
     }));
   }
 
+  /* ---------------- home page (learn.sutadhana.com): belongs to no group ---------------- */
+  function viewHome(idx, missing) {
+    document.title = "Sutadhana · Pāḷi course learning platform";
+    const last = store.get("sd:lastGroup", "");
+    const known = last && idx.groups.some((x) => x.id === last);
+    const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+    if (known && standalone && !missing) { location.replace(`#/${last}`); return; }   // the saved app opens the student's own class page
+    $("#top").innerHTML = `<div class="top-in"><div class="brandrow"><a class="brand" href="#/"><b>Sutadhana</b><span>Pāḷi course</span></a>
+      <button class="tourbtn" id="tourBtn" type="button"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="7 4 20 12 7 20 7 4"/></svg><span class="t-long">Take a tour</span><span class="t-short">Tour</span></button></div></div>`;
+    $("#main").innerHTML = `
+      <div class="site-title"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 8c4 5 6 10 6 15s-2 9-6 12c-4-3-6-7-6-12s2-10 6-15z"/><path d="M24 35c-6 0-12-3-16-9 5-1 10 0 14 3M24 35c6 0 12-3 16-9-5-1-10 0-14 3"/></svg><span>Sutadhana Learning Platform</span></div>
+      <div class="home">
+        ${missing ? `<div class="notice">This class page doesn’t exist.<br>Please check the link in your course email.</div>` : ""}
+        <div class="card home-card">
+          <h1>Welcome</h1>
+          <p>This is the learning platform of&nbsp;the&nbsp;Sutadhana online Pāḷi&nbsp;course.<br>
+          We read Pāḷi texts together here: tap any word for its meaning and&nbsp;grammar, listen to the readings, and review the&nbsp;words a&nbsp;few&nbsp;minutes a&nbsp;day.</p>
+          <p class="muted">Each course group has its own class&nbsp;page.<br>Its link is sent by email to the participants of&nbsp;the&nbsp;group.</p>
+          <div class="home-btns">
+            ${known ? `<a class="btn primary" href="#/${esc(last)}">Go to your class page</a>` : ""}
+            <button class="btn tour-open${known ? "" : " primary"}" type="button">Watch the tour</button>
+            <a class="btn" href="https://www.sutadhana.com">About the course</a>
+          </div>
+        </div>
+      </div>`;
+    window.scrollTo(0, 0);
+  }
+
   /* ---------------- router ---------------- */
   async function route() {
     closeSheet(); hidePop(); closeGrammar(); stopAudio();
@@ -1417,10 +1448,11 @@
       const idx = await load("groups/index.json");
       state.dataVersion = idx.version || "";
       if (!GRAMMAR_IDS) { try { GRAMMAR_IDS = new Set((await load("grammar/index.json")).sections.map((x) => x.id)); } catch (e) { GRAMMAR_IDS = new Set(); } }
-      if (!parts.length) { location.replace(`#/${idx.current}`); return; }
+      if (!parts.length) { viewHome(idx); footer(); return; }
       const gid = parts[0];
-      if (!idx.groups.some((x) => x.id === gid)) { $("#main").innerHTML = `<div class="notice">This group page doesn't exist. <a href="#/${idx.current}">Go to the current group</a>.</div>`; return; }
+      if (!idx.groups.some((x) => x.id === gid)) { viewHome(idx, true); footer(); return; }
       await getGroup(gid);
+      store.set("sd:lastGroup", gid);
       document.title = "Sutadhana · Pāḷi course";
       const v = parts[1];
       if (!v) await viewGroup();
@@ -1464,7 +1496,7 @@
     if (!e.target.closest(".nmark") && !e.target.closest("#pop") && !e.target.closest(".timebtn")) hidePop();
   });
   document.addEventListener("click", (e) => {
-    if (e.target.closest("#tourBtn")) openTour();
+    if (e.target.closest("#tourBtn, .tour-open")) openTour();
     if (e.target.closest("#rvVidBtn")) openReviewVideo();
     const bg = e.target.closest("[data-bookg]"); if (bg) openBookGrammar(bg.dataset.bookg);
   });
