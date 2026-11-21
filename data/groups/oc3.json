@@ -191,20 +191,36 @@
     }
    ],
    "next": ""
+  },
+  {
+   "n": 15,
+   "date": "2026-11-21",
+   "title": "Listening to the Dhamma and Recollect the Buddha",
+   "published": true,
+   "recording": "https://us06web.zoom.us/rec/share/JgKDes3pC67CClWNARcZc75T5XJOxwLka7UxmVz_YsNKuCJVX7L11h_oqpC4dkg.80jzMMn5s08nhMHj",
+   "items": [
+    {
+     "text": "ws1-an5-202"
+    },
+    {
+     "guide": "3"
+    },
+    {
+     "text": "ws1-sn11-3"
+    }
+   ],
+   "next": ""
   }
  ],
  "notes": {},
  "next": {
-  "n": 15,
+  "n": 16,
   "items": [
    {
-    "text": "ws1-an5-202"
+    "text": "ncrp-4-1-2"
    },
    {
-    "guide": "3"
-   },
-   {
-    "text": "ws1-sn11-3"
+    "text": "ncrp-4-1-3"
    }
   ]
  },

@@ -172,7 +172,9 @@
     const fresh = deck.filter((k) => !c[k.id]);
     const today = new Date().toDateString();
     const nd = store.get(scopeKey(sc) + ":newday", { day: "", n: 0 });
-    const newLeft = Math.max(0, NEW_PER_DAY - (nd.day === today ? nd.n : 0));
+    // the daily limit on new cards is for the main review only; a lesson's own review (last or next lesson)
+    // shows all its words at once, so a student can prepare a whole lesson in one sitting
+    const newLeft = sc ? Infinity : Math.max(0, NEW_PER_DAY - (nd.day === today ? nd.n : 0));
     return { due, fresh, newToday: fresh.slice(0, newLeft), total: due.length + Math.min(fresh.length, newLeft) };
   }
 
