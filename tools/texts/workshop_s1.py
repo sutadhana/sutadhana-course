@@ -1,11 +1,12 @@
-"""Texts from Mor's Pāḷi Workshop booklet (V3, 25.7.26), section 1 "sīla, dāna & saddhā",
-taken over from the Pāḷi Workshop Reader with their word analyses (meanings from DPD).
-They go to the library's "More texts" tab.  build_library.py calls build_prebuilt(api)."""
+"""Texts from Mor's Pāḷi Workshop booklet (corrected Nov 2026), sections 1–3
+("sīla, dāna & saddhā", "sammāvācā", "yoniso manasikāra"), with their word analyses
+(sections 1–2 taken over from the Pāḷi Workshop Reader; meanings from DPD).
+They go to the library's "Pāḷi Workshop Texts" tab.  build_library.py calls build_prebuilt(api)."""
 import json, os, re
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = json.load(open(os.path.join(HERE, "_workshop_booklet.json"), encoding="utf-8"))
-SECTION = 1
+SECTIONS = (1, 2, 3)
 PUNCT = re.compile(r"^([“”\"‘’,.;:!?—…\s\[\]()]*)(.*?)([“”\"‘’,.;:!?—…\s\[\]()]*)$")
 NO_PARSE = re.compile(r"indeclinable|two words joined|absolutive|infinitive|adverb|term of address|^numeral|idiom|prefix", re.I)
 GENDER_POS = {"masculine noun": {"masc"}, "feminine noun": {"fem"}, "neuter noun": {"nt"},
@@ -33,9 +34,8 @@ def convert_word(key, e, api):
 
 
 def build_prebuilt(api):
-    sec = next(s for s in DATA["SECTIONS"] if s["n"] == SECTION)
     out = []
-    for s in sec["suttas"]:
+    for sec, s in [(sec, s) for sec in DATA["SECTIONS"] if sec["n"] in SECTIONS for s in sec["suttas"]]:
         D = dict(DATA["E"]); D.update(s.get("words") or {})
         words, paras = {}, []
         for b in s["boxes"]:
@@ -60,7 +60,7 @@ def build_prebuilt(api):
             paras.append(p)
         title = s["title"] if s["title"][:1].islower() else s["title"]
         out.append({
-            "id": "ws1-" + s["id"], "title": title, "titleEn": s.get("en") or "",
+            "id": f"ws{sec['n']}-" + s["id"], "title": title, "titleEn": s.get("en") or "",
             "ref": (s.get("ref") or "").replace(" - ", " · "),
             "source": f"Pāḷi Workshop booklet · page {s['page']}",
             "credit": "Pāḷi text and English translation as in Mor’s Pāḷi Workshop booklet.",

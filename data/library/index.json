@@ -623,5 +623,192 @@
   "collection": "workshop",
   "group": "1 · sīla, dāna & saddhā",
   "groupSub": "And Other Wholesome Qualities"
+ },
+ {
+  "id": "ws2-dhp-2",
+  "ref": "",
+  "title": "Dhammapada Verses",
+  "titleEn": "",
+  "source": "Pāḷi Workshop booklet · page 22",
+  "section": "extra",
+  "collection": "workshop",
+  "group": "2 · sammāvācā",
+  "groupSub": "Right Speech"
+ },
+ {
+  "id": "ws2-mn58",
+  "ref": "MN 58 · excerpt",
+  "title": "kālaññū tathāgato",
+  "titleEn": "The Tathāgata Knows the Time",
+  "source": "Pāḷi Workshop booklet · page 23",
+  "section": "extra",
+  "collection": "workshop",
+  "group": "2 · sammāvācā",
+  "groupSub": "Right Speech"
+ },
+ {
+  "id": "ws2-an10-69",
+  "ref": "AN 10.69 · excerpt",
+  "title": "kathāvatthūni",
+  "titleEn": "Topics for Discussion",
+  "source": "Pāḷi Workshop booklet · page 24",
+  "section": "extra",
+  "collection": "workshop",
+  "group": "2 · sammāvācā",
+  "groupSub": "Right Speech"
+ },
+ {
+  "id": "ws2-mn21",
+  "ref": "MN 21 · excerpt",
+  "title": "kakacūpama sutta",
+  "titleEn": "The Simile of the Saw",
+  "source": "Pāḷi Workshop booklet · page 25",
+  "section": "extra",
+  "collection": "workshop",
+  "group": "2 · sammāvācā",
+  "groupSub": "Right Speech"
+ },
+ {
+  "id": "ws2-dn2",
+  "ref": "DN 2 · excerpt",
+  "title": "hadayaṅgamā vācā",
+  "titleEn": "Words That Go to the Heart",
+  "source": "Pāḷi Workshop booklet · page 26",
+  "section": "extra",
+  "collection": "workshop",
+  "group": "2 · sammāvācā",
+  "groupSub": "Right Speech"
+ },
+ {
+  "id": "ws2-dhp-76",
+  "ref": "",
+  "title": "Guide to Hidden Treasure",
+  "titleEn": "",
+  "source": "Pāḷi Workshop booklet · page 27",
+  "section": "extra",
+  "collection": "workshop",
+  "group": "2 · sammāvācā",
+  "groupSub": "Right Speech"
+ },
+ {
+  "id": "ws2-mn103",
+  "ref": "MN 103 · excerpt",
+  "title": "kallaṃ vacanāya",
+  "titleEn": "It is Proper to Speak",
+  "source": "Pāḷi Workshop booklet · page 27",
+  "section": "extra",
+  "collection": "workshop",
+  "group": "2 · sammāvācā",
+  "groupSub": "Right Speech"
+ },
+ {
+  "id": "ws2-mn95",
+  "ref": "MN 95 · excerpt",
+  "title": "saccānurakkhaṇā",
+  "titleEn": "Protecting the Truth",
+  "source": "Pāḷi Workshop booklet · page 30",
+  "section": "extra",
+  "collection": "workshop",
+  "group": "2 · sammāvācā",
+  "groupSub": "Right Speech"
+ },
+ {
+  "id": "ws2-mn117-vaca",
+  "ref": "MN 117",
+  "title": "sammādiṭṭhi pubbaṅgamā",
+  "titleEn": "Right View Comes First",
+  "source": "Pāḷi Workshop booklet · page 31",
+  "section": "extra",
+  "collection": "workshop",
+  "group": "2 · sammāvācā",
+  "groupSub": "Right Speech"
+ },
+ {
+  "id": "ws3-dhp-3",
+  "ref": "",
+  "title": "Dhammapada Verses",
+  "titleEn": "",
+  "source": "Pāḷi Workshop booklet · page 33",
+  "section": "extra",
+  "collection": "workshop",
+  "group": "3 · yoniso manasikāra",
+  "groupSub": "Reflecting upon and Examining the Dhamma"
+ },
+ {
+  "id": "ws3-an5-47",
+  "ref": "AN 5.47",
+  "title": "sutadhana",
+  "titleEn": "The Wealth of Learning",
+  "source": "Pāḷi Workshop booklet · page 34",
+  "section": "extra",
+  "collection": "workshop",
+  "group": "3 · yoniso manasikāra",
+  "groupSub": "Reflecting upon and Examining the Dhamma"
+ },
+ {
+  "id": "ws3-mn43",
+  "ref": "",
+  "title": "dve paccayā",
+  "titleEn": "Two Conditions",
+  "source": "Pāḷi Workshop booklet · page 35",
+  "section": "extra",
+  "collection": "workshop",
+  "group": "3 · yoniso manasikāra",
+  "groupSub": "Reflecting upon and Examining the Dhamma"
+ },
+ {
+  "id": "ws3-sn45-55",
+  "ref": "SN 45.55 · excerpt",
+  "title": "yonisomanasikārasampadā sutta",
+  "titleEn": "Accomplishment in Wise Attention",
+  "source": "Pāḷi Workshop booklet · page 35",
+  "section": "extra",
+  "collection": "workshop",
+  "group": "3 · yoniso manasikāra",
+  "groupSub": "Reflecting upon and Examining the Dhamma"
+ },
+ {
+  "id": "ws3-an8-6",
+  "ref": "AN 8.6 · excerpt",
+  "title": "(dutiya) lokadhamma sutta",
+  "titleEn": "Worldly Conditions (2)",
+  "source": "Pāḷi Workshop booklet · page 36",
+  "section": "extra",
+  "collection": "workshop",
+  "group": "3 · yoniso manasikāra",
+  "groupSub": "Reflecting upon and Examining the Dhamma"
+ },
+ {
+  "id": "ws3-mn19",
+  "ref": "MN 19 · excerpt",
+  "title": "dvedhāvitakka sutta",
+  "titleEn": "Two Kinds of Thought",
+  "source": "Pāḷi Workshop booklet · page 39",
+  "section": "extra",
+  "collection": "workshop",
+  "group": "3 · yoniso manasikāra",
+  "groupSub": "Reflecting upon and Examining the Dhamma"
+ },
+ {
+  "id": "ws3-an5-57",
+  "ref": "AN 5.57 · excerpt",
+  "title": "abhiṇhapaccavekkhitabbaṭhāna sutta",
+  "titleEn": "Themes for Frequent Reflection",
+  "source": "Pāḷi Workshop booklet · page 41",
+  "section": "extra",
+  "collection": "workshop",
+  "group": "3 · yoniso manasikāra",
+  "groupSub": "Reflecting upon and Examining the Dhamma"
+ },
+ {
+  "id": "ws3-mn117-sankappa",
+  "ref": "",
+  "title": "sammādiṭṭhi pubbaṅgamā",
+  "titleEn": "Right View Comes First",
+  "source": "Pāḷi Workshop booklet · page 42",
+  "section": "extra",
+  "collection": "workshop",
+  "group": "3 · yoniso manasikāra",
+  "groupSub": "Reflecting upon and Examining the Dhamma"
  }
 ]
