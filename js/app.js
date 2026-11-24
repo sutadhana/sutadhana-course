@@ -344,7 +344,7 @@
       if (!it.text) return `${head}<div class="${cls}"><span class="dot">${k}</span><span class="t"><b>${esc(it.label || "")}</b>${it.detail ? `<small>${esc(it.detail)}</small>` : ""}</span></div>`;
       const m = meta(it.text), part = partLabel(it, unitOf(m.titleEn));
       return `${head}<a class="${cls}" href="${href(m)}"><span class="dot">${k}</span><span class="t"><b lang="pi">${esc(m.title)}${part ? ` <span class="part">${part}</span>` : ""}</b>
-        <small>${[m.titleEn, m.ref && m.ref.replace(/ /g, "\u00a0")].filter(Boolean).map(esc).join(" · ")}${m.audio ? ` · <span class="has-audio">${HP_ICON}Audio</span>` : ""}</small></span><span class="arr" aria-hidden="true">›</span></a>`;
+        <small>${[m.titleEn && esc(m.titleEn), m.ref && `<span class="nobr">${esc(m.ref)}</span>`].filter(Boolean).join(" · ")}${m.audio ? ` · <span class="has-audio">${HP_ICON}Audio</span>` : ""}</small></span><span class="arr" aria-hidden="true">›</span></a>`;
     }).join("");
   }
   function openBookGrammar(id) {
@@ -387,12 +387,12 @@
       const nDue = dueInfo(nDeck, String(nx.n)).total;
       const when = nx.date ? new Date(nx.date + "T12:00:00").toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" }) : "";
       prep = `<section class="prep" aria-labelledby="prepH">
-        <div class="prep-h"><div><h2 id="prepH" class="prep-title">Prepare for next lesson</h2>
+        <div class="prep-h"><div><h2 id="prepH" class="prep-title">Prepare for next\u00a0lesson</h2>
           <div class="prep-sub">Lesson\u00a0${nx.n}${when ? " · " + esc(when).replace(/ (\d+) (\S+)$/, " $1\u00a0$2") : ""}</div></div>
           <span class="prep-tag">Coming up</span></div>
         <div class="prep-list">${itemRows(nx.items, meta, (m) => `#/${g.id}/read/${m.id}?lesson=${nx.n}`, "prep-row")}</div>
         <a class="rvbtn" href="#/${g.id}/review?lesson=${nx.n}"><span class="rv-ic" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="6" width="13" height="15" rx="2"/><path d="M8 3h11a2 2 0 0 1 2 2v12"/></svg></span>
-          <span class="rv-t"><b>Learn the new words</b><small>before the class</small></span>${nDue ? `<span class="rv-n" title="${nDue} cards ready">${nDue}</span>` : ""}
+          <span class="rv-t"><b>Learn the new words</b><small>before the class</small></span>${nDue ? `<span class="rv-n" title="${nDue} cards ready">${nDue}</span>` : ""}
           <span class="rv-go" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></a>
         <p class="muted" style="font-size:.88rem;margin:2px 0 0">Read the texts, listen to them and try your own translation before class.</p>
       </section>`;
@@ -445,7 +445,7 @@
       if (i.text) {
         const m = meta(i.text);
         return `<a class="row" href="#/${g.id}/read/${m.id}?lesson=${l.n}"><div class="dot">${k}</div>
-          <div class="t"><b>${esc(m.title)}${m.titleEn ? ` <span class="muted" style="display:inline;font-size:1rem">· ${esc(m.titleEn)}</span>` : ""}</b><span>${[m.source, m.ref].filter(Boolean).map(esc).join(" · ")}${m.audio ? ` · <span class="has-audio">${HP_ICON}Audio</span>` : ""}</span></div><div class="arr" aria-hidden="true">›</div></a>`;
+          <div class="t"><b>${esc(m.title)}${m.titleEn ? ` <span class="muted" style="display:inline;font-size:1rem">· ${esc(m.titleEn)}</span>` : ""}</b><span>${[m.source, m.ref].filter(Boolean).map(esc).join(" · ")}${m.audio ? ` · <span class="has-audio">${HP_ICON}Audio</span>` : ""}</span></div><div class="arr" aria-hidden="true">›</div></a>`;
       }
       if (i.grammar) return `<a class="row" href="#/${g.id}/grammar/${esc(i.grammar)}"><div class="dot">${k}</div><div class="t"><b>${esc(i.label || i.grammar)}</b><span>Grammar guide</span></div><div class="arr" aria-hidden="true">›</div></a>`;
       return `<div class="row"><div class="dot">${k}</div><div class="t"><b>${esc(i.label)}</b>${i.detail ? `<span>${esc(i.detail)}</span>` : ""}</div></div>`;
