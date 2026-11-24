@@ -1,14 +1,14 @@
-"""Texts from Mor's Pāḷi Workshop booklet (corrected Nov 2026), sections 1–3
-("sīla, dāna & saddhā", "sammāvācā", "yoniso manasikāra"), with their word analyses
+"""Texts from Mor's Pāḷi Workshop booklet (corrected Nov 2026), the whole booklet: sections 1–10,
+with the new texts of the expanded draft in their places, and their word analyses
 (sections 1–2 taken over from the Pāḷi Workshop Reader; meanings from DPD).
 They go to the library's "Pāḷi Workshop Texts" tab.  build_library.py calls build_prebuilt(api)."""
 import json, os, re
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = json.load(open(os.path.join(HERE, "_workshop_booklet.json"), encoding="utf-8"))
-SECTIONS = (1, 2, 3)
+SECTIONS = tuple(range(1, 11))
 PUNCT = re.compile(r"^([“”\"‘’,.;:!?—…\s\[\]()]*)(.*?)([“”\"‘’,.;:!?—…\s\[\]()]*)$")
-NO_PARSE = re.compile(r"indeclinable|two words joined|absolutive|infinitive|adverb|term of address|^numeral|idiom|prefix", re.I)
+NO_PARSE = re.compile(r"indeclinable|words joined|absolutive|infinitive|adverb|term of address|^numeral|idiom|prefix", re.I)
 GENDER_POS = {"masculine noun": {"masc"}, "feminine noun": {"fem"}, "neuter noun": {"nt"},
               "adjective": {"adj", "pp", "prp", "ptp", "ordin"}, "pronoun": {"pron"}, "past participle": {"pp", "adj"},
               "present participle": {"prp", "adj"}}
@@ -21,7 +21,7 @@ def convert_word(key, e, api):
             w[b] = e[a]
     if e.get("parts"):
         w["parts"] = [{"form": p["w"], "label": p["g"], "meaning": p["m"]} for p in e["parts"]]
-    sandhi = e["g"].startswith("two words joined")
+    sandhi = "words joined" in e["g"]
     w["heads"] = [] if sandhi or not e.get("dpd") else [{"lemma": e["lemma"], "meaning": e["dpd"]}]
     w["parse"] = not sandhi and not NO_PARSE.search(e["g"])
     # the word's declension type, from DPD, for the case tables
@@ -62,7 +62,7 @@ def build_prebuilt(api):
         out.append({
             "id": f"ws{sec['n']}-" + s["id"], "title": title, "titleEn": s.get("en") or "",
             "ref": (s.get("ref") or "").replace(" - ", " · "),
-            "source": f"Pāḷi Workshop booklet · page {s['page']}",
+            "source": f"Pāḷi Workshop booklet · page {s['page']}" if s.get("page") else "Pāḷi Workshop texts · added text",
             "credit": "Pāḷi text and English translation as in Mor’s Pāḷi Workshop booklet.",
             "section": "extra", "collection": "workshop", "group": f"{sec['n']} · {sec['title']}", "groupSub": sec.get("sub", ""),
             "paras": paras, "words": words,
