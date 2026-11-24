@@ -62,7 +62,7 @@ def build_prebuilt(api):
         out.append({
             "id": f"ws{sec['n']}-" + s["id"], "title": title, "titleEn": s.get("en") or "",
             "ref": (s.get("ref") or "").replace(" - ", " · "),
-            "source": f"Pāḷi Workshop booklet · page {s['page']}" if s.get("page") else "Pāḷi Workshop texts · added text",
+            "source": "Pāḷi Workshop booklet",
             "credit": "Pāḷi text and English translation as in Mor’s Pāḷi Workshop booklet.",
             "section": "extra", "collection": "workshop", "group": f"{sec['n']} · {sec['title']}", "groupSub": sec.get("sub", ""),
             "paras": paras, "words": words,
