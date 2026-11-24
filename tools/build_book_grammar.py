@@ -632,9 +632,9 @@ G4.append(("fem-participle", "Feminine participles in -ī and -ā", f"""
 """))
 
 G4.append(("optative", "More optative endings", f"""
-<p>Besides the endings in Grammar III, the optative has some shorter endings:</p>
-{table(["Singular", "Plural"], [("1st person", ["-e", "-ema (-eyyāmhe)"]), ("2nd person", ["-e (-etho)", "-etha (-eyyavho)"]), ("3rd person", ["-e (-etha)", "(-eraṃ)"])], first="Person")}
-<p>The endings in brackets are called “middle” endings, but the meaning is the same.</p>
+<p>Besides the endings in Grammar III, the optative has two short endings for “he, she, one should …”, which you will meet often, especially in verse:</p>
+<p><b>-e</b>: <span lang="pi">bhaj<b>e</b>, ghātay<b>e</b></span><br><b>-etha</b>: <span lang="pi">bhaj<b>etha</b>, labh<b>etha</b></span></p>
+<p>Both mean the same as <span lang="pi">-eyya</span>: <span lang="pi" class="nw">bhaje = bhajetha = bhajeyya</span>.</p>
 {ex(("na <b>bhaje</b> pāpake mitte", "one <b>should</b> not <b>associate</b> with bad friends (-e)", "Friends, Fear and Sorrow"),
     ("<b>bhajetha</b> mitte kalyāṇe", "one <b>should associate</b> with good friends (-etha)", "Friends, Fear and Sorrow"),
     ("na haneyya na <b>ghātaye</b>", "one should not kill nor <b>cause to kill</b> (-e)", "Friends, Fear and Sorrow"))}
@@ -650,8 +650,8 @@ G4.append(("numerals", "Numbers 1 to 5", f"""
  ("gen", ["ekassa", "ekassa", "ekissā (ekāya)"]), ("loc", ["ekamhi / ekasmiṃ", "ekamhi / ekasmiṃ", "ekissaṃ (ekāyaṃ)"])], first="Singular")}
 {table(["Masculine", "Neuter", "Feminine"], [
  ("nom", ["eke", "ekāni", "ekā / ekāyo"]), ("acc", ["eke", "ekāni", "ekā / ekāyo"]), ("ins", ["ekehi", "ekehi", "ekāhi"]),
- ("dat", ["ekesaṃ (ekesānaṃ)", "ekesaṃ (ekesānaṃ)", "ekāsaṃ (ekāsānaṃ)"]), ("abl", ["ekehi", "ekehi", "ekāhi"]),
- ("gen", ["ekesaṃ (ekesānaṃ)", "ekesaṃ (ekesānaṃ)", "ekāsaṃ (ekāsānaṃ)"]), ("loc", ["ekesu", "ekesu", "ekāsu"])], first="Plural")}
+ ("dat", ["ekesaṃ", "ekesaṃ", "ekāsaṃ"]), ("abl", ["ekehi", "ekehi", "ekāhi"]),
+ ("gen", ["ekesaṃ", "ekesaṃ", "ekāsaṃ"]), ("loc", ["ekesu", "ekesu", "ekāsu"])], first="Plural")}
 {h("dvi, ti, catu, pañca")}
 <p><b>ti</b> and <b>catu</b> have different forms for each gender. <b>dvi</b>, <b>pañca</b> and the higher numbers have one set of forms for all genders.</p>
 {table(["dvi (2)", "ti (3) m. / n. / f.", "catu (4) m. / n. / f.", "pañca (5)"], [
@@ -907,8 +907,7 @@ G7 = []
 G7.append(("optative", "dajjā and siyā: more optatives", f"""
 <p><b>1.</b> A few verbs have an optative in <b>-yā</b>: <span lang="pi">deti</span> (gives) → <span lang="pi"><b>dajjā</b></span>, <span lang="pi">jānāti</span> → <span lang="pi">jaññā</span>, <span lang="pi">karoti</span> → <span lang="pi">kayirā</span>, beside the usual <span lang="pi">dadeyya, jāneyya, kareyya</span>.</p>
 <p><b>2. The optative of atthi</b> (is):</p>
-{table(["Singular", "Plural"], [
- ("1st", ["assaṃ / siyaṃ", "assāma"]), ("2nd", ["assa", "assatha"]), ("3rd", ["assa / siyā", "assu / siyuṃ"])], first="Person")}
+<p><span lang="pi"><b>siyā</b></span> or <span lang="pi"><b>assa</b></span> – he, she, it would be; <span lang="pi"><b>siyuṃ</b></span> or <span lang="pi"><b>assu</b></span> – they would be; <span lang="pi"><b>assaṃ</b></span> – I would be.</p>
 <p><span lang="pi"><b>siyā</b></span> also means “suppose that …”.</p>
 {ex(("kāyena saṃvuto <b>siyā</b>", "one <b>should be</b> restrained by body", "Anger and Impurity"),
     ("<b>dajjā</b>’ppasmimpi yācito", "when asked, one <b>should give</b>, even (from) a little", "Anger and Impurity"))}
