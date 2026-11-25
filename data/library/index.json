@@ -224,7 +224,8 @@
   "titleEn": "The Wise",
   "source": "NCRP Lesson 4 · Further reading 2",
   "bookLesson": 4,
-  "section": "further"
+  "section": "further",
+  "audio": "audio/ncrp-4-2-2.m4a"
  },
  {
   "id": "ncrp-4-2-3",
@@ -233,7 +234,8 @@
   "titleEn": "Happiness",
   "source": "NCRP Lesson 4 · Further reading 3",
   "bookLesson": 4,
-  "section": "further"
+  "section": "further",
+  "audio": "audio/ncrp-4-2-3.m4a"
  },
  {
   "id": "ncrp-4-2-4",
