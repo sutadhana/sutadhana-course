@@ -272,7 +272,7 @@
     } catch (e) { return ""; }
   }
 
-  /* "add to calendar": Google Calendar link, and an .ics file for Apple, Outlook and other calendars.
+  /* "add to calendar": Google Calendar link, and an .ics file for Apple, Outlook and\u00a0other\u00a0calendars.
      The classes repeat weekly at the same UTC time, so they stay at that time when clocks change. */
   function calendarLinks(g) {
     const sc = g.schedule || {};
@@ -292,7 +292,7 @@
       "&recur=" + encodeURIComponent(rule);
     return `<div class="cal-add"><div class="cal-h">Add the classes to your calendar</div>
       <a class="btn block" href="${esc(google)}" target="_blank" rel="noopener">Google Calendar</a>
-      <a class="btn block" href="${esc(g.calendar)}" download="Pali classes.ics">Apple, Outlook and other calendars</a>
+      <a class="btn block" href="${esc(g.calendar)}" download="Pali classes.ics">Apple, Outlook and\u00a0other\u00a0calendars</a>
       <p class="muted" style="font-size:.85rem;margin:8px 0 0">All the classes are added at once, and your calendar reminds you before each one.</p></div>`;
   }
 

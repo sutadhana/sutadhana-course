@@ -718,6 +718,8 @@ html.ptr-on, html.ptr-on body{overscroll-behavior-y:contain}
 .home-card p{margin:0 0 12px}
 .home-btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
 .nobr{white-space:nowrap}
-.cal-add{margin-top:14px;padding-top:14px;border-top:1px solid var(--line, rgba(0,0,0,.08));display:flex;flex-direction:column;gap:8px}
+.cal-add{margin:16px -20px;padding:16px 20px;background:color-mix(in srgb,var(--surface) 45%,var(--soft));border-top:1px solid var(--line);border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
+.cal-add:last-child{margin-bottom:-18px;border-bottom:0;border-radius:0 0 14px 14px}
+.cal-add+p{margin-top:0 !important}
 .cal-add .cal-h{font-size:.92rem}
-.cal-add .btn{margin:0}
+.cal-add .btn{margin:0;text-align:center}
