@@ -272,6 +272,30 @@
     } catch (e) { return ""; }
   }
 
+  /* "add to calendar": Google Calendar link, and an .ics file for Apple, Outlook and other calendars.
+     The classes repeat weekly at the same UTC time, so they stay at that time when clocks change. */
+  function calendarLinks(g) {
+    const sc = g.schedule || {};
+    if (!g.calendar || !g.start || !sc.utc || !sc.weekdays) return "";
+    const [h, m] = sc.utc.split(":").map(Number);
+    const st = new Date(g.start + "T00:00:00Z");
+    const a = new Date(Date.UTC(st.getUTCFullYear(), st.getUTCMonth(), st.getUTCDate(), h, m));
+    const b = new Date(a.getTime() + (sc.minutes || 60) * 60000);
+    const f = (d) => d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+    const days = sc.weekdays.map((x) => ["SU", "MO", "TU", "WE", "TH", "FR", "SA"][x]).join(",");
+    const rule = `RRULE:FREQ=WEEKLY;BYDAY=${days}` + (sc.until ? `;UNTIL=${sc.until.replace(/-/g, "")}T235959Z` : "");
+    const page = `https://learn.sutadhana.com/#/${g.id}`;
+    const google = "https://calendar.google.com/calendar/render?action=TEMPLATE" +
+      "&text=" + encodeURIComponent("Pāḷi class (Sutadhana)") +
+      "&dates=" + f(a) + "/" + f(b) +
+      "&details=" + encodeURIComponent("Sutadhana online Pāḷi course. Lessons, texts and recordings: " + page) +
+      "&recur=" + encodeURIComponent(rule);
+    return `<div class="cal-add"><div class="cal-h">Add the classes to your calendar</div>
+      <a class="btn block" href="${esc(google)}" target="_blank" rel="noopener">Google Calendar</a>
+      <a class="btn block" href="${esc(g.calendar)}" download="Pali classes.ics">Apple, Outlook and other calendars</a>
+      <p class="muted" style="font-size:.85rem;margin:8px 0 0">All the classes are added at once, and your calendar reminds you before each one.</p></div>`;
+  }
+
   /* dāna card: three looks to choose from (settings.danaStyle a / b / c) */
   function danaCard(g, style) {
     if (!g.dana) return "";
@@ -420,6 +444,7 @@
           ${danaCard(g, g.settings?.danaStyle || "d")}
           <div class="card"><div class="eyebrow">Classes</div>
             <p style="margin:6px 0 0">${esc(g.schedule.days)}, <button class="timebtn" id="lessonTime" aria-describedby="pop">${esc(utcLabel(g.schedule.utc))}</button></p>
+            ${calendarLinks(g)}
             ${g.materials ? `<p style="margin:10px 0 0"><a href="${esc(g.materials)}" target="_blank" rel="noopener">Course materials folder</a></p>` : ""}</div>
         </aside>
       </div>`;

@@ -1,0 +1,22 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Sutadhana//Pali course//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:dec3-2026-classes@learn.sutadhana.com
+DTSTAMP:20261126T000000Z
+DTSTART:20261203T020000Z
+DTEND:20261203T030000Z
+RRULE:FREQ=WEEKLY;BYDAY=MO,TH;UNTIL=20270304T235959Z
+SUMMARY:Pāḷi class (Sutadhana)
+DESCRIPTION:Sutadhana online Pāḷi course. Lessons\, texts and recordings
+ : https://learn.sutadhana.com/#/dec3
+URL:https://learn.sutadhana.com/#/dec3
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Pāḷi class in 30 minutes
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+END:VCALENDAR
